@@ -3,8 +3,11 @@
 /out/
 /coverage
 /.worktrees/
+/src/generated/
+/assets/certificates/
 
 .env*
+!.env.example
 .vercel
 .DS_Store
 *.pem
