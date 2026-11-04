@@ -12,6 +12,17 @@
 - Each new worktree needs `npm ci` and a copy of `.env.local` from the project root before it can build.
 - Remove when done with `git worktree remove .worktrees/<name>`.
 
+## Database
+
+- Prisma 7 schema in `prisma/schema.prisma`. All tables live in the `synergy` Postgres schema. The client is generated to `src/generated/` (gitignored); import it from `@/lib/prisma`.
+- Neon branches: `dev` is used locally via `.env.local` (`DATABASE_URL` pooled, `DIRECT_URL` direct with `&schema=synergy` for migrations). `main` is production and its URL only lives in Vercel's environment variables.
+- Migrations: generate SQL with `prisma migrate diff`, making sure every statement is qualified with `"synergy".`; add CHECK constraints Prisma can't express by hand. Apply to `dev` first with `npx prisma migrate deploy`, and to production just before deploying. Never run `migrate reset` or `db push` against Neon.
+- Auth is Better Auth (`src/lib/auth.ts`). Users are created by the admin only; old MD5 passwords are upgraded on first sign-in.
+
+## Public repo
+
+This repo is public. Never commit `.env.local`, `assets/certificates/`, the old MySQL dumps, the old PHP source, or the question bank as a file.
+
 ## Code style
 
 Follow `code-conventions.md`.
