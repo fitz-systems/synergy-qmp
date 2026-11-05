@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "title": "Synergy QMP | TDG Class 7 Certification",
+    "description": "Online training and certification in the Transportation of Dangerous Goods, Class 7, from a team with over 20 years of nuclear medicine experience."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About us",
+    "courses": "Courses",
+    "contact": "Contact",
+    "privacy": "Privacy policy",
+    "login": "Log in",
+    "menu": "Menu",
+    "close": "Close menu",
+    "primary": "Main navigation",
+    "switchLanguage": "Français",
+    "switchLanguageLabel": "Voir cette page en français"
+  },
+  "hero": {
+    "titleTop": "Transportation of Dangerous Goods",
+    "titleBottom": "Certification",
+    "lead": "Online portal for the training and certification in Transportation of Dangerous Goods, Class 7.",
+    "primary": "Contact us to enroll",
+    "secondary": "Student log in"
+  },
+  "about": {
+    "title": "About us",
+    "subtitle": "Welcome to Synergy QMP",
+    "body": "The Synergy QMP team offers regulatory compliance support and radiation safety training, integral to the nuclear medicine community. Our team collaboratively delivers over 20 years of clinical nuclear medicine expertise, radiopharmacy, regulatory compliance, radiation safety and emergency management training, quality assurance and educational experience to provide high quality training and governance support to our customers.",
+    "link": "Read more about us",
+    "imageAlt": "The Synergy QMP course book, certified by CAMRT / ACTRM"
+  },
+  "stats": {
+    "label": "Course at a glance",
+    "items": [
+      {
+        "value": "2",
+        "label": "Courses"
+      },
+      {
+        "value": "2",
+        "label": "Certificates"
+      },
+      {
+        "value": "20",
+        "label": "Exam questions"
+      },
+      {
+        "value": "120",
+        "label": "Minutes"
+      }
+    ]
+  },
+  "objectives": {
+    "title": "Learning objectives",
+    "subtitle": "In accordance with the requirements of the Transportation of Dangerous Goods Act and Regulations.",
+    "items": [
+      {
+        "icon": "transport",
+        "title": "Transport",
+        "body": "Become familiar with the regulations for transporting radioactive materials by ground."
+      },
+      {
+        "icon": "classification",
+        "title": "Classification",
+        "body": "Understand the classification standards for dangerous goods in Canada."
+      },
+      {
+        "icon": "packaging",
+        "title": "Packaging",
+        "body": "Choose the proper packaging for the transportation of Class 7 packages."
+      },
+      {
+        "icon": "marking",
+        "title": "Marking",
+        "body": "Assign safety marks to radioactive packages and prepare proper paperwork."
+      },
+      {
+        "icon": "shipping",
+        "title": "Shipping",
+        "body": "Apply the standard procedures for shipping, handling and receiving radioactive packages."
+      },
+      {
+        "icon": "emergency",
+        "title": "Emergency",
+        "body": "React appropriately in case of emergency or possible contamination."
+      }
+    ]
+  },
+  "testimonials": {
+    "title": "What people say",
+    "subtitle": "How industry professionals feel about Synergy QMP's education portal.",
+    "previous": "Previous testimonial",
+    "next": "Next testimonial",
+    "listLabel": "Testimonials"
+  },
+  "cta": {
+    "title": "Our TDG course is now live",
+    "body": "Synergy QMP is a leader in the delivery of TDG certification in Canada.",
+    "action": "Contact us to enroll"
+  },
+  "footer": {
+    "tagline": "Training and certification in the Transportation of Dangerous Goods, Class 7.",
+    "contactHeading": "Contact",
+    "linksHeading": "Site",
+    "rights": "All rights reserved."
+  }
+}

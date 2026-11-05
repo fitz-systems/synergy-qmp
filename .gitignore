@@ -5,6 +5,7 @@
 /.worktrees/
 /src/generated/
 /assets/certificates/
+/.impeccable/
 
 .env*
 !.env.example

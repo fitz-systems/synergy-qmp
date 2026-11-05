@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "title": "Synergy QMP | Certification TMD classe 7",
+    "description": "Formation et certification en ligne pour le transport des marchandises dangereuses, classe 7, par une équipe cumulant plus de 20 ans d'expérience en médecine nucléaire."
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "courses": "Cours",
+    "contact": "Contactez-nous",
+    "privacy": "Politique de confidentialité",
+    "login": "Connexion",
+    "menu": "Menu",
+    "close": "Fermer le menu",
+    "primary": "Navigation principale",
+    "switchLanguage": "English",
+    "switchLanguageLabel": "View this page in English"
+  },
+  "hero": {
+    "titleTop": "Transport des marchandises dangereuses",
+    "titleBottom": "Certification",
+    "lead": "Portail en ligne pour la formation et la certification dans le transport des marchandises dangereuses, classe 7.",
+    "primary": "Contactez-nous pour vous inscrire",
+    "secondary": "Connexion étudiant"
+  },
+  "about": {
+    "title": "À propos de nous",
+    "subtitle": "Bienvenue chez Synergy QMP",
+    "body": "L'équipe Synergy QMP offre un soutien à la conformité réglementaire et une formation en radioprotection, intégrée à la communauté de la médecine nucléaire. Notre équipe fournit en collaboration plus de 20 ans d'expertise clinique en médecine nucléaire, en radiopharmacie, en conformité réglementaire, en formation en radioprotection et en gestion des urgences, en assurance de la qualité et en éducation, pour offrir une formation de haute qualité et un soutien de gouvernance à nos clients.",
+    "link": "En savoir plus sur nous",
+    "imageAlt": "Le manuel du cours Synergy QMP, certifié par CAMRT / ACTRM"
+  },
+  "stats": {
+    "label": "Le cours en bref",
+    "items": [
+      {
+        "value": "2",
+        "label": "Cours"
+      },
+      {
+        "value": "2",
+        "label": "Certificats"
+      },
+      {
+        "value": "20",
+        "label": "Questions d'examen"
+      },
+      {
+        "value": "120",
+        "label": "Minutes"
+      }
+    ]
+  },
+  "objectives": {
+    "title": "Objectifs d'apprentissage",
+    "subtitle": "Conformément aux exigences de la Loi sur le transport des marchandises dangereuses et du Règlement.",
+    "items": [
+      {
+        "icon": "transport",
+        "title": "Transport",
+        "body": "Avoir les connaissances nécessaires au sujet du transport de matières radioactives par voie terrestre."
+      },
+      {
+        "icon": "classification",
+        "title": "Classification",
+        "body": "Comprendre la classification des matières dangereuses au Canada."
+      },
+      {
+        "icon": "packaging",
+        "title": "Emballage",
+        "body": "Choisir le bon emballage pour le transport des colis de classe 7."
+      },
+      {
+        "icon": "marking",
+        "title": "Placard",
+        "body": "Assigner le bon niveau de transport aux placards ainsi qu'aux documents de transport."
+      },
+      {
+        "icon": "shipping",
+        "title": "Livraison",
+        "body": "Appliquer les procédures pour l'envoi, la manutention et la réception de colis radioactifs."
+      },
+      {
+        "icon": "emergency",
+        "title": "Urgence",
+        "body": "Réagir de façon appropriée dans le cas d'une urgence ou d'une possible contamination."
+      }
+    ]
+  },
+  "testimonials": {
+    "title": "Ce qu'on en dit",
+    "subtitle": "Ce que pensent les professionnels de l'industrie du portail de formation Synergy QMP.",
+    "previous": "Témoignage précédent",
+    "next": "Témoignage suivant",
+    "listLabel": "Témoignages"
+  },
+  "cta": {
+    "title": "Notre cours TMD est maintenant en ligne",
+    "body": "Synergy QMP est un chef de file de la certification TMD au Canada.",
+    "action": "Contactez-nous pour vous inscrire"
+  },
+  "footer": {
+    "tagline": "Formation et certification pour le transport des marchandises dangereuses, classe 7.",
+    "contactHeading": "Contact",
+    "linksHeading": "Site",
+    "rights": "Tous droits réservés."
+  }
+}
