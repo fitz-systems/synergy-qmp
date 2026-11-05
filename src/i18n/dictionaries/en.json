@@ -14,7 +14,8 @@
     "close": "Close menu",
     "primary": "Main navigation",
     "switchLanguage": "Français",
-    "switchLanguageLabel": "Voir cette page en français"
+    "switchLanguageLabel": "Voir cette page en français",
+    "breadcrumb": "Breadcrumb"
   },
   "hero": {
     "titleTop": "Transportation of Dangerous Goods",
@@ -29,6 +30,57 @@
     "body": "The Synergy QMP team offers regulatory compliance support and radiation safety training, integral to the nuclear medicine community. Our team collaboratively delivers over 20 years of clinical nuclear medicine expertise, radiopharmacy, regulatory compliance, radiation safety and emergency management training, quality assurance and educational experience to provide high quality training and governance support to our customers.",
     "link": "Read more about us",
     "imageAlt": "The Synergy QMP course book, certified by CAMRT / ACTRM"
+  },
+  "aboutPage": {
+    "metaTitle": "About us | Synergy QMP",
+    "metaDescription": "Synergy QMP brings over 20 years of clinical nuclear medicine, radiopharmacy, regulatory compliance and radiation safety experience to TDG Class 7 training and governance support.",
+    "definition": {
+      "term": "Synergy",
+      "body": "the interaction or cooperation of two or more organizations, elements or agents to produce a combined effect greater than the sum of the individual contributions."
+    },
+    "team": {
+      "title": "Experienced team"
+    },
+    "services": {
+      "title": "Synergy QMP services",
+      "items": [
+        {
+          "title": "CNSC",
+          "body": "CNSC licence application and support, for initial applications and renewals."
+        },
+        {
+          "title": "Reporting",
+          "body": "Annual compliance reporting."
+        },
+        {
+          "title": "P & P",
+          "body": "Policy and procedure development."
+        },
+        {
+          "title": "Imaging services",
+          "body": "A range of cost-effective services to support and maximize delivery of essential nuclear medicine imaging services: protocol development and workflow analysis."
+        },
+        {
+          "title": "TDG",
+          "body": "Transportation of Dangerous Goods certification (ground and air transport), a CAMRT accredited course."
+        },
+        {
+          "title": "Consulting",
+          "body": "Consulting services to the nuclear medicine community."
+        }
+      ]
+    },
+    "tdg": {
+      "title": "Transportation of Dangerous Goods Certification (TDG)",
+      "paragraphs": [
+        "Our self-directed online TDG certification course was developed by subject matter experts and is designed to provide the enrollee with all the practical skills, knowledge and judgement to adhere to regulatory requirements applicable to nuclear medicine services.",
+        "Synergy QMP TDG certification is intended for nuclear medicine technology staff, shippers, couriers and receivers of Class 7 dangerous goods. Included in the course are links to relevant regulatory agencies and resources.",
+        "Upon successful completion of the final exam, TDG certification is granted for 3 years (non-transferable). Successful candidates will receive a TDG wallet card, a Certificate of Completion and will earn 1.0 Category A credits from CAMRT / ACTRM. Educational credits are recognized by the CAMRT's provincial organizations and the American Registry of Radiologic Technologists (ARRT)."
+      ],
+      "imageAlt": "A transport truck displaying dangerous goods safety placards",
+      "accreditedBy": "Accredited by",
+      "camrtAlt": "CAMRT / ACTRM"
+    }
   },
   "stats": {
     "label": "Course at a glance",

@@ -14,7 +14,8 @@
     "close": "Fermer le menu",
     "primary": "Navigation principale",
     "switchLanguage": "English",
-    "switchLanguageLabel": "View this page in English"
+    "switchLanguageLabel": "View this page in English",
+    "breadcrumb": "Fil d'Ariane"
   },
   "hero": {
     "titleTop": "Transport des marchandises dangereuses",
@@ -29,6 +30,57 @@
     "body": "L'équipe Synergy QMP offre un soutien à la conformité réglementaire et une formation en radioprotection, intégrée à la communauté de la médecine nucléaire. Notre équipe fournit en collaboration plus de 20 ans d'expertise clinique en médecine nucléaire, en radiopharmacie, en conformité réglementaire, en formation en radioprotection et en gestion des urgences, en assurance de la qualité et en éducation, pour offrir une formation de haute qualité et un soutien de gouvernance à nos clients.",
     "link": "En savoir plus sur nous",
     "imageAlt": "Le manuel du cours Synergy QMP, certifié par CAMRT / ACTRM"
+  },
+  "aboutPage": {
+    "metaTitle": "À propos de nous | Synergy QMP",
+    "metaDescription": "Synergy QMP met plus de 20 ans d'expérience clinique en médecine nucléaire, en radiopharmacie, en conformité réglementaire et en radioprotection au service de la formation TMD classe 7 et du soutien à la gouvernance.",
+    "definition": {
+      "term": "Synergie",
+      "body": "l'interaction ou la coopération de deux ou plusieurs organisations, éléments ou agents pour produire un effet combiné supérieur à la somme des contributions individuelles."
+    },
+    "team": {
+      "title": "Une équipe expérimentée"
+    },
+    "services": {
+      "title": "Services Synergy QMP",
+      "items": [
+        {
+          "title": "CCSN",
+          "body": "Demande de permis de la CCSN et soutien, pour les demandes initiales et les renouvellements."
+        },
+        {
+          "title": "Rapports",
+          "body": "Rapports annuels de conformité."
+        },
+        {
+          "title": "P et P",
+          "body": "Élaboration de politiques et de procédures."
+        },
+        {
+          "title": "Services d'imagerie",
+          "body": "Une gamme de services économiques pour soutenir et optimiser la prestation des services essentiels d'imagerie en médecine nucléaire : élaboration de protocoles et analyse du flux de travail."
+        },
+        {
+          "title": "TMD",
+          "body": "Certification en transport des marchandises dangereuses (transport terrestre et aérien), un cours agréé par l'ACTRM."
+        },
+        {
+          "title": "Consultation",
+          "body": "Services de consultation pour la communauté de la médecine nucléaire."
+        }
+      ]
+    },
+    "tdg": {
+      "title": "Certification en transport des marchandises dangereuses (TMD)",
+      "paragraphs": [
+        "Notre cours de certification TMD en ligne, à suivre à votre rythme, a été élaboré par des experts en la matière. Il vise à donner aux participants les compétences pratiques, les connaissances et le jugement nécessaires pour respecter les exigences réglementaires applicables aux services de médecine nucléaire.",
+        "La certification TMD de Synergy QMP s'adresse au personnel technologue en médecine nucléaire ainsi qu'aux expéditeurs, transporteurs et destinataires de marchandises dangereuses de classe 7. Le cours comprend des liens vers les organismes de réglementation et les ressources pertinents.",
+        "Après la réussite de l'examen final, la certification TMD est accordée pour 3 ans (non transférable). Les candidats reçoivent une carte de portefeuille TMD et un certificat de réussite, et obtiennent 1,0 crédit de catégorie A de l'ACTRM / CAMRT. Ces crédits de formation sont reconnus par les associations provinciales de l'ACTRM et par l'American Registry of Radiologic Technologists (ARRT)."
+      ],
+      "imageAlt": "Un camion de transport portant des plaques de sécurité pour marchandises dangereuses",
+      "accreditedBy": "Agréé par",
+      "camrtAlt": "ACTRM / CAMRT"
+    }
   },
   "stats": {
     "label": "Le cours en bref",
