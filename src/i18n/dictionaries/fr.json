@@ -82,6 +82,136 @@
       "camrtAlt": "ACTRM / CAMRT"
     }
   },
+  "coursesPage": {
+    "metaTitle": "Tous les cours | Synergy QMP",
+    "metaDescription": "Cours de certification TMD classe 7 pour le transport terrestre et aérien de matières radioactives, conformes aux normes de l'ACTRM.",
+    "bannerTitle": "Tous les cours",
+    "imageAlt": "Illustration du cours Synergy QMP Quality Management Programs",
+    "teacherName": "Synergy QMP",
+    "modes": {
+      "ground": "Transport terrestre",
+      "air": "Transport aérien"
+    },
+    "archive": {
+      "layoutLabel": "Affichage des cours",
+      "gridView": "Affichage en grille",
+      "listView": "Affichage en liste",
+      "showing": "Affichage de {from} à {to} sur {total} résultats",
+      "showingOne": "Affichage du seul résultat",
+      "showingNone": "Aucun résultat",
+      "searchLabel": "Rechercher nos cours",
+      "searchPlaceholder": "Rechercher nos cours",
+      "clearSearch": "Effacer la recherche",
+      "filters": "Filtres",
+      "filterTransport": "Transport",
+      "clearFilters": "Effacer les filtres",
+      "emptyTitle": "Aucun cours ne correspond à votre recherche",
+      "emptyBody": "Essayez un autre terme, ou effacez la recherche et les filtres pour voir tous les cours.",
+      "readMore": "En savoir plus",
+      "students": {
+        "one": "{count} étudiant",
+        "other": "{count} étudiants"
+      },
+      "reviews": {
+        "one": "{count} avis",
+        "other": "{count} avis"
+      }
+    },
+    "sidebar": {
+      "search": "Recherche",
+      "searchSubmit": "Rechercher",
+      "ourCourses": "Nos cours"
+    },
+    "detail": {
+      "bannerTitle": "Certification TMD",
+      "bannerSubtitle": "Classe 7, matières radioactives",
+      "teacher": "Formateur",
+      "category": "Catégorie",
+      "categoryValue": "Cours en ligne",
+      "review": "Avis",
+      "reviewCount": {
+        "one": "({count} avis)",
+        "other": "({count} avis)"
+      },
+      "ratingLabel": "Note de {rating} sur 5",
+      "enroll": "Contactez-nous pour vous inscrire",
+      "tabsLabel": "Renseignements sur le cours",
+      "tabs": {
+        "description": "Description",
+        "curriculum": "Programme",
+        "instructors": "Formateurs",
+        "reviews": "Avis"
+      },
+      "descriptionTitle": "Description du cours",
+      "features": {
+        "title": "Caractéristiques du cours",
+        "lectures": "Leçons",
+        "quizzes": "Examens",
+        "duration": "Durée",
+        "durationValue": {
+          "one": "{count} heure",
+          "other": "{count} heures"
+        },
+        "skillLevel": "Niveau",
+        "skillLevelValue": "Tous",
+        "language": "Langue",
+        "languageValue": "Français",
+        "students": "Étudiants",
+        "certificate": "Certificat",
+        "certificateValue": "Oui",
+        "assessments": "Évaluations",
+        "assessmentsValue": "Autoévaluation"
+      },
+      "curriculum": {
+        "items": {
+          "one": "{count} élément",
+          "other": "{count} éléments"
+        },
+        "lecture": "Leçon",
+        "quiz": "Examen",
+        "examTitle": "Examen final",
+        "questions": {
+          "one": "{count} question",
+          "other": "{count} questions"
+        },
+        "minutes": "{count} min"
+      },
+      "reviews": {
+        "average": "Note moyenne",
+        "detailed": "Détail des notes",
+        "ratings": {
+          "one": "{count} note",
+          "other": "{count} notes"
+        },
+        "stars": {
+          "one": "{count} étoile",
+          "other": "{count} étoiles"
+        },
+        "emptyTitle": "Aucun avis pour le moment",
+        "emptyBody": "Les avis des étudiants certifiés s'afficheront ici."
+      },
+      "share": {
+        "label": "Partager",
+        "linkedin": "Partager sur LinkedIn",
+        "facebook": "Partager sur Facebook",
+        "email": "Partager par courriel",
+        "copy": "Copier le lien",
+        "copied": "Lien copié"
+      },
+      "youMayLike": "Vous aimerez aussi"
+    },
+    "certification": {
+      "title": "Certification : classe 7, matières radioactives",
+      "before": "Notre certification est conforme aux normes de l'",
+      "link": "Association canadienne des technologues en radiation médicale",
+      "after": " (ACTRM). L'ACTRM est l'organisme national de certification des professionnels en radiologie, en radiothérapie, en médecine nucléaire et en résonance magnétique.",
+      "logoAlt": "ACTRM / CAMRT"
+    },
+    "outcomes": {
+      "title": "Objectifs",
+      "intro": "À la fin de ce cours, vous serez en mesure de :"
+    }
+  },
   "stats": {
     "label": "Le cours en bref",
     "items": [

@@ -82,6 +82,136 @@
       "camrtAlt": "CAMRT / ACTRM"
     }
   },
+  "coursesPage": {
+    "metaTitle": "All courses | Synergy QMP",
+    "metaDescription": "TDG Class 7 certification courses for the ground and air transport of radioactive materials, compliant with CAMRT standards.",
+    "bannerTitle": "All courses",
+    "imageAlt": "Synergy QMP Quality Management Programs course artwork",
+    "teacherName": "Synergy QMP",
+    "modes": {
+      "ground": "Ground transport",
+      "air": "Air transport"
+    },
+    "archive": {
+      "layoutLabel": "Course layout",
+      "gridView": "Grid view",
+      "listView": "List view",
+      "showing": "Showing {from}–{to} of {total} results",
+      "showingOne": "Showing the only result",
+      "showingNone": "No results",
+      "searchLabel": "Search our courses",
+      "searchPlaceholder": "Search our courses",
+      "clearSearch": "Clear search",
+      "filters": "Filters",
+      "filterTransport": "Transport",
+      "clearFilters": "Clear filters",
+      "emptyTitle": "No courses match your search",
+      "emptyBody": "Try a different search term, or clear the search and filters to see every course.",
+      "readMore": "Read more",
+      "students": {
+        "one": "{count} student",
+        "other": "{count} students"
+      },
+      "reviews": {
+        "one": "{count} review",
+        "other": "{count} reviews"
+      }
+    },
+    "sidebar": {
+      "search": "Search",
+      "searchSubmit": "Search",
+      "ourCourses": "Our courses"
+    },
+    "detail": {
+      "bannerTitle": "TDG certification",
+      "bannerSubtitle": "Class 7 radioactive materials",
+      "teacher": "Teacher",
+      "category": "Category",
+      "categoryValue": "Online courses",
+      "review": "Review",
+      "reviewCount": {
+        "one": "({count} review)",
+        "other": "({count} reviews)"
+      },
+      "ratingLabel": "Rated {rating} out of 5",
+      "enroll": "Contact us to enroll",
+      "tabsLabel": "Course information",
+      "tabs": {
+        "description": "Description",
+        "curriculum": "Curriculum",
+        "instructors": "Instructors",
+        "reviews": "Reviews"
+      },
+      "descriptionTitle": "Course description",
+      "features": {
+        "title": "Course features",
+        "lectures": "Lectures",
+        "quizzes": "Quizzes",
+        "duration": "Duration",
+        "durationValue": {
+          "one": "{count} hour",
+          "other": "{count} hours"
+        },
+        "skillLevel": "Skill level",
+        "skillLevelValue": "All",
+        "language": "Language",
+        "languageValue": "English",
+        "students": "Students",
+        "certificate": "Certificate",
+        "certificateValue": "Yes",
+        "assessments": "Assessments",
+        "assessmentsValue": "Self"
+      },
+      "curriculum": {
+        "items": {
+          "one": "{count} item",
+          "other": "{count} items"
+        },
+        "lecture": "Lecture",
+        "quiz": "Quiz",
+        "examTitle": "Final exam",
+        "questions": {
+          "one": "{count} question",
+          "other": "{count} questions"
+        },
+        "minutes": "{count} min"
+      },
+      "reviews": {
+        "average": "Average rating",
+        "detailed": "Detailed rating",
+        "ratings": {
+          "one": "{count} rating",
+          "other": "{count} ratings"
+        },
+        "stars": {
+          "one": "{count} star",
+          "other": "{count} stars"
+        },
+        "emptyTitle": "No reviews yet",
+        "emptyBody": "Reviews from certified students will appear here."
+      },
+      "share": {
+        "label": "Share",
+        "linkedin": "Share on LinkedIn",
+        "facebook": "Share on Facebook",
+        "email": "Share by email",
+        "copy": "Copy link",
+        "copied": "Link copied"
+      },
+      "youMayLike": "You may like"
+    },
+    "certification": {
+      "title": "Certification: Class 7 radioactive materials",
+      "before": "Our certification is compliant with ",
+      "link": "Canadian Association of Medical Radiation Technologists",
+      "after": " (CAMRT) standards. The CAMRT is the national certifying body for radiological, radiation, nuclear medicine and magnetic resonance professionals.",
+      "logoAlt": "CAMRT / ACTRM"
+    },
+    "outcomes": {
+      "title": "Learning outcomes",
+      "intro": "Upon completion of this course, you will be able to:"
+    }
+  },
   "stats": {
     "label": "Course at a glance",
     "items": [
