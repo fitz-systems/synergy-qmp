@@ -28,7 +28,8 @@ export default async function MyCoursePage() {
     material: courseMaterialPlaceholderHref,
     materialDownload: courseMaterialPlaceholderHref,
     exam: localizedHref(locale, "exam"),
-    certificate: localizedHref(locale, "certificate")
+    certificate: localizedHref(locale, "certificate"),
+    contact: localizedHref(locale, "contact")
   }, copy.steps, locale);
 
   return (

@@ -486,7 +486,9 @@
           "start": "Start exam",
           "retake": "Retake exam",
           "passed": "Passed on {date} with {score}",
-          "attempts": "{used} of {max} attempts used"
+          "attempts": "{used} of {max} attempts used",
+          "noAttempts": "You've used all {max} attempts. Contact us to arrange another attempt.",
+          "contact": "Contact us"
         },
         "certificate": {
           "title": "Get your certificate",
@@ -517,6 +519,15 @@
       "title": "Final exam",
       "intro": "Choose one answer for each question. You can change your answers until you submit.",
       "timeLimit": "{minutes} min time limit",
+      "timeLeft": "Time left",
+      "timeWarning": {
+        "one": "{count} minute left",
+        "other": "{count} minutes left"
+      },
+      "timeUp": {
+        "title": "Time's up",
+        "body": "Your answers are being submitted."
+      },
       "progress": "{answered} of {total} answered",
       "progressLabel": "Exam progress",
       "questionLabel": "Question {n} of {total}",
@@ -550,6 +561,8 @@
         "one": "You have {count} attempt left. Review the course material before you try again.",
         "other": "You have {count} attempts left. Review the course material before you try again."
       },
+      "noAttemptsBody": "You've used all your attempts. Contact us at {email} or {phone} to arrange another attempt.",
+      "contact": "Contact us",
       "viewCertificate": "View certificate",
       "backToCourse": "Back to my course",
       "retake": "Retake exam",

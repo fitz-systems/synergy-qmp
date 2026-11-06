@@ -1,9 +1,11 @@
 import Link from "next/link";
 
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Check, CircleCheck, CircleX, X } from "lucide-react";
 import { StudentPageHeader } from "@/components/student/student-page-header";
 import { ButtonLink } from "@/components/ui/button-link";
+import { contact } from "@/constants/contact";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { formatDate, formatPercent, interpolate, plural } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
@@ -18,8 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ExamResultsPage() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
   const result = await getLatestExamResult(locale);
-  const copy = dict.student.results;
   const myCourseHref = localizedHref(locale, "myCourse");
+  if (!result) redirect(myCourseHref);
+
+  const copy = dict.student.results;
+  const outOfAttempts = !result.passed && result.attemptsLeft === 0;
 
   return (
     <>
@@ -48,12 +53,18 @@ export default async function ExamResultsPage() {
                 {interpolate(copy.submitted, { date: formatDate(locale, result.submittedAt) })}
               </p>
               <p className="mt-4 leading-relaxed text-ink-muted">
-                {result.passed ? copy.passedBody : plural(locale, copy.failedBody, result.attemptsLeft)}
+                {result.passed
+                  ? copy.passedBody
+                  : outOfAttempts
+                    ? interpolate(copy.noAttemptsBody, { email: contact.email, phone: contact.phoneDisplay })
+                    : plural(locale, copy.failedBody, result.attemptsLeft)}
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
                 {result.passed
                   ? <ButtonLink href={localizedHref(locale, "certificate")} arrow>{copy.viewCertificate}</ButtonLink>
-                  : <ButtonLink href={localizedHref(locale, "exam")} arrow>{copy.retake}</ButtonLink>}
+                  : outOfAttempts
+                    ? <ButtonLink href={localizedHref(locale, "contact")} arrow>{copy.contact}</ButtonLink>
+                    : <ButtonLink href={localizedHref(locale, "exam")} arrow>{copy.retake}</ButtonLink>}
                 <Link href={myCourseHref} className="font-semibold text-ink underline decoration-brand decoration-2 underline-offset-[0.3em] transition-colors hover:decoration-ink">
                   {copy.backToCourse}
                 </Link>

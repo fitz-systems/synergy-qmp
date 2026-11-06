@@ -1,6 +1,6 @@
-import { certificateCredits, certificateValidYears } from "@/constants/student";
+import { certificateCredits, certificateValidYears, examTimeWarningMinutes } from "@/constants/student";
 import type { Locale } from "@/i18n/config";
-import type { CertificateDetail, CourseDetailRow, CourseStep, CourseStepContent, CourseStepHrefs, ExamAnswers, ExamResult, ExamSettings, HeaderAccount, StudentAccount, StudentCertificate, StudentCertificateLabels, StudentCopy, StudentEnrollment } from "@/types/student";
+import type { CertificateDetail, CourseDetailRow, CourseStep, CourseStepContent, CourseStepHrefs, ExamAnswers, ExamAttempt, ExamResult, ExamSettings, HeaderAccount, StudentAccount, StudentCertificate, StudentCertificateLabels, StudentCopy, StudentEnrollment } from "@/types/student";
 import { formatDate, formatPercent, interpolate } from "./format";
 
 export function headerAccount(account: StudentAccount): HeaderAccount {
@@ -11,13 +11,37 @@ export function headerAccount(account: StudentAccount): HeaderAccount {
   }
 }
 
+export function attemptsLeft(enrollment: StudentEnrollment) {
+  return Math.max(0, enrollment.maxAttempts - enrollment.attemptsUsed);
+}
+
+export function canTakeExam(enrollment: StudentEnrollment) {
+  return enrollment.examStatus !== "passed" && attemptsLeft(enrollment) > 0;
+}
+
 export function courseSteps(enrollment: StudentEnrollment): CourseStep[] {
   const passed = enrollment.examStatus === "passed";
   return [
     { key: "material", state: enrollment.examStatus === "notStarted" ? "current" : "done" },
-    { key: "exam", state: passed ? "done" : "current" },
+    { key: "exam", state: passed ? "done" : canTakeExam(enrollment) ? "current" : "locked" },
     { key: "certificate", state: passed ? "current" : "locked" }
   ];
+}
+
+export function examDeadline(attempt: ExamAttempt, settings: ExamSettings) {
+  return new Date(attempt.startedAt).getTime() + settings.timeLimitMinutes * 60_000;
+}
+
+export function remainingMs(deadline: number, now: number) {
+  return Math.max(0, deadline - now);
+}
+
+export function newTimeWarnings(remaining: number, announced: number[]) {
+  return examTimeWarningMinutes.filter((minutes) => remaining <= minutes * 60_000 && !announced.includes(minutes));
+}
+
+export function isTimeLow(remaining: number) {
+  return remaining <= Math.max(...examTimeWarningMinutes) * 60_000;
 }
 
 export function examAnswerField(questionId: number) {
@@ -66,10 +90,8 @@ export function courseStepContent(steps: CourseStep[], enrollment: StudentEnroll
         ...step,
         title: labels.exam.title,
         body: interpolate(labels.exam.body, { questions: questionCount, minutes: settings.timeLimitMinutes, passMark: formatPercent(locale, settings.passMarkPct) }),
-        note: passed && enrollment.passedOn
-          ? interpolate(labels.exam.passed, { date: formatDate(locale, enrollment.passedOn), score: formatPercent(locale, enrollment.scorePct ?? 0) })
-          : interpolate(labels.exam.attempts, { used: enrollment.attemptsUsed, max: enrollment.maxAttempts }),
-        actions: passed ? [] : [{ label: enrollment.attemptsUsed > 0 ? labels.exam.retake : labels.exam.start, href: hrefs.exam, variant: "primary" }]
+        note: examStepNote(enrollment, labels.exam, locale),
+        actions: examStepActions(enrollment, hrefs, labels.exam)
       }
     }
     return {
@@ -80,6 +102,20 @@ export function courseStepContent(steps: CourseStep[], enrollment: StudentEnroll
       actions: passed ? [{ label: labels.certificate.view, href: hrefs.certificate, variant: "primary" }] : []
     }
   });
+}
+
+function examStepNote(enrollment: StudentEnrollment, labels: StudentCopy["myCourse"]["steps"]["exam"], locale: Locale) {
+  if (enrollment.examStatus === "passed" && enrollment.passedOn) {
+    return interpolate(labels.passed, { date: formatDate(locale, enrollment.passedOn), score: formatPercent(locale, enrollment.scorePct ?? 0) });
+  }
+  if (enrollment.examStatus !== "passed" && !canTakeExam(enrollment)) return interpolate(labels.noAttempts, { max: enrollment.maxAttempts });
+  return interpolate(labels.attempts, { used: enrollment.attemptsUsed, max: enrollment.maxAttempts });
+}
+
+function examStepActions(enrollment: StudentEnrollment, hrefs: CourseStepHrefs, labels: StudentCopy["myCourse"]["steps"]["exam"]): CourseStepContent["actions"] {
+  if (enrollment.examStatus === "passed") return [];
+  if (!canTakeExam(enrollment)) return [{ label: labels.contact, href: hrefs.contact, variant: "secondary" }];
+  return [{ label: enrollment.attemptsUsed > 0 ? labels.retake : labels.start, href: hrefs.exam, variant: "primary" }];
 }
 
 export function progressPct(done: number, total: number) {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Download } from "lucide-react";
 import { CertificatePreview } from "@/components/student/certificate-preview";
 import { PrintButton } from "@/components/student/print-button";
@@ -19,6 +20,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CertificatePage() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
   const certificate = await getStudentCertificate();
+  if (!certificate) redirect(localizedHref(locale, "myCourse"));
+
   const course = await getCourse(certificate.courseCode, locale);
   const copy = dict.student.certificate;
 

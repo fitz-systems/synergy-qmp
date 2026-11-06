@@ -1,5 +1,5 @@
 import type { Locale } from "@/i18n/config";
-import type { ExamQuestion, ExamResult, ExamSettings, StudentAccount, StudentCertificate, StudentEnrollment } from "@/types/student";
+import type { ExamAttempt, ExamQuestion, ExamResult, ExamSettings, MockStudentScenario, StudentAccount, StudentCertificate, StudentEnrollment } from "@/types/student";
 
 // Todo: Placeholder data for designing the student area; replace with the signed-in student's records once auth and the migration are wired up
 export const mockStudentAccount: StudentAccount = {
@@ -8,13 +8,16 @@ export const mockStudentAccount: StudentAccount = {
   email: "jordan.tremblay@example.com"
 }
 
-export const mockEnrollment: StudentEnrollment = {
-  courseCode: "ground",
-  enrolledOn: "2026-10-28",
-  examStatus: "notStarted",
-  attemptsUsed: 0,
-  maxAttempts: 3
+const mockScenario = "notStarted" as MockStudentScenario;
+
+const scenarioEnrollments: Record<MockStudentScenario, StudentEnrollment> = {
+  notStarted: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "notStarted", attemptsUsed: 0, maxAttempts: 3 },
+  failed: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "failed", attemptsUsed: 1, maxAttempts: 3 },
+  noAttemptsLeft: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "failed", attemptsUsed: 3, maxAttempts: 3 },
+  passed: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "passed", attemptsUsed: 1, maxAttempts: 3, passedOn: "2026-11-05", scorePct: 90 }
 }
+
+export const mockEnrollment = scenarioEnrollments[mockScenario];
 
 export const mockExamSettings: ExamSettings = {
   timeLimitMinutes: 120,
@@ -43,15 +46,21 @@ export function mockExamQuestions(locale: Locale): ExamQuestion[] {
   }));
 }
 
-export function mockExamResult(locale: Locale): ExamResult {
-  const wrong = [4, 11];
+export function mockExamAttempt(): ExamAttempt {
+  return { startedAt: new Date().toISOString() }
+}
+
+export function mockExamResult(locale: Locale): ExamResult | null {
+  if (mockScenario === "notStarted") return null;
+  const passed = mockScenario === "passed";
+  const wrong = passed ? [4, 11] : [2, 4, 7, 11, 13, 16, 19, 20];
   return {
     submittedAt: "2026-11-05T15:42:00Z",
-    correctCount: 18,
+    correctCount: 20 - wrong.length,
     questionCount: 20,
     passMarkPct: mockExamSettings.passMarkPct,
-    passed: true,
-    attemptsLeft: 2,
+    passed,
+    attemptsLeft: mockEnrollment.maxAttempts - mockEnrollment.attemptsUsed,
     answers: mockExamQuestions(locale).map((question) => ({
       questionId: question.id,
       prompt: question.prompt,
@@ -61,7 +70,7 @@ export function mockExamResult(locale: Locale): ExamResult {
   }
 }
 
-export const mockCertificate: StudentCertificate = {
+export const mockCertificate: StudentCertificate | null = mockScenario !== "passed" ? null : {
   studentName: "Jordan Tremblay",
   courseCode: "ground",
   certificateNumber: "SQMP-2026-0418",

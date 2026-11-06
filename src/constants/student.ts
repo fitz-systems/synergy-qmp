@@ -13,6 +13,10 @@ export const certificateValidYears = 3;
 
 export const certificateCredits = 1;
 
+export const examTimeWarningMinutes = [5, 1];
+
+export const examTimerTickMs = 1000;
+
 // Todo: Point at the auth-checked course material route once the PDFs are in private storage
 export const courseMaterialPlaceholderHref = "#course-material";
 

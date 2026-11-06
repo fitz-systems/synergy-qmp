@@ -486,7 +486,9 @@
           "start": "Commencer l'examen",
           "retake": "Reprendre l'examen",
           "passed": "Réussi le {date} avec {score}",
-          "attempts": "{used} tentatives sur {max} utilisées"
+          "attempts": "{used} tentatives sur {max} utilisées",
+          "noAttempts": "Vous avez utilisé vos {max} tentatives. Communiquez avec nous pour obtenir une autre tentative.",
+          "contact": "Nous joindre"
         },
         "certificate": {
           "title": "Obtenir votre certificat",
@@ -517,6 +519,15 @@
       "title": "Examen final",
       "intro": "Choisissez une réponse pour chaque question. Vous pouvez modifier vos réponses jusqu'à ce que vous soumettiez l'examen.",
       "timeLimit": "Limite de {minutes} min",
+      "timeLeft": "Temps restant",
+      "timeWarning": {
+        "one": "Il reste {count} minute",
+        "other": "Il reste {count} minutes"
+      },
+      "timeUp": {
+        "title": "Temps écoulé",
+        "body": "Vos réponses sont en cours de soumission."
+      },
       "progress": "{answered} sur {total} répondues",
       "progressLabel": "Progression de l'examen",
       "questionLabel": "Question {n} sur {total}",
@@ -550,6 +561,8 @@
         "one": "Il vous reste {count} tentative. Revoyez le matériel de cours avant de réessayer.",
         "other": "Il vous reste {count} tentatives. Revoyez le matériel de cours avant de réessayer."
       },
+      "noAttemptsBody": "Vous avez utilisé toutes vos tentatives. Communiquez avec nous à {email} ou au {phone} pour obtenir une autre tentative.",
+      "contact": "Nous joindre",
       "viewCertificate": "Voir le certificat",
       "backToCourse": "Retour à mon cours",
       "retake": "Reprendre l'examen",

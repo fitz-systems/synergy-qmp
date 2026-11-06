@@ -2,16 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { CircleAlert, Clock, Send } from "lucide-react";
+import { CircleAlert, Clock, Send, TimerOff } from "lucide-react";
+import { useCountdown } from "@/hooks/use-countdown";
 import type { Locale } from "@/i18n/config";
 import { interpolate, plural } from "@/lib/helpers/format";
 import { answeredCount, examAnswerField, progressPct, questionAnchor, unansweredIds } from "@/lib/helpers/student";
 import type { ExamAnswers, ExamLabels, ExamQuestion } from "@/types/student";
+import { ExamTimer } from "./exam-timer";
 
 interface ExamFormProps {
   locale: Locale;
   questions: ExamQuestion[];
   timeLimitMinutes: number;
+  deadline: number;
   resultsHref: string;
   labels: ExamLabels;
 }
@@ -21,12 +24,16 @@ interface ExamProgressProps {
   total: number;
   labels: ExamLabels;
   compact?: boolean;
+  children?: React.ReactNode;
 }
 
-export function ExamForm({ locale, questions, timeLimitMinutes, resultsHref, labels }: ExamFormProps) {
+export function ExamForm({ locale, questions, timeLimitMinutes, deadline, resultsHref, labels }: ExamFormProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState<ExamAnswers>({});
+  const [expired, setExpired] = useState(false);
+  const [timeAnnouncement, setTimeAnnouncement] = useState("");
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const timeUpRef = useRef<HTMLDialogElement>(null);
 
   const total = questions.length;
   const answered = answeredCount(answers);
@@ -40,17 +47,28 @@ export function ExamForm({ locale, questions, timeLimitMinutes, resultsHref, lab
     if (first) document.getElementById(questionAnchor(first))?.querySelector<HTMLInputElement>("input")?.focus();
   }
 
-  // Todo: Submit the answers to a server action that scores the attempt
+  // Todo: Submit the answers to a server action that scores the attempt; the server must also reject submissions after the deadline
   const submit = () => {
     dialogRef.current?.close();
     router.push(resultsHref);
   }
 
+  const remaining = useCountdown(deadline, {
+    onWarning: (minutesLeft) => setTimeAnnouncement(plural(locale, labels.timeWarning, minutesLeft)),
+    onExpire: () => {
+      setExpired(true);
+      dialogRef.current?.close();
+      timeUpRef.current?.showModal();
+      submit();
+    }
+  });
+
   const submitButton = (className = "") => (
     <button
       type="button"
       onClick={() => dialogRef.current?.showModal()}
-      className={`inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-semibold text-ink transition-colors duration-200 hover:bg-brand-hover ${className}`}
+      disabled={expired}
+      className={`inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-semibold text-ink transition-colors duration-200 hover:bg-brand-hover disabled:pointer-events-none disabled:opacity-50 ${className}`}
     >
       <Send aria-hidden className="size-4" strokeWidth={2}/>
       {labels.submit}
@@ -62,7 +80,7 @@ export function ExamForm({ locale, questions, timeLimitMinutes, resultsHref, lab
       <ol className="space-y-5">
         {questions.map((question, index) => (
           <li key={question.id} id={questionAnchor(question.id)} className="scroll-mt-28">
-            <fieldset className="rounded-xl border border-line bg-canvas p-5 sm:p-6">
+            <fieldset disabled={expired} className="rounded-xl border border-line bg-canvas p-5 sm:p-6">
               <legend className="contents">
                 <span className="block text-sm font-semibold text-ink-subtle">{interpolate(labels.questionLabel, { n: index + 1, total })}</span>
                 <span className="mt-1.5 block text-lg font-semibold leading-snug text-ink">{question.prompt}</span>
@@ -92,7 +110,8 @@ export function ExamForm({ locale, questions, timeLimitMinutes, resultsHref, lab
 
       <aside className="hidden space-y-6 lg:sticky lg:top-28 lg:block">
         <div className="rounded-xl border border-line bg-canvas p-5">
-          <p className="inline-flex items-center gap-2 text-sm font-medium text-ink-muted">
+          <ExamTimer remaining={remaining} label={labels.timeLeft}/>
+          <p className="mt-2 inline-flex items-center gap-2 text-sm font-medium text-ink-muted">
             <Clock aria-hidden className="size-4" strokeWidth={1.75}/>
             {interpolate(labels.timeLimit, { minutes: timeLimitMinutes })}
           </p>
@@ -123,11 +142,28 @@ export function ExamForm({ locale, questions, timeLimitMinutes, resultsHref, lab
       <div className="sticky bottom-0 z-20 -mx-5 border-t border-line bg-canvas/95 px-5 py-3 backdrop-blur-md lg:hidden">
         <div className="flex items-center gap-4">
           <div className="min-w-0 flex-1">
-            <ExamProgress answered={answered} total={total} labels={labels} compact/>
+            <ExamProgress answered={answered} total={total} labels={labels} compact>
+              <ExamTimer remaining={remaining} label={labels.timeLeft} compact/>
+            </ExamProgress>
           </div>
           {submitButton("shrink-0")}
         </div>
       </div>
+
+      <p aria-live="assertive" className="sr-only">{timeAnnouncement}</p>
+
+      <dialog
+        ref={timeUpRef}
+        aria-labelledby="exam-time-up-title"
+        onCancel={(event) => event.preventDefault()}
+        className="m-auto w-[min(32rem,calc(100%-2.5rem))] rounded-2xl border border-line bg-canvas p-0 text-ink shadow-raise backdrop:bg-night/60 backdrop:backdrop-blur-sm"
+      >
+        <div className="p-6 sm:p-8">
+          <TimerOff aria-hidden className="size-7 text-danger" strokeWidth={1.75}/>
+          <h2 id="exam-time-up-title" className="mt-3 text-xl font-bold">{labels.timeUp.title}</h2>
+          <p className="mt-2 leading-relaxed text-ink-muted">{labels.timeUp.body}</p>
+        </div>
+      </dialog>
 
       <dialog
         ref={dialogRef}
@@ -170,13 +206,16 @@ export function ExamForm({ locale, questions, timeLimitMinutes, resultsHref, lab
   );
 }
 
-function ExamProgress({ answered, total, labels, compact = false }: ExamProgressProps) {
+function ExamProgress({ answered, total, labels, compact = false, children }: ExamProgressProps) {
   const pct = progressPct(answered, total);
   return (
     <div className={compact ? "" : "mt-4"}>
-      <p aria-live="polite" className={`font-semibold tabular-nums text-ink ${compact ? "text-sm" : "text-lg"}`}>
-        {interpolate(labels.progress, { answered, total })}
-      </p>
+      <div className="flex items-center justify-between gap-3">
+        <p aria-live="polite" className={`font-semibold tabular-nums text-ink ${compact ? "text-sm" : "text-lg"}`}>
+          {interpolate(labels.progress, { answered, total })}
+        </p>
+        {children}
+      </div>
       <div
         role="progressbar"
         aria-label={labels.progressLabel}
