@@ -1,7 +1,7 @@
 import { Mail } from "lucide-react";
-import type { ComponentType } from "react";
-import { FacebookIcon, LinkedInIcon } from "@/components/icons/social-icons";
+import { FacebookIcon, GooglePlusIcon, LinkedInIcon, PinterestIcon, TwitterIcon } from "@/components/icons/social-icons";
 import type { ShareLink } from "@/types/courses";
+import type { IconComponent } from "@/types/icons";
 
 export const externalLinks = {
   camrt: "https://www.camrt.ca/"
@@ -12,8 +12,10 @@ export const shareEndpoints = {
   facebook: "https://www.facebook.com/sharer/sharer.php?u="
 }
 
-export const shareIcons: Record<ShareLink["key"], ComponentType<{ className?: string }>> = {
+export const shareIcons: Record<ShareLink["key"], IconComponent> = {
   linkedin: LinkedInIcon,
   facebook: FacebookIcon,
   email: Mail
 }
+
+export const contactSocialIcons: IconComponent[] = [FacebookIcon, TwitterIcon, GooglePlusIcon, PinterestIcon];

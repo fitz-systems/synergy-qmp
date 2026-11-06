@@ -286,5 +286,51 @@
     "contactHeading": "Contact",
     "linksHeading": "Site",
     "rights": "All rights reserved."
+  },
+  "contactPage": {
+    "metaTitle": "Contact | Synergy QMP",
+    "metaDescription": "Contact Synergy QMP about TDG Class 7 certification, enrollment and training.",
+    "info": {
+      "title": "Contact info",
+      "body": "Welcome to Synergy QMP. Please contact us with any questions.",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address"
+    },
+    "form": {
+      "title": "Send a message",
+      "body": "Your email address will not be stored. Required fields are marked.",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "subject": "Subject",
+        "message": "Message"
+      },
+      "submit": "Submit",
+      "sending": "Sending…",
+      "errors": {
+        "required": {
+          "name": "Enter your name.",
+          "email": "Enter your email address.",
+          "subject": "Enter a subject.",
+          "message": "Enter your message."
+        },
+        "invalidEmail": "Enter an email address like name@example.com.",
+        "tooLong": "This is too long. Keep it under {max} characters."
+      },
+      "sent": {
+        "title": "Message sent",
+        "body": "Thanks for contacting Synergy QMP. We'll reply to {email} as soon as we can.",
+        "again": "Send another message"
+      },
+      "unavailable": {
+        "title": "We couldn't send your message",
+        "body": "Our contact form isn't connected yet. Please email us at {email} or call {phone}."
+      },
+      "failed": {
+        "title": "We couldn't send your message",
+        "body": "Something went wrong on our side. Please try again, or email us at {email}."
+      }
+    }
   }
 }

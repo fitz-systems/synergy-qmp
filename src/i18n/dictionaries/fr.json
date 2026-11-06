@@ -286,5 +286,51 @@
     "contactHeading": "Contact",
     "linksHeading": "Site",
     "rights": "Tous droits réservés."
+  },
+  "contactPage": {
+    "metaTitle": "Contactez-nous | Synergy QMP",
+    "metaDescription": "Communiquez avec Synergy QMP au sujet de la certification TMD classe 7, de l'inscription et de la formation.",
+    "info": {
+      "title": "Informations de contact",
+      "body": "Bienvenue chez Synergy QMP. N'hésitez pas à nous joindre pour toute question.",
+      "phone": "Téléphone",
+      "email": "Courriel",
+      "address": "Adresse"
+    },
+    "form": {
+      "title": "Envoyer un message",
+      "body": "Votre adresse courriel ne sera pas conservée. Les champs obligatoires sont indiqués.",
+      "fields": {
+        "name": "Nom",
+        "email": "Courriel",
+        "subject": "Objet",
+        "message": "Message"
+      },
+      "submit": "Envoyer",
+      "sending": "Envoi en cours…",
+      "errors": {
+        "required": {
+          "name": "Entrez votre nom.",
+          "email": "Entrez votre adresse courriel.",
+          "subject": "Entrez un objet.",
+          "message": "Entrez votre message."
+        },
+        "invalidEmail": "Entrez une adresse courriel valide, par exemple nom@exemple.com.",
+        "tooLong": "Ce champ est trop long. Limitez-le à {max} caractères."
+      },
+      "sent": {
+        "title": "Message envoyé",
+        "body": "Merci d'avoir communiqué avec Synergy QMP. Nous vous répondrons à {email} dès que possible.",
+        "again": "Envoyer un autre message"
+      },
+      "unavailable": {
+        "title": "Nous n'avons pas pu envoyer votre message",
+        "body": "Notre formulaire de contact n'est pas encore relié. Écrivez-nous à {email} ou appelez-nous au {phone}."
+      },
+      "failed": {
+        "title": "Nous n'avons pas pu envoyer votre message",
+        "body": "Un problème est survenu de notre côté. Veuillez réessayer, ou écrivez-nous à {email}."
+      }
+    }
   }
 }
