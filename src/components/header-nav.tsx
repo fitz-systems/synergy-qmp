@@ -4,9 +4,11 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Globe, Menu, X } from "lucide-react";
+import { BookOpen, Globe, LogOut, Menu, X } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/helpers/routes";
+import type { HeaderAccountMenu } from "@/types/student";
+import { AccountAvatar, AccountMenu } from "./account-menu";
 
 interface HeaderNavProps {
   locale: Locale;
@@ -14,6 +16,7 @@ interface HeaderNavProps {
   links: { href: string; label: string }[];
   loginHref: string;
   brand: React.ReactNode;
+  accountMenu?: HeaderAccountMenu;
   labels: {
     login: string;
     menu: string;
@@ -24,7 +27,7 @@ interface HeaderNavProps {
   };
 }
 
-export function HeaderNav({ locale, otherLocale, links, loginHref, brand, labels }: HeaderNavProps) {
+export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accountMenu, labels }: HeaderNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -78,12 +81,16 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, labels
           <Globe aria-hidden className="size-4" strokeWidth={1.75}/>
           {labels.switchLanguage}
         </Link>
-        <Link
-          href={loginHref}
-          className="inline-flex h-10 items-center rounded-md border border-line-strong px-4 text-[0.9375rem] font-semibold text-ink transition-colors duration-200 hover:border-ink hover:bg-ink hover:text-canvas"
-        >
-          {labels.login}
-        </Link>
+        {accountMenu ? (
+          <AccountMenu {...accountMenu}/>
+        ) : (
+          <Link
+            href={loginHref}
+            className="inline-flex h-10 items-center rounded-md border border-line-strong px-4 text-[0.9375rem] font-semibold text-ink transition-colors duration-200 hover:border-ink hover:bg-ink hover:text-canvas"
+          >
+            {labels.login}
+          </Link>
+        )}
       </div>
 
       <button
@@ -127,13 +134,43 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, labels
             </Link>
           ))}
           <div className="mt-8 flex flex-col gap-3">
-            <Link
-              href={loginHref}
-              onClick={close}
-              className="inline-flex h-12 items-center justify-center rounded-md bg-ink text-base font-semibold text-canvas"
-            >
-              {labels.login}
-            </Link>
+            {accountMenu ? (
+              <div className="rounded-xl border border-line p-4">
+                <div className="flex items-center gap-3">
+                  <AccountAvatar initials={accountMenu.account.initials} className="size-11 text-base"/>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-ink">{accountMenu.account.name}</p>
+                    <p className="truncate text-sm text-ink-muted">{accountMenu.account.email}</p>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-2">
+                  <Link
+                    href={accountMenu.myCourseHref}
+                    onClick={close}
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-ink text-base font-semibold text-canvas"
+                  >
+                    <BookOpen aria-hidden className="size-4" strokeWidth={1.75}/>
+                    {accountMenu.labels.myCourse}
+                  </Link>
+                  {/* Todo: Sign out through Better Auth */}
+                  <button
+                    type="button"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-line-strong text-base font-medium text-ink"
+                  >
+                    <LogOut aria-hidden className="size-4" strokeWidth={1.75}/>
+                    {accountMenu.labels.logout}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <Link
+                href={loginHref}
+                onClick={close}
+                className="inline-flex h-12 items-center justify-center rounded-md bg-ink text-base font-semibold text-canvas"
+              >
+                {labels.login}
+              </Link>
+            )}
             <Link
               href={switchHref}
               onClick={close}

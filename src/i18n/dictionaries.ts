@@ -11,7 +11,7 @@ export type Dictionary = Awaited<ReturnType<(typeof dictionaries)["en"]>>;
 
 export async function getLocale(): Promise<Locale> {
   const locale = await lang();
-  if (!hasLocale(locale)) notFound();
+  if (!locale || !hasLocale(locale)) notFound();
   return locale;
 }
 

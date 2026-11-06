@@ -1,6 +1,6 @@
 import { APIError } from "better-auth/api";
-import { initialLoginFormState, loginFields, loginRememberField, loginStatusByAuthError } from "@/constants/auth";
-import type { LoginCredentials, LoginErrorLabels, LoginFailureStatus, LoginField, LoginFormLabels, LoginFormState } from "@/types/auth";
+import { initialLoginFormState, loginFields, loginRememberField, loginStatusByAuthError, passwordMinLength, resetPasswordFields } from "@/constants/auth";
+import type { ForgotPasswordCopy, ForgotPasswordError, LoginCredentials, LoginErrorLabels, LoginFailureStatus, LoginField, LoginFormLabels, LoginFormState, ResetPasswordCopy, ResetPasswordField, ResetPasswordFormState } from "@/types/auth";
 import type { NoticeLabels } from "@/types/forms";
 import { interpolate } from "./format";
 import { isEmail, readFormString } from "./forms";
@@ -40,4 +40,36 @@ export function loginNotice(labels: LoginFormLabels, status: LoginFormState["sta
   if (status === "idle" || status === "invalid") return null;
   const notice = labels.notices[status];
   return { title: notice.title, body: interpolate(notice.body, { email }) }
+}
+
+export function validateForgotPasswordEmail(email: string): ForgotPasswordError | undefined {
+  if (!email) return "required";
+  if (!isEmail(email)) return "invalidEmail";
+  return undefined;
+}
+
+export function forgotPasswordErrorMessage(labels: ForgotPasswordCopy["errors"], error?: ForgotPasswordError) {
+  return error ? labels[error] : undefined;
+}
+
+export function readResetPasswordForm(formData: FormData): Record<ResetPasswordField, string> {
+  return { password: String(formData.get("password") ?? ""), confirm: String(formData.get("confirm") ?? "") }
+}
+
+export function validateResetPassword(values: Record<ResetPasswordField, string>): ResetPasswordFormState["errors"] {
+  const errors: ResetPasswordFormState["errors"] = {}
+  for (const field of resetPasswordFields) {
+    if (!values[field]) errors[field] = "required";
+  }
+  if (!errors.password && values.password.length < passwordMinLength) errors.password = "tooShort";
+  if (!errors.password && !errors.confirm && values.password !== values.confirm) errors.confirm = "mismatch";
+  return errors;
+}
+
+export function resetPasswordErrorMessage(labels: ResetPasswordCopy["errors"], errors: ResetPasswordFormState["errors"], field: ResetPasswordField) {
+  const error = errors[field];
+  if (!error) return undefined;
+  if (error === "required") return labels.required[field];
+  if (error === "tooShort") return interpolate(labels.tooShort, { min: passwordMinLength });
+  return labels.mismatch;
 }

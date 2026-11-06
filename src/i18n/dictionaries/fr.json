@@ -16,7 +16,12 @@
     "primary": "Navigation principale",
     "switchLanguage": "English",
     "switchLanguageLabel": "View this page in English",
-    "breadcrumb": "Fil d'Ariane"
+    "breadcrumb": "Fil d'Ariane",
+    "resetPassword": "Réinitialiser le mot de passe",
+    "myCourse": "Mon cours",
+    "exam": "Examen",
+    "examResults": "Résultats",
+    "certificate": "Certificat"
   },
   "hero": {
     "titleTop": "Transport des marchandises dangereuses",
@@ -381,6 +386,195 @@
           "body": "Nous n'avons pas pu vous connecter. Veuillez réessayer, ou écrivez-nous à {email}."
         }
       }
+    }
+  },
+  "privacyPage": {
+    "metaTitle": "Politique de confidentialité | Synergy QMP",
+    "metaDescription": "Comment Synergy QMP recueille, utilise et protège vos renseignements personnels.",
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "contents": "Sur cette page"
+  },
+  "notFound": {
+    "metaTitle": "Page introuvable | Synergy QMP",
+    "code": "404",
+    "title": "Page introuvable",
+    "body": "La page que vous cherchez n'existe pas ou a peut-être été déplacée.",
+    "home": "Aller à l'accueil",
+    "courses": "Voir les cours",
+    "contact": "Nous joindre"
+  },
+  "forgotPasswordPage": {
+    "metaTitle": "Mot de passe oublié | Synergy QMP",
+    "title": "Réinitialiser votre mot de passe",
+    "body": "Entrez l'adresse courriel de votre compte et nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+    "email": "Courriel",
+    "submit": "Envoyer le lien",
+    "submitting": "Envoi en cours…",
+    "back": "Retour à la connexion",
+    "errors": {
+      "required": "Entrez votre adresse courriel.",
+      "invalidEmail": "Entrez une adresse courriel valide, par exemple nom@exemple.com."
+    },
+    "sent": {
+      "title": "Vérifiez vos courriels",
+      "body": "Si un compte existe pour {email}, nous avons envoyé un lien pour choisir un nouveau mot de passe. Le lien expire dans 1 heure."
+    },
+    "unavailable": {
+      "title": "La réinitialisation n'est pas encore offerte",
+      "body": "Les courriels de réinitialisation ne sont pas encore reliés. Écrivez-nous à {email} et nous réinitialiserons votre mot de passe."
+    }
+  },
+  "resetPasswordPage": {
+    "metaTitle": "Nouveau mot de passe | Synergy QMP",
+    "title": "Choisir un nouveau mot de passe",
+    "body": "Choisissez un nouveau mot de passe pour votre compte Synergy QMP.",
+    "fields": {
+      "password": "Nouveau mot de passe",
+      "confirm": "Confirmer le nouveau mot de passe"
+    },
+    "rule": "Utilisez au moins {min} caractères.",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "submit": "Enregistrer le mot de passe",
+    "submitting": "Enregistrement…",
+    "errors": {
+      "required": {
+        "password": "Entrez un nouveau mot de passe.",
+        "confirm": "Entrez de nouveau le mot de passe."
+      },
+      "tooShort": "Utilisez au moins {min} caractères.",
+      "mismatch": "Les mots de passe ne correspondent pas."
+    },
+    "done": {
+      "title": "Mot de passe modifié",
+      "body": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+      "login": "Se connecter"
+    },
+    "unavailable": {
+      "title": "La réinitialisation n'est pas encore offerte",
+      "body": "Les liens de réinitialisation ne sont pas encore reliés. Écrivez-nous à {email} et nous réinitialiserons votre mot de passe."
+    }
+  },
+  "student": {
+    "account": {
+      "menu": "Menu du compte",
+      "signedInAs": "Connecté en tant que",
+      "myCourse": "Mon cours",
+      "logout": "Se déconnecter"
+    },
+    "myCourse": {
+      "metaTitle": "Mon cours | Synergy QMP",
+      "greeting": "Bon retour, {name}",
+      "progressTitle": "Votre progression",
+      "stepLabel": "Étape {n}",
+      "states": {
+        "done": "Terminé",
+        "current": "À faire",
+        "locked": "Verrouillé"
+      },
+      "steps": {
+        "material": {
+          "title": "Lire le matériel de cours",
+          "body": "Parcourez le matériel de cours à votre rythme. Vous pouvez y revenir en tout temps.",
+          "open": "Ouvrir le matériel de cours",
+          "download": "Télécharger le PDF"
+        },
+        "exam": {
+          "title": "Passer l'examen final",
+          "body": "{questions} questions · {minutes} minutes · note de passage {passMark}",
+          "start": "Commencer l'examen",
+          "retake": "Reprendre l'examen",
+          "passed": "Réussi le {date} avec {score}",
+          "attempts": "{used} tentatives sur {max} utilisées"
+        },
+        "certificate": {
+          "title": "Obtenir votre certificat",
+          "body": "Votre certificat est valide pendant {years} ans et donne droit à {credits} crédit de catégorie A de l'ACTRM / CAMRT.",
+          "locked": "Disponible une fois l'examen réussi.",
+          "view": "Voir le certificat"
+        }
+      },
+      "details": {
+        "title": "Détails du cours",
+        "course": "Cours",
+        "language": "Langue",
+        "languageValue": "Français",
+        "enrolled": "Inscription",
+        "exam": "Examen",
+        "examValue": "{questions} questions, {minutes} min",
+        "passMark": "Note de passage",
+        "attempts": "Tentatives",
+        "attemptsValue": "{used} sur {max} utilisées"
+      },
+      "help": {
+        "title": "Besoin d'aide?",
+        "body": "Communiquez avec Synergy QMP à {email} ou au {phone}."
+      }
+    },
+    "exam": {
+      "metaTitle": "Examen final | Synergy QMP",
+      "title": "Examen final",
+      "intro": "Choisissez une réponse pour chaque question. Vous pouvez modifier vos réponses jusqu'à ce que vous soumettiez l'examen.",
+      "timeLimit": "Limite de {minutes} min",
+      "progress": "{answered} sur {total} répondues",
+      "progressLabel": "Progression de l'examen",
+      "questionLabel": "Question {n} sur {total}",
+      "navigator": "Questions",
+      "jumpTo": "Question {n}, {state}",
+      "answered": "répondue",
+      "unanswered": "sans réponse",
+      "submit": "Soumettre l'examen",
+      "confirm": {
+        "title": "Soumettre votre examen?",
+        "body": "Vous ne pourrez plus modifier vos réponses après l'avoir soumis.",
+        "unansweredTitle": {
+          "one": "{count} question est sans réponse",
+          "other": "{count} questions sont sans réponse"
+        },
+        "unansweredBody": "Les questions sans réponse sont comptées comme fausses. Vous pouvez y revenir ou soumettre maintenant.",
+        "keep": "Continuer à répondre",
+        "submit": "Soumettre l'examen"
+      }
+    },
+    "results": {
+      "metaTitle": "Résultats de l'examen | Synergy QMP",
+      "title": "Résultats de l'examen",
+      "passedTitle": "Vous avez réussi",
+      "failedTitle": "Vous n'avez pas réussi cette fois",
+      "score": "{correct} bonnes réponses sur {total}",
+      "passMark": "Note de passage {passMark}",
+      "submitted": "Soumis le {date}",
+      "passedBody": "Félicitations. Votre certificat est prêt à être téléchargé.",
+      "failedBody": {
+        "one": "Il vous reste {count} tentative. Revoyez le matériel de cours avant de réessayer.",
+        "other": "Il vous reste {count} tentatives. Revoyez le matériel de cours avant de réessayer."
+      },
+      "viewCertificate": "Voir le certificat",
+      "backToCourse": "Retour à mon cours",
+      "retake": "Reprendre l'examen",
+      "answersTitle": "Vos réponses",
+      "answerLabel": "Votre réponse",
+      "noAnswer": "Aucune réponse",
+      "correct": "Bonne réponse",
+      "incorrect": "Mauvaise réponse"
+    },
+    "certificate": {
+      "metaTitle": "Votre certificat | Synergy QMP",
+      "title": "Votre certificat",
+      "intro": "Téléchargez votre certificat de réussite ou imprimez-le pour vos dossiers.",
+      "download": "Télécharger le PDF",
+      "print": "Imprimer",
+      "detailsTitle": "Détails du certificat",
+      "heading": "Certificat de réussite",
+      "certifies": "Nous certifions que",
+      "completed": "a réussi",
+      "course": "la certification en transport des marchandises dangereuses, classe 7",
+      "issued": "Délivré le",
+      "validUntil": "Valide jusqu'au",
+      "number": "N° de certificat",
+      "credits": "{credits} crédit de catégorie A, ACTRM / CAMRT",
+      "accreditedBy": "Agréé par"
     }
   }
 }

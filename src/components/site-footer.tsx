@@ -15,7 +15,7 @@ export async function SiteFooter() {
   const links = footerLinks.map((route) => ({ href: localizedHref(locale, route), label: dict.nav[route] }));
 
   return (
-    <footer className="border-t border-line bg-canvas">
+    <footer className="border-t border-line bg-canvas print:hidden">
       <div className="container-site grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:gap-12">
         <div className="max-w-xs">
           <Image src={logo} alt="Synergy QMP" className="h-7 w-auto"/>

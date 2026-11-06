@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { CircleCheck } from "lucide-react";
-import { submitContactForm } from "@/app/[lang]/contact/actions";
+import { submitContactForm } from "@/app/[lang]/(site)/contact/actions";
 import { FormField } from "@/components/ui/form-field";
 import { FormNotice } from "@/components/ui/form-notice";
 import { SubmitButton } from "@/components/ui/submit-button";

@@ -1,7 +1,5 @@
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
 import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { localizedHref } from "@/lib/helpers/routes";
@@ -34,11 +32,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
 
   return (
     <html lang={locale} className={inter.variable}>
-      <body className="flex min-h-dvh flex-col font-sans">
-        <SiteHeader />
-        <main id="main" className="flex-1">{children}</main>
-        <SiteFooter />
-      </body>
+      <body className="flex min-h-dvh flex-col font-sans">{children}</body>
     </html>
   );
 }

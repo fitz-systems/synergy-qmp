@@ -16,7 +16,12 @@
     "primary": "Main navigation",
     "switchLanguage": "Français",
     "switchLanguageLabel": "Voir cette page en français",
-    "breadcrumb": "Breadcrumb"
+    "breadcrumb": "Breadcrumb",
+    "resetPassword": "Reset password",
+    "myCourse": "My course",
+    "exam": "Exam",
+    "examResults": "Results",
+    "certificate": "Certificate"
   },
   "hero": {
     "titleTop": "Transportation of Dangerous Goods",
@@ -381,6 +386,195 @@
           "body": "We couldn't log you in. Please try again, or contact us at {email}."
         }
       }
+    }
+  },
+  "privacyPage": {
+    "metaTitle": "Privacy policy | Synergy QMP",
+    "metaDescription": "How Synergy QMP collects, uses and protects your personal information.",
+    "title": "Privacy policy",
+    "lastUpdated": "Last updated {date}",
+    "contents": "On this page"
+  },
+  "notFound": {
+    "metaTitle": "Page not found | Synergy QMP",
+    "code": "404",
+    "title": "Page not found",
+    "body": "The page you are looking for doesn't exist or may have moved.",
+    "home": "Go to the home page",
+    "courses": "Browse courses",
+    "contact": "Contact us"
+  },
+  "forgotPasswordPage": {
+    "metaTitle": "Forgot password | Synergy QMP",
+    "title": "Reset your password",
+    "body": "Enter the email address for your account and we'll email you a link to set a new password.",
+    "email": "Email",
+    "submit": "Send reset link",
+    "submitting": "Sending…",
+    "back": "Back to log in",
+    "errors": {
+      "required": "Enter your email address.",
+      "invalidEmail": "Enter an email address like name@example.com."
+    },
+    "sent": {
+      "title": "Check your email",
+      "body": "If an account exists for {email}, we've sent a link to set a new password. The link expires in 1 hour."
+    },
+    "unavailable": {
+      "title": "Password reset isn't available yet",
+      "body": "Reset emails aren't connected yet. Contact us at {email} and we'll reset your password for you."
+    }
+  },
+  "resetPasswordPage": {
+    "metaTitle": "Set a new password | Synergy QMP",
+    "title": "Set a new password",
+    "body": "Choose a new password for your Synergy QMP account.",
+    "fields": {
+      "password": "New password",
+      "confirm": "Confirm new password"
+    },
+    "rule": "Use at least {min} characters.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "submit": "Set new password",
+    "submitting": "Saving…",
+    "errors": {
+      "required": {
+        "password": "Enter a new password.",
+        "confirm": "Enter the new password again."
+      },
+      "tooShort": "Use at least {min} characters.",
+      "mismatch": "The passwords don't match."
+    },
+    "done": {
+      "title": "Password updated",
+      "body": "You can now log in with your new password.",
+      "login": "Log in"
+    },
+    "unavailable": {
+      "title": "Password reset isn't available yet",
+      "body": "Reset links aren't connected yet. Contact us at {email} and we'll reset your password for you."
+    }
+  },
+  "student": {
+    "account": {
+      "menu": "Account menu",
+      "signedInAs": "Signed in as",
+      "myCourse": "My course",
+      "logout": "Log out"
+    },
+    "myCourse": {
+      "metaTitle": "My course | Synergy QMP",
+      "greeting": "Welcome back, {name}",
+      "progressTitle": "Your progress",
+      "stepLabel": "Step {n}",
+      "states": {
+        "done": "Done",
+        "current": "To do",
+        "locked": "Locked"
+      },
+      "steps": {
+        "material": {
+          "title": "Read the course material",
+          "body": "Work through the course material at your own pace. You can come back to it at any time.",
+          "open": "Open course material",
+          "download": "Download PDF"
+        },
+        "exam": {
+          "title": "Take the final exam",
+          "body": "{questions} questions · {minutes} minutes · pass mark {passMark}",
+          "start": "Start exam",
+          "retake": "Retake exam",
+          "passed": "Passed on {date} with {score}",
+          "attempts": "{used} of {max} attempts used"
+        },
+        "certificate": {
+          "title": "Get your certificate",
+          "body": "Your certificate is valid for {years} years and earns {credits} Category A credit from CAMRT / ACTRM.",
+          "locked": "Available once you pass the exam.",
+          "view": "View certificate"
+        }
+      },
+      "details": {
+        "title": "Course details",
+        "course": "Course",
+        "language": "Language",
+        "languageValue": "English",
+        "enrolled": "Enrolled",
+        "exam": "Exam",
+        "examValue": "{questions} questions, {minutes} min",
+        "passMark": "Pass mark",
+        "attempts": "Attempts",
+        "attemptsValue": "{used} of {max} used"
+      },
+      "help": {
+        "title": "Need help?",
+        "body": "Contact Synergy QMP at {email} or {phone}."
+      }
+    },
+    "exam": {
+      "metaTitle": "Final exam | Synergy QMP",
+      "title": "Final exam",
+      "intro": "Choose one answer for each question. You can change your answers until you submit.",
+      "timeLimit": "{minutes} min time limit",
+      "progress": "{answered} of {total} answered",
+      "progressLabel": "Exam progress",
+      "questionLabel": "Question {n} of {total}",
+      "navigator": "Questions",
+      "jumpTo": "Question {n}, {state}",
+      "answered": "answered",
+      "unanswered": "not answered",
+      "submit": "Submit exam",
+      "confirm": {
+        "title": "Submit your exam?",
+        "body": "You can't change your answers after you submit.",
+        "unansweredTitle": {
+          "one": "{count} question isn't answered",
+          "other": "{count} questions aren't answered"
+        },
+        "unansweredBody": "Unanswered questions are marked wrong. You can go back and answer them, or submit now.",
+        "keep": "Keep answering",
+        "submit": "Submit exam"
+      }
+    },
+    "results": {
+      "metaTitle": "Exam results | Synergy QMP",
+      "title": "Exam results",
+      "passedTitle": "You passed",
+      "failedTitle": "You didn't pass this time",
+      "score": "{correct} of {total} correct",
+      "passMark": "Pass mark {passMark}",
+      "submitted": "Submitted {date}",
+      "passedBody": "Congratulations. Your certificate is ready to download.",
+      "failedBody": {
+        "one": "You have {count} attempt left. Review the course material before you try again.",
+        "other": "You have {count} attempts left. Review the course material before you try again."
+      },
+      "viewCertificate": "View certificate",
+      "backToCourse": "Back to my course",
+      "retake": "Retake exam",
+      "answersTitle": "Your answers",
+      "answerLabel": "Your answer",
+      "noAnswer": "No answer",
+      "correct": "Correct",
+      "incorrect": "Incorrect"
+    },
+    "certificate": {
+      "metaTitle": "Your certificate | Synergy QMP",
+      "title": "Your certificate",
+      "intro": "Download your certificate of completion, or print it for your records.",
+      "download": "Download PDF",
+      "print": "Print",
+      "detailsTitle": "Certificate details",
+      "heading": "Certificate of completion",
+      "certifies": "This certifies that",
+      "completed": "has successfully completed",
+      "course": "Transportation of Dangerous Goods certification, Class 7",
+      "issued": "Issued",
+      "validUntil": "Valid until",
+      "number": "Certificate no.",
+      "credits": "{credits} Category A credit, CAMRT / ACTRM",
+      "accreditedBy": "Accredited by"
     }
   }
 }

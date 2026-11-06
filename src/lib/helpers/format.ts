@@ -17,3 +17,11 @@ export function formatPrice(locale: Locale, amount: number) {
 export function formatRating(locale: Locale, rating: number) {
   return rating.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
+
+export function formatDate(locale: Locale, isoDate: string) {
+  return new Intl.DateTimeFormat(`${locale}-CA`, { dateStyle: "long", timeZone: "UTC" }).format(new Date(isoDate));
+}
+
+export function formatPercent(locale: Locale, percent: number) {
+  return new Intl.NumberFormat(`${locale}-CA`, { style: "percent", maximumFractionDigits: 0 }).format(percent / 100);
+}

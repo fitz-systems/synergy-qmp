@@ -3,10 +3,10 @@
 import Link from "next/link";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
-import { submitLogin } from "@/app/[lang]/login/actions";
+import { submitLogin } from "@/app/[lang]/(site)/login/actions";
 import { FormField } from "@/components/ui/form-field";
 import { FormNotice } from "@/components/ui/form-notice";
+import { PasswordToggle } from "@/components/ui/password-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialLoginFormState, loginRememberField } from "@/constants/auth";
 import { formLocaleField } from "@/constants/forms";
@@ -59,17 +59,7 @@ export function LoginForm({ locale, labels, forgotPasswordHref, contactEmail }: 
         type={showPassword ? "text" : "password"}
         autoComplete="current-password"
         error={loginFieldErrorMessage(labels.errors, state.errors, "password")}
-        trailing={(
-          <button
-            type="button"
-            aria-pressed={showPassword}
-            onClick={() => setShowPassword((shown) => !shown)}
-            className="inline-flex size-10 items-center justify-center rounded-md text-ink-subtle transition-colors hover:text-ink"
-          >
-            {showPassword ? <EyeOff aria-hidden className="size-[1.125rem]" strokeWidth={1.75}/> : <Eye aria-hidden className="size-[1.125rem]" strokeWidth={1.75}/>}
-            <span className="sr-only">{showPassword ? labels.hidePassword : labels.showPassword}</span>
-          </button>
-        )}
+        trailing={<PasswordToggle shown={showPassword} onToggle={() => setShowPassword((shown) => !shown)} showLabel={labels.showPassword} hideLabel={labels.hidePassword}/>}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
