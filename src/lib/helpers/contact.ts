@@ -1,9 +1,11 @@
-import { contact, contactEmailPattern, contactFieldLimits, contactFields, initialContactFormState } from "@/constants/contact";
-import type { ContactDeliveryFailure, ContactErrorLabels, ContactField, ContactFieldError, ContactFieldIds, ContactFormLabels, ContactFormState, ContactFormStatus, ContactFormValues, ContactInfoItem, ContactInfoLabels, ContactNoticeLabels } from "@/types/contact";
+import { contact, contactFieldLimits, contactFields, initialContactFormState } from "@/constants/contact";
+import type { ContactDeliveryFailure, ContactErrorLabels, ContactField, ContactFieldError, ContactFormLabels, ContactFormState, ContactFormStatus, ContactFormValues, ContactInfoItem, ContactInfoLabels } from "@/types/contact";
+import type { NoticeLabels } from "@/types/forms";
 import { interpolate } from "./format";
+import { isEmail, readFormString } from "./forms";
 
 export function readContactForm(formData: FormData): ContactFormValues {
-  return Object.fromEntries(contactFields.map((field) => [field, String(formData.get(field) ?? "").trim()])) as ContactFormValues;
+  return Object.fromEntries(contactFields.map((field) => [field, readFormString(formData, field)])) as ContactFormValues;
 }
 
 export function validateContactForm(values: ContactFormValues): ContactFormState["errors"] {
@@ -12,7 +14,7 @@ export function validateContactForm(values: ContactFormValues): ContactFormState
     if (!values[field]) errors[field] = "required";
     else if (values[field].length > contactFieldLimits[field]) errors[field] = "tooLong";
   }
-  if (!errors.email && !contactEmailPattern.test(values.email)) errors.email = "invalidEmail";
+  if (!errors.email && !isEmail(values.email)) errors.email = "invalidEmail";
   return errors;
 }
 
@@ -27,11 +29,6 @@ export function contactFieldErrorMessage(labels: ContactErrorLabels, errors: Con
   return error ? contactErrorMessage(labels, field, error) : undefined;
 }
 
-export function contactFieldIds(field: ContactField): ContactFieldIds {
-  const input = `contact-${field}`;
-  return { input, error: `${input}-error` }
-}
-
 export function sentContactFormState(email: string): ContactFormState {
   return { ...initialContactFormState, status: "sent", values: { ...initialContactFormState.values, email } }
 }
@@ -40,10 +37,9 @@ export function contactStatusForFailure(reason: ContactDeliveryFailure): Contact
   return reason === "not-configured" ? "unavailable" : "failed";
 }
 
-export function contactNoticeLabels(labels: ContactFormLabels, status: ContactFormStatus): ContactNoticeLabels | null {
-  if (status === "unavailable") return labels.unavailable;
-  if (status === "failed") return labels.failed;
-  return null;
+export function contactNotice(labels: ContactFormLabels, status: ContactFormStatus, values: Record<"email" | "phone", string>): NoticeLabels | null {
+  const notice = status === "unavailable" ? labels.unavailable : status === "failed" ? labels.failed : null;
+  return notice && { title: notice.title, body: interpolate(notice.body, values) }
 }
 
 export function contactInfoItems(labels: ContactInfoLabels): ContactInfoItem[] {

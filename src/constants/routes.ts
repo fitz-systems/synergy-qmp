@@ -4,7 +4,8 @@ export const routes = {
   courses: "/courses",
   contact: "/contact",
   privacy: "/privacy-policy",
-  login: "/login"
+  login: "/login",
+  forgotPassword: "/forgot-password"
 } as const;
 
 export type Route = keyof typeof routes;

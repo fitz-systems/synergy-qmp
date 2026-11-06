@@ -10,6 +10,7 @@
     "contact": "Contactez-nous",
     "privacy": "Politique de confidentialité",
     "login": "Connexion",
+    "forgotPassword": "Mot de passe oublié",
     "menu": "Menu",
     "close": "Fermer le menu",
     "primary": "Navigation principale",
@@ -330,6 +331,55 @@
       "failed": {
         "title": "Nous n'avons pas pu envoyer votre message",
         "body": "Un problème est survenu de notre côté. Veuillez réessayer, ou écrivez-nous à {email}."
+      }
+    }
+  },
+  "loginPage": {
+    "metaTitle": "Connexion | Synergy QMP",
+    "metaDescription": "Connectez-vous à votre compte étudiant Synergy QMP pour consulter votre matériel de cours, passer votre examen et télécharger votre certificat.",
+    "intro": {
+      "title": "Connexion étudiant",
+      "body": "Connectez-vous avec l'adresse courriel et le mot de passe reçus dans votre courriel de bienvenue Synergy QMP pour consulter votre matériel de cours, passer votre examen et télécharger votre certificat.",
+      "enrollTitle": "Vous n'avez pas de compte?",
+      "enrollBody": "Les comptes sont créés par Synergy QMP au moment de l'inscription.",
+      "enrollLink": "Contactez-nous pour vous inscrire"
+    },
+    "form": {
+      "title": "Connectez-vous avec votre compte",
+      "fields": {
+        "email": "Courriel",
+        "password": "Mot de passe"
+      },
+      "rememberMe": "Se souvenir de moi",
+      "forgotPassword": "Mot de passe oublié?",
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe",
+      "submit": "Se connecter",
+      "submitting": "Connexion en cours…",
+      "errors": {
+        "required": {
+          "email": "Entrez votre adresse courriel.",
+          "password": "Entrez votre mot de passe."
+        },
+        "invalidEmail": "Entrez une adresse courriel valide, par exemple nom@exemple.com."
+      },
+      "notices": {
+        "invalidCredentials": {
+          "title": "Connexion impossible",
+          "body": "Le courriel ou le mot de passe est incorrect. Vérifiez-les et réessayez."
+        },
+        "deactivated": {
+          "title": "Ce compte est inactif",
+          "body": "Communiquez avec Synergy QMP à {email} pour le réactiver."
+        },
+        "rateLimited": {
+          "title": "Trop de tentatives",
+          "body": "Attendez une minute, puis réessayez."
+        },
+        "failed": {
+          "title": "Un problème est survenu",
+          "body": "Nous n'avons pas pu vous connecter. Veuillez réessayer, ou écrivez-nous à {email}."
+        }
       }
     }
   }

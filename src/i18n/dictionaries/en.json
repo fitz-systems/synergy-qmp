@@ -10,6 +10,7 @@
     "contact": "Contact",
     "privacy": "Privacy policy",
     "login": "Log in",
+    "forgotPassword": "Forgot password",
     "menu": "Menu",
     "close": "Close menu",
     "primary": "Main navigation",
@@ -330,6 +331,55 @@
       "failed": {
         "title": "We couldn't send your message",
         "body": "Something went wrong on our side. Please try again, or email us at {email}."
+      }
+    }
+  },
+  "loginPage": {
+    "metaTitle": "Log in | Synergy QMP",
+    "metaDescription": "Log in to your Synergy QMP student account to read your course material, take your exam and download your certificate.",
+    "intro": {
+      "title": "Student log in",
+      "body": "Log in with the email address and password from your Synergy QMP welcome email to read your course material, take your exam and download your certificate.",
+      "enrollTitle": "Don't have an account?",
+      "enrollBody": "Accounts are created by Synergy QMP when you enroll.",
+      "enrollLink": "Contact us to enroll"
+    },
+    "form": {
+      "title": "Log in with your account",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      },
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot your password?",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "errors": {
+        "required": {
+          "email": "Enter your email address.",
+          "password": "Enter your password."
+        },
+        "invalidEmail": "Enter an email address like name@example.com."
+      },
+      "notices": {
+        "invalidCredentials": {
+          "title": "We couldn't log you in",
+          "body": "The email or password is incorrect. Check them and try again."
+        },
+        "deactivated": {
+          "title": "This account is inactive",
+          "body": "Contact Synergy QMP at {email} to reactivate it."
+        },
+        "rateLimited": {
+          "title": "Too many attempts",
+          "body": "Wait a minute, then try again."
+        },
+        "failed": {
+          "title": "Something went wrong",
+          "body": "We couldn't log you in. Please try again, or contact us at {email}."
+        }
       }
     }
   }

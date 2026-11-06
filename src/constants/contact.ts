@@ -23,13 +23,9 @@ export const contactFieldLimits: Record<ContactField, number> = {
   message: 5000
 }
 
-export const contactEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export const contactHoneypotField = "website";
 
 export const contactHoneypotLabel = "Website";
-
-export const contactLocaleField = "locale";
 
 export const initialContactFormState: ContactFormState = {
   status: "idle",

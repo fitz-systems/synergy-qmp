@@ -1,6 +1,7 @@
 "use server";
 
-import { contactHoneypotField, contactLocaleField } from "@/constants/contact";
+import { contactHoneypotField } from "@/constants/contact";
+import { formLocaleField } from "@/constants/forms";
 import { sendContactMessage } from "@/lib/contact";
 import { contactStatusForFailure, readContactForm, sentContactFormState, validateContactForm } from "@/lib/helpers/contact";
 import { resolveLocale } from "@/lib/helpers/locale";
@@ -13,7 +14,7 @@ export async function submitContactForm(_previous: ContactFormState, formData: F
   const errors = validateContactForm(values);
   if (Object.keys(errors).length > 0) return { status: "invalid", values, errors }
 
-  const result = await sendContactMessage(values, resolveLocale(formData.get(contactLocaleField)));
+  const result = await sendContactMessage(values, resolveLocale(formData.get(formLocaleField)));
   if (result.ok) return sentContactFormState(values.email);
 
   return { status: contactStatusForFailure(result.reason), values, errors: {} }

@@ -24,14 +24,7 @@ export type ContactErrorLabels = ContactFormLabels["errors"];
 
 export type ContactInfoLabels = Dictionary["contactPage"]["info"];
 
-export type ContactNoticeLabels = ContactFormLabels["unavailable"];
-
 export type ContactInfoKey = "phone" | "email" | "address";
-
-export interface ContactFieldIds {
-  input: string;
-  error: string;
-}
 
 export interface ContactInfoItem {
   key: ContactInfoKey;
