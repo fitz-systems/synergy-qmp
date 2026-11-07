@@ -2,7 +2,8 @@ import { adminFilterAll, adminSearchParam, courseLocaleFieldLabels, courseLocale
 import { locales, type Locale } from "@/i18n/config";
 import type { AdminCourse, AdminCourseRecord, AdminQuestion, AdminQuestionListQuery, AdminQuestionOption, AdminQuestionRecord, AdminSearchParams, CourseFormState, CourseFormValues, CourseLocaleField, CourseSetting, CourseSettings, QuestionFormState, QuestionFormValues, QuestionStatus, QuestionType } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
-import { courseCodeOf, languageLabel, localeOf, optionLetter, questionBankLabel, searchParamValue } from "./admin";
+import { changeDetails, courseCodeOf, languageLabel, localeOf, optionLetter, questionBankLabel, searchParamValue } from "./admin";
+import { csvLine } from "./csv";
 import { readFormString } from "./forms";
 
 function perLocale<T>(make: (locale: Locale) => T) {
@@ -130,7 +131,6 @@ export function courseChanges(before: AdminCourse, values: CourseFormValues, set
     .map((setting) => `${courseSettingLabels[setting].toLowerCase()} ${settingLabel(setting, before[setting])} → ${settingLabel(setting, settings[setting])}`);
   if (before.shuffleQuestions !== values.shuffleQuestions) changes.push(`question shuffling ${values.shuffleQuestions ? "on" : "off"}`);
   if (before.shuffleAnswers !== values.shuffleAnswers) changes.push(`answer shuffling ${values.shuffleAnswers ? "on" : "off"}`);
-  if (before.active !== values.active) changes.push(values.active ? "activated" : "deactivated");
   for (const locale of locales) {
     for (const field of courseLocaleFields) {
       const previous = courseLocaleValue(before, field, locale);
@@ -140,7 +140,7 @@ export function courseChanges(before: AdminCourse, values: CourseFormValues, set
       changes.push(field === "certificateCode" ? `${label} ${previous} → ${next}` : label);
     }
   }
-  return changes;
+  return changeDetails(changes, before.active === values.active ? undefined : values.active ? "Activated" : "Deactivated");
 }
 
 export function isQuestionType(value: string): value is QuestionType {
@@ -241,10 +241,10 @@ export function questionChanges(before: AdminQuestion, values: QuestionFormValue
     [answersChanged, "answers"],
     [beforeOptions[beforeCorrect] !== values.options[values.correctIndex], "correct answer"],
     [before.explanation !== values.explanation, "explanation"],
-    [String(before.sortOrder) !== values.sortOrder, "order"],
-    [before.active !== values.active, values.active ? "made active" : "hidden"]
+    [String(before.sortOrder) !== values.sortOrder, "order"]
   ];
-  return changes.filter(([changed]) => changed).map(([, label]) => label);
+  const changed = changes.filter(([isChanged]) => isChanged).map(([, label]) => label);
+  return changeDetails(changed, before.active === values.active ? undefined : values.active ? "Made active" : "Hidden");
 }
 
 export function hiddenQuestionError(activeCount: number, questionsPerAttempt: number) {
@@ -264,17 +264,13 @@ export function questionListFilterValues(query: AdminQuestionListQuery): Record<
   return { [adminSearchParam]: query.search, status: query.status ?? adminFilterAll }
 }
 
-function csvCell(value: string) {
-  return /[",\r\n]/.test(value) ? `"${value.replace(/"/g, "\"\"")}"` : value;
-}
-
 export function questionsCsv(questions: AdminQuestion[]) {
   const rows = questions.map((question) => {
     const texts = Array.from({ length: maxQuestionOptions }, (_, index) => question.options[index]?.text ?? "");
     const correct = question.options.findIndex((option) => option.correct);
     return [question.prompt, ...texts, correct === -1 ? "" : optionLetter(correct), question.explanation];
   });
-  return questionCsvBom + [importColumns.questions, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
+  return questionCsvBom + [importColumns.questions, ...rows].map(csvLine).join("\r\n") + "\r\n";
 }
 
 export function questionsCsvFileName(code: CourseCode, locale: Locale) {

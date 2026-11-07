@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { adminRoutes } from "@/constants/admin";
-import { getAdminReviews } from "@/lib/admin";
+import { getAdminReviews } from "@/lib/admin-reviews";
 import { adminReviewHref, languageLabel } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default async function AdminReviewsPage() {
     <>
       <AdminPageHeader
         title="Reviews"
-        description="Published reviews appear on the home page and course pages for their language. The home page section hides itself when there are none."
+        description="Published reviews appear on the course pages in their language. Only publish reviews from real students who agreed to be quoted."
         crumbs={[{ label: "Dashboard", href: adminRoutes.dashboard }, { label: "Reviews" }]}
         actions={<Button asChild><Link href={adminRoutes.newReview}><Plus/>Add review</Link></Button>}
       />
@@ -49,9 +49,13 @@ export default async function AdminReviewsPage() {
                 <TableCell className="max-w-sm whitespace-normal text-muted-foreground">{review.body}</TableCell>
                 <TableCell>{languageLabel(review.locale)}</TableCell>
                 <TableCell>
-                  <span className="inline-flex items-center gap-1 tabular-nums" aria-label={`${review.rating} out of 5`}>
-                    <Star aria-hidden className="size-4 fill-primary text-primary"/>{review.rating}
-                  </span>
+                  {review.rating === null
+                    ? <span className="text-muted-foreground">—</span>
+                    : (
+                      <span className="inline-flex items-center gap-1 tabular-nums" aria-label={`${review.rating} out of 5`}>
+                        <Star aria-hidden className="size-4 fill-primary text-primary"/>{review.rating}
+                      </span>
+                    )}
                 </TableCell>
                 <TableCell className="text-right tabular-nums">{review.sortOrder}</TableCell>
                 <TableCell><ToggleBadge on={review.published} onLabel="Published" offLabel="Draft"/></TableCell>
@@ -60,6 +64,11 @@ export default async function AdminReviewsPage() {
                 </TableCell>
               </TableRow>
             ))}
+            {reviews.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">No reviews yet.</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </Card>

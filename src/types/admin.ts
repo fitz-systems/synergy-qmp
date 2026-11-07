@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { adminCourseSelect, adminQuestionSelect, adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
+import type { adminCourseSelect, adminQuestionSelect, adminReviewSelect, adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
@@ -74,9 +74,27 @@ export interface AdminReview {
   roleCompany: string;
   locale: Locale;
   body: string;
-  rating: number;
+  rating: number | null;
   published: boolean;
   sortOrder: number;
+}
+
+export type ReviewFormField = "author" | "body" | "locale" | "rating" | "sortOrder";
+
+export interface ReviewFormValues {
+  author: string;
+  roleCompany: string;
+  body: string;
+  locale: string;
+  rating: string;
+  sortOrder: string;
+  published: boolean;
+}
+
+export interface ReviewFormState {
+  status: "idle" | "invalid" | "failed";
+  values: ReviewFormValues;
+  errors: Partial<Record<ReviewFormField, string>>;
 }
 
 export interface AdminCourse {
@@ -340,7 +358,7 @@ export interface UserFormState {
 
 export type AdminActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
-export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued" | "courseUpdated" | "courseMaterialUploaded" | "questionCreated" | "questionUpdated" | "questionDeleted";
+export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued" | "courseUpdated" | "courseMaterialUploaded" | "questionCreated" | "questionUpdated" | "questionDeleted" | "reviewCreated" | "reviewUpdated" | "reviewDeleted" | "usersImported" | "questionsImported";
 
 export type AuditEntity = "user" | "certificate" | "course" | "question" | "review" | "import";
 
@@ -348,7 +366,7 @@ export interface AuditInput {
   adminId: number;
   action: AuditAction;
   entity: AuditEntity;
-  entityId: number | string;
+  entityId?: number | string;
   entityLabel: string;
   details?: string;
 }
@@ -368,6 +386,70 @@ export interface ImportPreviewRow {
   line: number;
   values: string[];
   problem?: string;
+}
+
+export interface ImportPreview {
+  fileError?: string;
+  rows: ImportPreviewRow[];
+  ready: number;
+}
+
+export interface ImportRequest {
+  kind: ImportKind;
+  bank: string;
+  fileName: string;
+  text: string;
+}
+
+export interface QuestionBankKey {
+  code: CourseCode;
+  locale: Locale;
+}
+
+export type ParsedImportRequest = { kind: "users"; result: ParsedImport<ImportUserRow> } | { kind: "questions"; result: ParsedImport<ImportQuestionRow>; bank: QuestionBankKey }
+
+export type ImportResult = AdminActionResult & { kind?: ImportKind }
+
+export interface ImportRecord {
+  line: number;
+  cells: Record<string, string>;
+  values: string[];
+}
+
+export interface ImportTable {
+  fileError?: string;
+  records: ImportRecord[];
+}
+
+export interface ImportUserContext {
+  existing: Map<string, string>;
+  inactiveCourses: Set<string>;
+}
+
+export interface ImportQuestionContext {
+  existingPrompts: Set<string>;
+  nextSortOrder: number;
+}
+
+export interface ImportUserRow {
+  line: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  course: CourseCode;
+  locale: Locale;
+}
+
+export interface ImportQuestionRow {
+  line: number;
+  values: QuestionFormValues;
+}
+
+export interface ParsedImport<Row> {
+  fileError?: string;
+  preview: ImportPreviewRow[];
+  rows: Row[];
 }
 
 export interface AdminIdentity {
@@ -391,5 +473,7 @@ export type AuditLogRecord = Prisma.AuditLogGetPayload<{ select: typeof auditLog
 export type AdminCourseRecord = Prisma.CourseGetPayload<{ select: typeof adminCourseSelect }>;
 
 export type AdminQuestionRecord = Prisma.QuestionGetPayload<{ select: typeof adminQuestionSelect }>;
+
+export type AdminReviewRecord = Prisma.ReviewGetPayload<{ select: typeof adminReviewSelect }>;
 
 export type AdminEnrollmentRecord = AdminUserDetailRecord["enrollments"][number];

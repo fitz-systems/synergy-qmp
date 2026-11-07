@@ -114,7 +114,12 @@ export const auditActionLabels: Record<AuditAction, string> = {
   courseMaterialUploaded: "Uploaded course material",
   questionCreated: "Added question",
   questionUpdated: "Edited question",
-  questionDeleted: "Deleted question"
+  questionDeleted: "Deleted question",
+  reviewCreated: "Added review",
+  reviewUpdated: "Edited review",
+  reviewDeleted: "Deleted review",
+  usersImported: "Imported users",
+  questionsImported: "Imported questions"
 }
 
 export const adminSidebarWidth = "16rem";
@@ -148,7 +153,12 @@ export const passRateChartConfig = {
   passRate: { label: "Pass rate (%)", color: "var(--chart-2)" }
 } satisfies ChartConfig;
 
-export const ratingOptions: SelectOption[] = [5, 4, 3, 2, 1].map((rating) => ({ value: String(rating), label: `${rating} out of 5` }));
+export const noRatingValue = "none";
+
+export const ratingOptions: SelectOption[] = [
+  ...[5, 4, 3, 2, 1].map((rating) => ({ value: String(rating), label: `${rating} out of 5` })),
+  { value: noRatingValue, label: "No rating" }
+];
 
 export const auditEntityFilter = "entity";
 
@@ -371,3 +381,57 @@ export const questionActionMessages = {
 }
 
 export const questionCsvBom = "\uFEFF";
+
+export const adminReviewSelect = {
+  id: true,
+  author: true,
+  roleCompany: true,
+  locale: true,
+  body: true,
+  rating: true,
+  published: true,
+  sortOrder: true
+} satisfies Prisma.ReviewSelect;
+
+export const reviewFormFailedNotice = "The review couldn't be saved. Please try again.";
+
+export const reviewActionMessages = {
+  notFound: "This review no longer exists.",
+  failed: "Something went wrong. Please try again."
+}
+
+export const reviewsCacheTag = "reviews";
+
+export const enrollmentsCacheTag = "enrollments";
+
+export const importMaxRows = 5000;
+
+export const importMaxBytes = 900 * 1024;
+
+export const importPreviewLimit = 500;
+
+export const importMessages = {
+  empty: "This file is empty.",
+  tooLarge: "This file is larger than 900 KB. Split it into smaller files.",
+  tooManyRows: `This file has more than ${importMaxRows.toLocaleString("en-CA")} rows. Split it into smaller files.`,
+  unreadable: "This file couldn't be read. Save it as CSV and try again.",
+  noRows: "There are no rows to import below the column names.",
+  noBank: "Choose a question bank.",
+  nothingReady: "There are no rows without problems to import.",
+  changed: "Some rows changed since the preview. Check the preview again before importing.",
+  failed: "The import failed and nothing was added. Please try again."
+}
+
+export const trueFalseImportWords = new Set(["true", "false", "t", "f", "vrai", "faux", "v"]);
+
+export const questionImportLetters = ["A", "B", "C", "D"];
+
+export const languageAliases: Record<string, Locale> = {
+  en: "en",
+  english: "en",
+  anglais: "en",
+  fr: "fr",
+  french: "fr",
+  "français": "fr",
+  francais: "fr"
+}

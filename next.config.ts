@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   experimental: {
-    globalNotFound: true
+    globalNotFound: true,
+    serverActions: {
+      bodySizeLimit: "2mb"
+    }
   },
   turbopack: {
     rules: {

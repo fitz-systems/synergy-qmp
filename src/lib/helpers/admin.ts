@@ -393,6 +393,7 @@ function auditEntityHref(entity: AuditEntity, entityId: string | null) {
   if (!Number.isInteger(id) || id <= 0) return undefined;
   if (entity === "user") return adminUserHref(id);
   if (entity === "certificate") return adminCertificateHref(id);
+  if (entity === "review") return adminReviewHref(id);
   return undefined;
 }
 
@@ -463,4 +464,9 @@ export function dashboardAttempt(record: DashboardAttemptRecord): DashboardAttem
     questionCount: record.questionCount,
     passed: record.passed === true
   }
+}
+
+export function changeDetails(changes: string[], status?: string) {
+  const parts = [changes.length > 0 ? `Changed ${changes.join(", ")}` : "", status ?? ""].filter(Boolean);
+  return parts.length > 0 ? parts.join("; ") : undefined;
 }

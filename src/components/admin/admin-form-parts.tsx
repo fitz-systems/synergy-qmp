@@ -34,7 +34,6 @@ interface AdminSwitchFieldProps {
 interface AdminFormActionsProps {
   submitLabel: string;
   cancelHref: string;
-  submits?: boolean;
   pending?: boolean;
 }
 
@@ -78,12 +77,11 @@ export function AdminSwitchField({ name, label, hint, checked, onCheckedChange, 
   );
 }
 
-// Todo: Submit the review, question and course forms through server actions, then drop the submits prop
-export function AdminFormActions({ submitLabel, cancelHref, submits = false, pending = false }: AdminFormActionsProps) {
+export function AdminFormActions({ submitLabel, cancelHref, pending = false }: AdminFormActionsProps) {
   return (
     <div className="flex justify-end gap-2">
       <Button variant="outline" asChild><Link href={cancelHref}>Cancel</Link></Button>
-      <Button type={submits ? "submit" : "button"} disabled={pending}>
+      <Button type="submit" disabled={pending}>
         {pending && <LoaderCircle aria-hidden className="animate-spin"/>}
         {submitLabel}
       </Button>

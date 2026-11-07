@@ -121,7 +121,7 @@ export function UserForm({ action, initialState, creating, submitLabel, cancelHr
         )}
       </AdminFormSection>
 
-      <AdminFormActions submitLabel={submitLabel} cancelHref={cancelHref} submits pending={pending}/>
+      <AdminFormActions submitLabel={submitLabel} cancelHref={cancelHref} pending={pending}/>
     </form>
   );
 }

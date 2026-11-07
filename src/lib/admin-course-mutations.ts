@@ -33,8 +33,8 @@ export async function updateCourse(adminId: number, code: CourseCode, values: Co
       await tx.courseLocale.upsert({ where: { courseId_locale: { courseId: record.id, locale } }, update: data, create: { ...data, courseId: record.id, locale } });
     }
 
-    const changes = courseChanges(before, values, settings);
-    if (changes.length > 0) await recordAudit(tx, { adminId, action: "courseUpdated", entity: "course", entityId: code, entityLabel: values["name.en"], details: `Changed ${changes.join(", ")}` });
+    const details = courseChanges(before, values, settings);
+    if (details) await recordAudit(tx, { adminId, action: "courseUpdated", entity: "course", entityId: code, entityLabel: values["name.en"], details });
     return { saved: true }
   });
 }
@@ -113,8 +113,8 @@ export async function saveQuestion(adminId: number, code: CourseCode, locale: Lo
     }
 
     await tx.question.update({ where: { id: questionId }, data: questionData(values) });
-    const changes = questionChanges(before, values);
-    if (changes.length > 0) await recordAudit(tx, { adminId, action: "questionUpdated", entity: "question", entityId: questionId, entityLabel: label, details: `Changed ${changes.join(", ")}` });
+    const details = questionChanges(before, values);
+    if (details) await recordAudit(tx, { adminId, action: "questionUpdated", entity: "question", entityId: questionId, entityLabel: label, details });
     return { id: questionId }
   });
 }

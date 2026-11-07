@@ -143,7 +143,7 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
         />
       </AdminFormSection>
 
-      <AdminFormActions submitLabel="Save changes" cancelHref={cancelHref} submits pending={pending}/>
+      <AdminFormActions submitLabel="Save changes" cancelHref={cancelHref} pending={pending}/>
     </form>
   );
 }

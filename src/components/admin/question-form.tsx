@@ -151,7 +151,7 @@ export function QuestionForm({ action, initialState, locale, submitLabel, cancel
         </CardContent>
       </Card>
 
-      <AdminFormActions submitLabel={submitLabel} cancelHref={cancelHref} submits pending={pending}/>
+      <AdminFormActions submitLabel={submitLabel} cancelHref={cancelHref} pending={pending}/>
     </form>
   );
 }
