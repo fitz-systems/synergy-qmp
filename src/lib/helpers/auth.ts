@@ -1,6 +1,7 @@
 import { APIError } from "better-auth/api";
-import { initialLoginFormState, loginFields, loginRememberField, loginStatusByAuthError, passwordMinLength, resetPasswordFields } from "@/constants/auth";
-import type { ForgotPasswordCopy, ForgotPasswordError, LoginCredentials, LoginErrorLabels, LoginFailureStatus, LoginField, LoginFormLabels, LoginFormState, ResetPasswordCopy, ResetPasswordField, ResetPasswordFormState } from "@/types/auth";
+import { adminRole, initialLoginFormState, invalidTokenCode, loginFields, loginRememberField, loginStatusByAuthError, passwordMinLength, resetPasswordFields } from "@/constants/auth";
+import { defaultLocale } from "@/i18n/config";
+import type { AuthSessionRecord, ForgotPasswordCopy, ForgotPasswordError, LoginCredentials, LoginErrorLabels, LoginFailureStatus, LoginField, LoginFormLabels, LoginFormState, ResetPasswordCopy, ResetPasswordField, ResetPasswordFormState, SessionUser } from "@/types/auth";
 import type { NoticeLabels } from "@/types/forms";
 import { interpolate } from "./format";
 import { isEmail, readFormString } from "./forms";
@@ -72,4 +73,24 @@ export function resetPasswordErrorMessage(labels: ResetPasswordCopy["errors"], e
   if (error === "required") return labels.required[field];
   if (error === "tooShort") return interpolate(labels.tooShort, { min: passwordMinLength });
   return labels.mismatch;
+}
+
+export function resetFailureStatus(error: unknown): ResetPasswordFormState["status"] {
+  return error instanceof APIError && error.body?.code === invalidTokenCode ? "expired" : "failed";
+}
+
+export function sessionUser(user: AuthSessionRecord): SessionUser {
+  return {
+    id: Number(user.id),
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    role: user.role === adminRole ? adminRole : "student",
+    preferredLocale: user.preferredLocale ?? defaultLocale
+  }
+}
+
+export function resetTokenFromQuery(query: Record<string, string | string[] | undefined>) {
+  const { token, error } = query;
+  return typeof token === "string" && token && !error ? token : null;
 }

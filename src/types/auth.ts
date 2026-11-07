@@ -33,7 +33,7 @@ export type ResetPasswordCopy = Dictionary["resetPasswordPage"];
 export type ForgotPasswordError = "required" | "invalidEmail";
 
 export interface ForgotPasswordFormState {
-  status: "idle" | "invalid" | "sent" | "unavailable";
+  status: "idle" | "invalid" | "sent" | "failed";
   email: string;
   error?: ForgotPasswordError;
 }
@@ -43,6 +43,32 @@ export type ResetPasswordField = "password" | "confirm";
 export type ResetPasswordFieldError = "required" | "tooShort" | "mismatch";
 
 export interface ResetPasswordFormState {
-  status: "idle" | "invalid" | "done" | "unavailable";
+  status: "idle" | "invalid" | "done" | "expired" | "failed";
   errors: Partial<Record<ResetPasswordField, ResetPasswordFieldError>>;
+}
+
+export type UserRole = "student" | "admin";
+
+export interface SessionUser {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  preferredLocale: string;
+}
+
+export interface AuthSessionRecord {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role?: string | null;
+  preferredLocale?: string | null;
+}
+
+export interface AuthUserProfile {
+  email: string;
+  firstName?: string;
+  preferredLocale?: string;
 }

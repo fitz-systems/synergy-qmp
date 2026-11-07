@@ -1,5 +1,5 @@
 import type { Route } from "@/constants/routes";
-import type { ForgotPasswordFormState, LoginFailureStatus, LoginField, LoginFormState, ResetPasswordField, ResetPasswordFormState } from "@/types/auth";
+import type { ForgotPasswordFormState, LoginFailureStatus, LoginField, LoginFormState, ResetPasswordField, ResetPasswordFormState, UserRole } from "@/types/auth";
 
 export const loginFields: LoginField[] = ["email", "password"];
 
@@ -11,8 +11,11 @@ export const initialLoginFormState: LoginFormState = {
   errors: {}
 }
 
-// Todo: Send students to their course page once it exists
-export const postLoginRoute: Route = "home";
+export const postLoginRoute: Route = "myCourse";
+
+export const postSignOutRoute: Route = "home";
+
+export const adminRole: UserRole = "admin";
 
 export const loginStatusByAuthError: Record<string, LoginFailureStatus> = {
   UNAUTHORIZED: "invalidCredentials",
@@ -21,6 +24,12 @@ export const loginStatusByAuthError: Record<string, LoginFailureStatus> = {
 }
 
 export const passwordMinLength = 8;
+
+export const passwordResetTokenSeconds = 60 * 60;
+
+export const resetTokenField = "token";
+
+export const invalidTokenCode = "INVALID_TOKEN";
 
 export const resetPasswordFields: ResetPasswordField[] = ["password", "confirm"];
 

@@ -18,3 +18,7 @@ export async function getLocale(): Promise<Locale> {
 export async function getDictionary(): Promise<Dictionary> {
   return dictionaries[await getLocale()]();
 }
+
+export async function getDictionaryFor(locale: Locale): Promise<Dictionary> {
+  return dictionaries[locale]();
+}

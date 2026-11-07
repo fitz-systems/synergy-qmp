@@ -420,9 +420,9 @@
       "title": "Vérifiez vos courriels",
       "body": "Si un compte existe pour {email}, nous avons envoyé un lien pour choisir un nouveau mot de passe. Le lien expire dans 1 heure."
     },
-    "unavailable": {
-      "title": "La réinitialisation n'est pas encore offerte",
-      "body": "Les courriels de réinitialisation ne sont pas encore reliés. Écrivez-nous à {email} et nous réinitialiserons votre mot de passe."
+    "failed": {
+      "title": "Impossible d'envoyer le lien",
+      "body": "Réessayez dans quelques minutes, ou écrivez-nous à {email} et nous réinitialiserons votre mot de passe."
     }
   },
   "resetPasswordPage": {
@@ -451,9 +451,14 @@
       "body": "Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
       "login": "Se connecter"
     },
-    "unavailable": {
-      "title": "La réinitialisation n'est pas encore offerte",
-      "body": "Les liens de réinitialisation ne sont pas encore reliés. Écrivez-nous à {email} et nous réinitialiserons votre mot de passe."
+    "expired": {
+      "title": "Ce lien a expiré",
+      "body": "Les liens de réinitialisation ne fonctionnent qu'une fois et expirent après 1 heure. Demandez-en un nouveau pour choisir votre mot de passe.",
+      "action": "Demander un nouveau lien"
+    },
+    "failed": {
+      "title": "Impossible de modifier le mot de passe",
+      "body": "Veuillez réessayer, ou écrivez-nous à {email}."
     }
   },
   "student": {
@@ -595,6 +600,16 @@
       "referenceCode": "Numéro de référence RCEEM : {code}",
       "credits": "{credits} crédit de catégorie A, ACTRM / CAMRT",
       "accreditedBy": "Agréé par"
+    }
+  },
+  "emails": {
+    "passwordReset": {
+      "subject": "Réinitialiser votre mot de passe Synergy QMP",
+      "greeting": "Bonjour {name},",
+      "body": "Nous avons reçu une demande de réinitialisation du mot de passe de votre compte Synergy QMP. Utilisez le bouton ci-dessous pour choisir un nouveau mot de passe. Le lien expire dans 1 heure.",
+      "button": "Choisir un nouveau mot de passe",
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :",
+      "ignore": "Si vous n'avez pas fait cette demande, vous pouvez ignorer ce courriel. Votre mot de passe ne changera pas."
     }
   }
 }

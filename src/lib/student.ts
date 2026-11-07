@@ -1,13 +1,15 @@
 import { connection } from "next/server";
-import { mockCertificate, mockEnrollment, mockExamAttempt, mockExamQuestions, mockExamResult, mockExamSettings, mockStudentAccount } from "@/content/mock-student";
+import { mockCertificate, mockEnrollment, mockExamAttempt, mockExamQuestions, mockExamResult, mockExamSettings } from "@/content/mock-student";
 import type { Locale } from "@/i18n/config";
+import { requireUser } from "@/lib/session";
 import type { ExamAttempt, ExamQuestion, ExamResult, ExamSettings, StudentAccount, StudentCertificate, StudentEnrollment } from "@/types/student";
 
-// Todo: Read these from the signed-in session and the database; they return placeholder data while the UI is designed
-
 export async function getStudentAccount(): Promise<StudentAccount> {
-  return mockStudentAccount;
+  const { firstName, lastName, email } = await requireUser();
+  return { firstName, lastName, email }
 }
+
+// Todo: Read these from the database for the signed-in student (each one calling requireUser); they return placeholder data while the UI is designed
 
 export async function getStudentEnrollment(): Promise<StudentEnrollment> {
   return mockEnrollment;

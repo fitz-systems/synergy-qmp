@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { CourseCode } from "./courses";
 
@@ -31,6 +32,7 @@ export interface HeaderAccount {
 
 export interface HeaderAccountMenu {
   account: HeaderAccount;
+  locale: Locale;
   myCourseHref: string;
   labels: AccountMenuLabels;
 }

@@ -5,11 +5,13 @@ import { localizedHref } from "@/lib/helpers/routes";
 import { headerAccount } from "@/lib/helpers/student";
 import { getStudentAccount } from "@/lib/student";
 
-// Todo: Redirect to the login page when there's no session
+export const instant = false;
+
 export default async function StudentLayout({ children }: LayoutProps<"/[lang]">) {
   const [dict, locale, account] = await Promise.all([getDictionary(), getLocale(), getStudentAccount()]);
   const accountMenu = {
     account: headerAccount(account),
+    locale,
     myCourseHref: localizedHref(locale, "myCourse"),
     labels: dict.student.account
   }

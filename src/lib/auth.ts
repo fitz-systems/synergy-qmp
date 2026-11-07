@@ -4,6 +4,8 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import { nextCookies } from "better-auth/next-js";
+import { passwordMinLength, passwordResetTokenSeconds } from "@/constants/auth";
+import { sendPasswordResetEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
 const LEGACY_MD5 = /^[a-f0-9]{32}$/i;
@@ -32,6 +34,8 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     disableSignUp: true,
+    minPasswordLength: passwordMinLength,
+    resetPasswordTokenExpiresIn: passwordResetTokenSeconds,
     revokeSessionsOnPasswordReset: true,
     password: {
       hash: hashPassword,
@@ -43,11 +47,7 @@ export const auth = betterAuth({
       }
     },
     sendResetPassword: async ({ user, url }) => {
-      // TODO: send through the email provider (Resend) once it's set up.
-      if (process.env.NODE_ENV === "production") {
-        throw new Error("Password reset email is not configured yet.");
-      }
-      console.info(`[dev] Password reset link for ${user.email}: ${url}`);
+      await sendPasswordResetEmail(user, url);
     }
   },
   databaseHooks: {

@@ -1,13 +1,7 @@
 import type { Locale } from "@/i18n/config";
-import type { ExamAttempt, ExamQuestion, ExamResult, ExamSettings, MockStudentScenario, StudentAccount, StudentCertificate, StudentEnrollment } from "@/types/student";
+import type { ExamAttempt, ExamQuestion, ExamResult, ExamSettings, MockStudentScenario, StudentCertificate, StudentEnrollment } from "@/types/student";
 
 // Todo: Placeholder data for designing the student area; replace with the signed-in student's records once auth and the migration are wired up
-export const mockStudentAccount: StudentAccount = {
-  firstName: "Jordan",
-  lastName: "Tremblay",
-  email: "jordan.tremblay@example.com"
-}
-
 const mockScenario = "notStarted" as MockStudentScenario;
 
 const scenarioEnrollments: Record<MockStudentScenario, StudentEnrollment> = {

@@ -2,17 +2,21 @@ import Image from "next/image";
 import logo from "@/assets/images/logo.png";
 
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { AdminLoginForm } from "@/components/admin/admin-login-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { adminRoutes } from "@/constants/admin";
+import { adminRole } from "@/constants/auth";
+import { getCurrentUser } from "@/lib/session";
 
 export const metadata: Metadata = {
   title: "Log in"
 }
 
-// Todo: Sign in through Better Auth and only allow accounts with the admin role
-export default function AdminLoginPage() {
+export default async function AdminLoginPage() {
+  const user = await getCurrentUser();
+  if (user?.role === adminRole) redirect(adminRoutes.dashboard);
+
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-8 bg-muted/40 p-6">
       <div className="flex items-center gap-2">
@@ -25,17 +29,7 @@ export default function AdminLoginPage() {
           <CardDescription>Use your Synergy QMP staff account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="admin-email">Email</Label>
-              <Input id="admin-email" name="email" type="email" autoComplete="username" required/>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="admin-password">Password</Label>
-              <Input id="admin-password" name="password" type="password" autoComplete="current-password" required/>
-            </div>
-            <Button type="button" className="w-full">Log in</Button>
-          </form>
+          <AdminLoginForm/>
         </CardContent>
       </Card>
     </main>

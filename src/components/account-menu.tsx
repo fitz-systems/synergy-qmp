@@ -3,7 +3,8 @@
 import Link from "next/link";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { BookOpen, ChevronDown, LogOut } from "lucide-react";
+import { BookOpen, ChevronDown } from "lucide-react";
+import { SignOutForm } from "@/components/sign-out-form";
 import type { HeaderAccountMenu } from "@/types/student";
 
 type AccountMenuProps = HeaderAccountMenu;
@@ -21,7 +22,7 @@ export function AccountAvatar({ initials, className = "size-9 text-sm" }: Accoun
   );
 }
 
-export function AccountMenu({ account, myCourseHref, labels }: AccountMenuProps) {
+export function AccountMenu({ account, locale, myCourseHref, labels }: AccountMenuProps) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -80,14 +81,12 @@ export function AccountMenu({ account, myCourseHref, labels }: AccountMenuProps)
             </Link>
           </li>
           <li>
-            {/* Todo: Sign out through Better Auth */}
-            <button
-              type="button"
+            <SignOutForm
+              locale={locale}
+              label={labels.logout}
               className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-[0.9375rem] font-medium text-ink transition-colors hover:bg-canvas-alt"
-            >
-              <LogOut aria-hidden className="size-4 text-ink-muted" strokeWidth={1.75}/>
-              {labels.logout}
-            </button>
+              iconClassName="size-4 text-ink-muted"
+            />
           </li>
         </ul>
       </div>

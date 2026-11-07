@@ -1,6 +1,7 @@
 import { BookOpen, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
 import type { ChartConfig } from "@/components/ui/chart";
-import type { AdminNavGroup, AdminRoute, AdminThemeOption, EnrollmentStatus, ImportKind, QuestionType, SelectOption, StatusTone } from "@/types/admin";
+import type { AdminLoginField, AdminNavGroup, AdminRoute, AdminThemeOption, EnrollmentStatus, ImportKind, QuestionType, SelectOption, StatusTone } from "@/types/admin";
+import type { LoginFailureStatus, LoginField, LoginFieldError } from "@/types/auth";
 
 export const adminRoutes: Record<AdminRoute, string> = {
   dashboard: "/admin",
@@ -75,7 +76,22 @@ export const adminDateFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "me
 
 export const adminDateTimeFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
 
-export const sampleAdmin = { name: "Sample Admin", email: "admin@example.com" }
+export const adminLoginNotices: Record<LoginFailureStatus, string> = {
+  invalidCredentials: "The email or password is incorrect, or this account doesn't have admin access.",
+  deactivated: "This account has been deactivated.",
+  rateLimited: "Too many attempts. Wait a minute, then try again.",
+  failed: "Something went wrong. Please try again."
+}
+
+export const adminLoginFields: AdminLoginField[] = [
+  { name: "email", label: "Email", type: "email", autoComplete: "username" },
+  { name: "password", label: "Password", type: "password", autoComplete: "current-password" }
+];
+
+export const adminLoginFieldErrors: Record<LoginField, Partial<Record<LoginFieldError, string>>> = {
+  email: { required: "Enter your email.", invalidEmail: "Enter a valid email address." },
+  password: { required: "Enter your password." }
+}
 
 export const registrationsChartConfig = {
   registrations: { label: "Registrations", color: "var(--chart-1)" }

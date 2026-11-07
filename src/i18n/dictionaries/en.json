@@ -420,9 +420,9 @@
       "title": "Check your email",
       "body": "If an account exists for {email}, we've sent a link to set a new password. The link expires in 1 hour."
     },
-    "unavailable": {
-      "title": "Password reset isn't available yet",
-      "body": "Reset emails aren't connected yet. Contact us at {email} and we'll reset your password for you."
+    "failed": {
+      "title": "We couldn't send the reset link",
+      "body": "Please try again in a few minutes, or contact us at {email} and we'll reset your password for you."
     }
   },
   "resetPasswordPage": {
@@ -451,9 +451,14 @@
       "body": "You can now log in with your new password.",
       "login": "Log in"
     },
-    "unavailable": {
-      "title": "Password reset isn't available yet",
-      "body": "Reset links aren't connected yet. Contact us at {email} and we'll reset your password for you."
+    "expired": {
+      "title": "This reset link has expired",
+      "body": "Reset links work once and expire after 1 hour. Request a new one to set your password.",
+      "action": "Request a new link"
+    },
+    "failed": {
+      "title": "We couldn't update your password",
+      "body": "Please try again, or contact us at {email}."
     }
   },
   "student": {
@@ -595,6 +600,16 @@
       "credits": "{credits} Category A credit, CAMRT / ACTRM",
       "referenceCode": "RCEEM reference code: {code}",
       "accreditedBy": "Accredited by"
+    }
+  },
+  "emails": {
+    "passwordReset": {
+      "subject": "Reset your Synergy QMP password",
+      "greeting": "Hello {name},",
+      "body": "We received a request to reset the password for your Synergy QMP account. Use the button below to choose a new password. The link expires in 1 hour.",
+      "button": "Set a new password",
+      "fallback": "If the button doesn't work, copy this link into your browser:",
+      "ignore": "If you didn't ask for this, you can ignore this email. Your password won't change."
     }
   }
 }

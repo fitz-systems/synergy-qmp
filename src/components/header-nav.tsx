@@ -4,7 +4,8 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { BookOpen, Globe, LogOut, Menu, X } from "lucide-react";
+import { BookOpen, Globe, Menu, X } from "lucide-react";
+import { SignOutForm } from "@/components/sign-out-form";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/helpers/routes";
 import type { HeaderAccountMenu } from "@/types/student";
@@ -152,14 +153,11 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accoun
                     <BookOpen aria-hidden className="size-4" strokeWidth={1.75}/>
                     {accountMenu.labels.myCourse}
                   </Link>
-                  {/* Todo: Sign out through Better Auth */}
-                  <button
-                    type="button"
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-line-strong text-base font-medium text-ink"
-                  >
-                    <LogOut aria-hidden className="size-4" strokeWidth={1.75}/>
-                    {accountMenu.labels.logout}
-                  </button>
+                  <SignOutForm
+                    locale={locale}
+                    label={accountMenu.labels.logout}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-line-strong text-base font-medium text-ink"
+                  />
                 </div>
               </div>
             ) : (

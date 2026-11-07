@@ -3,24 +3,27 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { CircleCheck, Info } from "lucide-react";
 import { resetPassword } from "@/app/[lang]/(site)/reset-password/actions";
+import { ResetLinkExpired } from "@/components/auth/reset-link-expired";
 import { ButtonLink } from "@/components/ui/button-link";
 import { FormField } from "@/components/ui/form-field";
 import { FormNotice } from "@/components/ui/form-notice";
 import { PasswordToggle } from "@/components/ui/password-toggle";
 import { SubmitButton } from "@/components/ui/submit-button";
-import { initialResetPasswordState, passwordMinLength } from "@/constants/auth";
+import { initialResetPasswordState, passwordMinLength, resetTokenField } from "@/constants/auth";
 import { resetPasswordErrorMessage } from "@/lib/helpers/auth";
 import { interpolate } from "@/lib/helpers/format";
 import { fieldIds } from "@/lib/helpers/forms";
 import type { ResetPasswordCopy, ResetPasswordField } from "@/types/auth";
 
 interface ResetPasswordFormProps {
+  token: string;
   labels: ResetPasswordCopy;
   loginHref: string;
+  forgotPasswordHref: string;
   contactEmail: string;
 }
 
-export function ResetPasswordForm({ labels, loginHref, contactEmail }: ResetPasswordFormProps) {
+export function ResetPasswordForm({ token, labels, loginHref, forgotPasswordHref, contactEmail }: ResetPasswordFormProps) {
   const [state, action, pending] = useActionState(resetPassword, initialResetPasswordState);
   const [shown, setShown] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -44,6 +47,10 @@ export function ResetPasswordForm({ labels, loginHref, contactEmail }: ResetPass
     );
   }
 
+  if (state.status === "expired") {
+    return <ResetLinkExpired ref={noticeRef} labels={labels.expired} forgotPasswordHref={forgotPasswordHref}/>;
+  }
+
   const toggle = <PasswordToggle shown={shown} onToggle={() => setShown((value) => !value)} showLabel={labels.showPassword} hideLabel={labels.hidePassword}/>;
   const fieldProps = (field: ResetPasswordField) => ({
     name: field,
@@ -57,8 +64,9 @@ export function ResetPasswordForm({ labels, loginHref, contactEmail }: ResetPass
 
   return (
     <form ref={formRef} action={action} noValidate className="mt-8 space-y-5">
-      {state.status === "unavailable" && (
-        <FormNotice ref={noticeRef} notice={{ title: labels.unavailable.title, body: interpolate(labels.unavailable.body, { email: contactEmail }) }}/>
+      <input type="hidden" name={resetTokenField} value={token}/>
+      {state.status === "failed" && (
+        <FormNotice ref={noticeRef} notice={{ title: labels.failed.title, body: interpolate(labels.failed.body, { email: contactEmail }) }}/>
       )}
       <FormField {...fieldProps("password")}/>
       <p className="-mt-2 flex items-center gap-2 text-sm text-ink-muted">

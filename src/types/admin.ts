@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
+import type { LoginField } from "./auth";
 
 export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "courses" | "reviews" | "newReview" | "auditLog" | "login";
 
@@ -166,4 +167,16 @@ export interface ImportPreviewRow {
   line: number;
   values: string[];
   problem?: string;
+}
+
+export interface AdminIdentity {
+  name: string;
+  email: string;
+}
+
+export interface AdminLoginField {
+  name: LoginField;
+  label: string;
+  type: "email" | "password";
+  autoComplete: string;
 }

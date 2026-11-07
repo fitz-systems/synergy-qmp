@@ -1,6 +1,7 @@
-import { adminDateFormat, adminDateTimeFormat, adminRoutes, courseOptions, languageOptions } from "@/constants/admin";
+import { adminDateFormat, adminDateTimeFormat, adminLoginFieldErrors, adminLoginNotices, adminRoutes, courseOptions, languageOptions } from "@/constants/admin";
 import { locales, type Locale } from "@/i18n/config";
-import type { AdminAttempt, AdminCourse, AdminQuestion, AdminQuestionOption, AdminRoute, AdminUser, DashboardStat, QuestionBank, QuestionType } from "@/types/admin";
+import type { AdminAttempt, AdminCourse, AdminIdentity, AdminQuestion, AdminQuestionOption, AdminRoute, AdminUser, DashboardStat, QuestionBank, QuestionType } from "@/types/admin";
+import type { LoginField, LoginFormState, SessionUser } from "@/types/auth";
 import type { CourseCode } from "@/types/courses";
 
 export function formatAdminDate(isoDate: string) {
@@ -101,4 +102,17 @@ export function defaultQuestionOptions(type: QuestionType): AdminQuestionOption[
   return type === "trueFalse"
     ? [{ text: "True", correct: true }, { text: "False", correct: false }]
     : Array.from({ length: 4 }, (_, index) => ({ text: "", correct: index === 0 }));
+}
+
+export function adminIdentity(user: SessionUser): AdminIdentity {
+  return { name: `${user.firstName} ${user.lastName}`.trim() || user.email, email: user.email }
+}
+
+export function adminLoginFieldError(errors: LoginFormState["errors"], field: LoginField) {
+  const error = errors[field];
+  return error ? adminLoginFieldErrors[field][error] : undefined;
+}
+
+export function adminLoginNotice(status: LoginFormState["status"]) {
+  return status === "idle" || status === "invalid" ? null : adminLoginNotices[status];
 }

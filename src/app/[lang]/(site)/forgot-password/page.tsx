@@ -26,7 +26,7 @@ export default async function ForgotPasswordPage() {
         imagePosition="object-[center_30%]"
       />
       <AuthCard titleId="forgot-title" title={copy.title} body={copy.body}>
-        <ForgotPasswordForm labels={copy} loginHref={localizedHref(locale, "login")} contactEmail={contact.email}/>
+        <ForgotPasswordForm locale={locale} labels={copy} loginHref={localizedHref(locale, "login")} contactEmail={contact.email}/>
       </AuthCard>
     </>
   );

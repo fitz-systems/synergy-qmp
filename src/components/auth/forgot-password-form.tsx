@@ -9,18 +9,21 @@ import { FormField } from "@/components/ui/form-field";
 import { FormNotice } from "@/components/ui/form-notice";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { initialForgotPasswordState } from "@/constants/auth";
+import { formLocaleField } from "@/constants/forms";
+import type { Locale } from "@/i18n/config";
 import { forgotPasswordErrorMessage } from "@/lib/helpers/auth";
 import { interpolate } from "@/lib/helpers/format";
 import { fieldIds } from "@/lib/helpers/forms";
 import type { ForgotPasswordCopy } from "@/types/auth";
 
 interface ForgotPasswordFormProps {
+  locale: Locale;
   labels: ForgotPasswordCopy;
   loginHref: string;
   contactEmail: string;
 }
 
-export function ForgotPasswordForm({ labels, loginHref, contactEmail }: ForgotPasswordFormProps) {
+export function ForgotPasswordForm({ locale, labels, loginHref, contactEmail }: ForgotPasswordFormProps) {
   const [state, action, pending] = useActionState(requestPasswordReset, initialForgotPasswordState);
   const formRef = useRef<HTMLFormElement>(null);
   const noticeRef = useRef<HTMLDivElement>(null);
@@ -52,8 +55,9 @@ export function ForgotPasswordForm({ labels, loginHref, contactEmail }: ForgotPa
 
   return (
     <form ref={formRef} action={action} noValidate className="mt-8 space-y-5">
-      {state.status === "unavailable" && (
-        <FormNotice ref={noticeRef} notice={{ title: labels.unavailable.title, body: interpolate(labels.unavailable.body, { email: contactEmail }) }}/>
+      <input type="hidden" name={formLocaleField} value={locale}/>
+      {state.status === "failed" && (
+        <FormNotice ref={noticeRef} notice={{ title: labels.failed.title, body: interpolate(labels.failed.body, { email: contactEmail }) }}/>
       )}
       <FormField
         name="email"
