@@ -487,6 +487,10 @@
           "retake": "Retake exam",
           "passed": "Passed on {date} with {score}",
           "attempts": "{used} of {max} attempts used",
+          "attemptsUnlimited": {
+            "one": "{count} attempt used, no limit",
+            "other": "{count} attempts used, no limit"
+          },
           "noAttempts": "You've used all {max} attempts. Contact us to arrange another attempt.",
           "contact": "Contact us"
         },
@@ -507,7 +511,8 @@
         "examValue": "{questions} questions, {minutes} min",
         "passMark": "Pass mark",
         "attempts": "Attempts",
-        "attemptsValue": "{used} of {max} used"
+        "attemptsValue": "{used} of {max} used",
+        "attemptsUnlimitedValue": "{used} used, no limit"
       },
       "help": {
         "title": "Need help?",
@@ -561,6 +566,7 @@
         "one": "You have {count} attempt left. Review the course material before you try again.",
         "other": "You have {count} attempts left. Review the course material before you try again."
       },
+      "failedBodyUnlimited": "Review the course material before you try again.",
       "noAttemptsBody": "You've used all your attempts. Contact us at {email} or {phone} to arrange another attempt.",
       "contact": "Contact us",
       "viewCertificate": "View certificate",
@@ -587,6 +593,7 @@
       "validUntil": "Valid until",
       "number": "Certificate no.",
       "credits": "{credits} Category A credit, CAMRT / ACTRM",
+      "referenceCode": "RCEEM reference code: {code}",
       "accreditedBy": "Accredited by"
     }
   }

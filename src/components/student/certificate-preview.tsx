@@ -9,10 +9,11 @@ interface CertificatePreviewProps {
   courseTitle: string;
   details: CertificateDetail[];
   credits: string;
+  referenceCode: string;
   labels: StudentCertificateLabels;
 }
 
-export function CertificatePreview({ studentName, courseTitle, details, credits, labels }: CertificatePreviewProps) {
+export function CertificatePreview({ studentName, courseTitle, details, credits, referenceCode, labels }: CertificatePreviewProps) {
   return (
     <figure className="mx-auto w-full max-w-4xl rounded-lg bg-canvas p-3 shadow-raise print:max-w-none print:shadow-none sm:p-4">
       <div className="flex flex-col items-center rounded border-2 border-brand px-6 py-10 text-center sm:aspect-[1.414/1] sm:justify-center sm:px-12 sm:py-12">
@@ -36,6 +37,7 @@ export function CertificatePreview({ studentName, courseTitle, details, credits,
 
         <div className="mt-8 flex flex-col items-center gap-2">
           <p className="text-sm text-ink-muted">{credits}</p>
+          <p className="text-sm font-medium tabular-nums text-ink">{referenceCode}</p>
           <span className="sr-only">{labels.accreditedBy}</span>
           <Image src={camrtLogo} alt="CAMRT / ACTRM" className="h-auto w-36"/>
         </div>

@@ -1,4 +1,5 @@
-import type { AdminAttempt, AdminAttemptAnswer, ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminQuiz, AdminReview, AdminUser, AuditEntry, CoursePassRate, EnrollmentStatus, MonthlyRegistrations } from "@/types/admin";
+import { locales } from "@/i18n/config";
+import type { AdminAttempt, AdminAttemptAnswer, ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview, AdminUser, AuditEntry, CoursePassRate, EnrollmentStatus, MonthlyRegistrations } from "@/types/admin";
 
 // Todo: Placeholder data for designing the admin; replace with database queries once the migration has run
 
@@ -65,9 +66,14 @@ export const mockAdminCourses: AdminCourse[] = [
       fr: "Cours de certification en transport des marchandises dangereuses pour les matières radioactives de classe 7."
     },
     materialFiles: { en: "TDG Ground.pdf", fr: "TMD French ground.pdf" },
-    certificateCode: "SQMP-2020-111",
+    certificateCodes: { en: "SQMP-2020-114", fr: "SQMP-2020-113" },
+    questionCounts: { en: 41, fr: 42 },
     questionsPerAttempt: 20,
     passMarkPct: 75,
+    timeLimitMinutes: 120,
+    maxAttempts: 3,
+    shuffleQuestions: true,
+    shuffleAnswers: true,
     active: true
   },
   {
@@ -78,24 +84,25 @@ export const mockAdminCourses: AdminCourse[] = [
       fr: "Cours de certification en transport des marchandises dangereuses pour les matières radioactives de classe 7."
     },
     materialFiles: { en: "TDG Air.pdf", fr: null },
-    certificateCode: "SQMP-2020-112",
+    certificateCodes: { en: "SQMP-2020-112", fr: "SQMP-2020-111" },
+    questionCounts: { en: 51, fr: 52 },
     questionsPerAttempt: 28,
     passMarkPct: 75,
+    timeLimitMinutes: 120,
+    maxAttempts: 3,
+    shuffleQuestions: true,
+    shuffleAnswers: true,
     active: true
   }
 ];
 
-export const mockAdminQuizzes: AdminQuiz[] = [
-  { id: 1, title: "TDG Ground final exam", courseCode: "ground", locale: "en", questionCount: 41, questionsShown: 20, passMarkPct: 75, timeLimitMinutes: 120, maxAttempts: 3, shuffleQuestions: true, shuffleAnswers: true, active: true },
-  { id: 2, title: "Examen final TMD terrestre", courseCode: "ground", locale: "fr", questionCount: 42, questionsShown: 20, passMarkPct: 75, timeLimitMinutes: 120, maxAttempts: 3, shuffleQuestions: true, shuffleAnswers: true, active: true },
-  { id: 3, title: "TDG Air final exam", courseCode: "air", locale: "en", questionCount: 51, questionsShown: 28, passMarkPct: 75, timeLimitMinutes: 120, maxAttempts: 3, shuffleQuestions: true, shuffleAnswers: true, active: true },
-  { id: 4, title: "Examen final TMD aérien", courseCode: "air", locale: "fr", questionCount: 52, questionsShown: 28, passMarkPct: 75, timeLimitMinutes: 120, maxAttempts: 3, shuffleQuestions: true, shuffleAnswers: false, active: false }
-];
+const questionBanks = mockAdminCourses.flatMap((course) => locales.map((locale) => ({ courseCode: course.code, locale })));
 
-export const mockAdminQuestions: AdminQuestion[] = mockAdminQuizzes.flatMap((quiz) =>
+export const mockAdminQuestions: AdminQuestion[] = questionBanks.flatMap((bank, bankIndex) =>
   Array.from({ length: 8 }, (_, index) => ({
-    id: quiz.id * 100 + index + 1,
-    quizId: quiz.id,
+    id: (bankIndex + 1) * 100 + index + 1,
+    courseCode: bank.courseCode,
+    locale: bank.locale,
     sortOrder: index + 1,
     type: index % 5 === 4 ? "trueFalse" as const : "multipleChoice" as const,
     prompt: `Sample question ${index + 1}. Placeholder text for a real exam question.`,
@@ -116,12 +123,12 @@ export const mockAdminReviews: AdminReview[] = [
 export const mockAuditLog: AuditEntry[] = [
   { id: 1, at: "2026-11-05T14:12:00Z", admin: "Sample Admin", action: "Created user", entity: "User", entityLabel: "Jordan Tremblay", details: "Enrolled in TDG – Class 7 Ground (English)" },
   { id: 2, at: "2026-11-05T13:40:00Z", admin: "Sample Admin", action: "Reset attempts", entity: "User", entityLabel: "Sophie Bouchard", details: "Attempts reset from 2 to 0" },
-  { id: 3, at: "2026-11-05T11:05:00Z", admin: "Sample Admin", action: "Edited question", entity: "Question", entityLabel: "TDG Ground final exam #12", details: "Prompt wording changed" },
+  { id: 3, at: "2026-11-05T11:05:00Z", admin: "Sample Admin", action: "Edited question", entity: "Question", entityLabel: "Ground · English #12", details: "Prompt wording changed" },
   { id: 4, at: "2026-11-04T16:22:00Z", admin: "Sample Admin", action: "Published review", entity: "Review", entityLabel: "Sample reviewer A", details: "Shown on the English home page" },
   { id: 5, at: "2026-11-04T10:18:00Z", admin: "Sample Admin", action: "Imported users", entity: "Import", entityLabel: "users-november.csv", details: "14 created, 2 skipped (duplicate email)" },
   { id: 6, at: "2026-11-03T15:51:00Z", admin: "Sample Admin", action: "Reissued certificate", entity: "Certificate", entityLabel: "SQMP-2026-0404", details: "New PDF generated" },
   { id: 7, at: "2026-11-03T09:30:00Z", admin: "Sample Admin", action: "Deactivated user", entity: "User", entityLabel: "Grace MacDonald", details: "Left employer" },
-  { id: 8, at: "2026-11-02T14:02:00Z", admin: "Sample Admin", action: "Updated quiz settings", entity: "Quiz", entityLabel: "Examen final TMD aérien", details: "Shuffle answers turned off" }
+  { id: 8, at: "2026-11-02T14:02:00Z", admin: "Sample Admin", action: "Updated exam settings", entity: "Course", entityLabel: "TDG – Class 7 Air", details: "Time limit changed from 90 to 120 minutes" }
 ];
 
 export const mockMonthlyRegistrations: MonthlyRegistrations[] = [
@@ -149,8 +156,8 @@ export const mockImportPreview: Record<ImportKind, ImportPreviewRow[]> = {
     { line: 6, values: ["Pierre", "", "pierre@example.com", "Bay Street Diagnostics", "ground", "fr"], problem: "Last name is missing" }
   ],
   questions: [
-    { line: 2, values: ["TDG Ground final exam", "Sample question A", "Sample answer A", "Sample answer B", "Sample answer C", "Sample answer D", "B", "Placeholder"] },
-    { line: 3, values: ["TDG Ground final exam", "Sample question B", "True", "False", "", "", "A", "Placeholder"] },
-    { line: 4, values: ["TDG Ground final exam", "Sample question C", "Sample answer A", "Sample answer B", "", "", "E", ""], problem: "Correct answer E has no option" }
+    { line: 2, values: ["Sample question A", "Sample answer A", "Sample answer B", "Sample answer C", "Sample answer D", "B", "Placeholder"] },
+    { line: 3, values: ["Sample question B", "True", "False", "", "", "A", "Placeholder"] },
+    { line: 4, values: ["Sample question C", "Sample answer A", "Sample answer B", "", "", "E", ""], problem: "Correct answer E has no option" }
   ]
 }

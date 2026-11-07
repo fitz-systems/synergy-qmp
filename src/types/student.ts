@@ -11,7 +11,7 @@ export type StudentCertificateLabels = StudentCopy["certificate"];
 
 export type ExamStatus = "notStarted" | "passed" | "failed";
 
-export type MockStudentScenario = "notStarted" | "failed" | "noAttemptsLeft" | "passed";
+export type MockStudentScenario = "notStarted" | "failed" | "noAttemptsLeft" | "unlimitedAttempts" | "passed";
 
 export type CourseStepKey = "material" | "exam" | "certificate";
 
@@ -40,7 +40,7 @@ export interface StudentEnrollment {
   enrolledOn: string;
   examStatus: ExamStatus;
   attemptsUsed: number;
-  maxAttempts: number;
+  maxAttempts: number | null;
   passedOn?: string;
   scorePct?: number;
 }
@@ -122,7 +122,7 @@ export interface ExamResult {
   questionCount: number;
   passMarkPct: number;
   passed: boolean;
-  attemptsLeft: number;
+  attemptsLeft: number | null;
   answers: ExamAnswerReview[];
 }
 
@@ -130,6 +130,7 @@ export interface StudentCertificate {
   studentName: string;
   courseCode: CourseCode;
   certificateNumber: string;
+  referenceCode: string;
   issuedOn: string;
   validUntil: string;
   credits: number;

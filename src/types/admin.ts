@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
 
-export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "courses" | "quizzes" | "newQuiz" | "reviews" | "newReview" | "auditLog" | "login";
+export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "courses" | "reviews" | "newReview" | "auditLog" | "login";
 
 export type EnrollmentStatus = "notStarted" | "inProgress" | "passed" | "failed";
 
@@ -71,21 +71,6 @@ export interface AdminAttemptAnswer {
   correct: boolean;
 }
 
-export interface AdminQuiz {
-  id: number;
-  title: string;
-  courseCode: CourseCode;
-  locale: Locale;
-  questionCount: number;
-  questionsShown: number;
-  passMarkPct: number;
-  timeLimitMinutes: number;
-  maxAttempts: number;
-  shuffleQuestions: boolean;
-  shuffleAnswers: boolean;
-  active: boolean;
-}
-
 export interface AdminQuestionOption {
   text: string;
   correct: boolean;
@@ -93,7 +78,8 @@ export interface AdminQuestionOption {
 
 export interface AdminQuestion {
   id: number;
-  quizId: number;
+  courseCode: CourseCode;
+  locale: Locale;
   sortOrder: number;
   type: QuestionType;
   prompt: string;
@@ -118,9 +104,14 @@ export interface AdminCourse {
   names: Record<Locale, string>;
   descriptions: Record<Locale, string>;
   materialFiles: Record<Locale, string | null>;
-  certificateCode: string;
+  certificateCodes: Record<Locale, string>;
+  questionCounts: Record<Locale, number>;
   questionsPerAttempt: number;
   passMarkPct: number;
+  timeLimitMinutes: number;
+  maxAttempts: number | null;
+  shuffleQuestions: boolean;
+  shuffleAnswers: boolean;
   active: boolean;
 }
 
@@ -158,6 +149,17 @@ export interface SelectOption {
 export interface AdminTableFilter {
   label: string;
   options: SelectOption[];
+}
+
+export interface QuestionBank {
+  courseCode: CourseCode;
+  locale: Locale;
+  label: string;
+}
+
+export interface CourseQuestionBank {
+  course: AdminCourse;
+  locale: Locale;
 }
 
 export interface ImportPreviewRow {

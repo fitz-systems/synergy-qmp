@@ -10,30 +10,37 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { adminRoutes, questionTypeLabels } from "@/constants/admin";
-import { getAdminQuestions, getAdminQuiz } from "@/lib/admin";
-import { adminQuestionHref, adminQuizHref, correctAnswerText } from "@/lib/helpers/admin";
+import { getAdminQuestions, getCourseQuestionBank } from "@/lib/admin";
+import { adminCourseHref, adminQuestionHref, correctAnswerText, languageLabel } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {
   title: "Questions"
 }
 
-export default async function AdminQuestionsPage({ params }: PageProps<"/admin/quizzes/[id]/questions">) {
-  const { id } = await params;
-  const quiz = await getAdminQuiz(Number(id));
-  if (!quiz) notFound();
-  const questions = await getAdminQuestions(quiz.id);
+export default async function AdminQuestionsPage({ params }: PageProps<"/admin/courses/[code]/[locale]/questions">) {
+  const { code, locale } = await params;
+  const bank = await getCourseQuestionBank(code, locale);
+  if (!bank) notFound();
+  const { course } = bank;
+  const questions = await getAdminQuestions(course.code, bank.locale);
+  const title = `Questions (${languageLabel(bank.locale)})`;
 
   return (
     <>
       <AdminPageHeader
-        title="Questions"
-        description={`${quiz.title} · ${quiz.questionsShown} of these are drawn for each attempt`}
-        crumbs={[{ label: "Dashboard", href: adminRoutes.dashboard }, { label: "Quizzes", href: adminRoutes.quizzes }, { label: quiz.title, href: adminQuizHref(quiz.id) }, { label: "Questions" }]}
+        title={title}
+        description={`${course.names[bank.locale]} · ${course.questionsPerAttempt} of these are drawn for each attempt`}
+        crumbs={[
+          { label: "Dashboard", href: adminRoutes.dashboard },
+          { label: "Courses", href: adminRoutes.courses },
+          { label: course.names.en, href: adminCourseHref(course.code) },
+          { label: title }
+        ]}
         actions={(
           <>
             <Button variant="outline"><Download/>Export CSV</Button>
             <Button variant="outline" asChild><Link href={adminRoutes.importData}><FileUp/>Import CSV</Link></Button>
-            <Button asChild><Link href={adminQuestionHref(quiz.id, "new")}><Plus/>Add question</Link></Button>
+            <Button asChild><Link href={adminQuestionHref(course.code, bank.locale, "new")}><Plus/>Add question</Link></Button>
           </>
         )}
       />
@@ -59,7 +66,7 @@ export default async function AdminQuestionsPage({ params }: PageProps<"/admin/q
                 <TableCell>{correctAnswerText(question)}</TableCell>
                 <TableCell><ToggleBadge on={question.active} onLabel="Active" offLabel="Hidden"/></TableCell>
                 <TableCell className="pr-4 text-right">
-                  <Button variant="ghost" size="sm" asChild><Link href={adminQuestionHref(quiz.id, question.id)}>Edit</Link></Button>
+                  <Button variant="ghost" size="sm" asChild><Link href={adminQuestionHref(course.code, bank.locale, question.id)}>Edit</Link></Button>
                 </TableCell>
               </TableRow>
             ))}

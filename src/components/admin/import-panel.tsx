@@ -9,22 +9,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { importColumns, importKindLabels, statusToneIconStyles, statusToneStyles } from "@/constants/admin";
+import { questionBankValue } from "@/lib/helpers/admin";
 import { cn } from "@/lib/helpers/class-names";
-import type { AdminQuiz, ImportKind, ImportPreviewRow } from "@/types/admin";
+import type { ImportKind, ImportPreviewRow, QuestionBank } from "@/types/admin";
 
 interface ImportPanelProps {
   preview: Record<ImportKind, ImportPreviewRow[]>;
-  quizzes: AdminQuiz[];
+  banks: QuestionBank[];
 }
 
 interface ImportTabProps {
   kind: ImportKind;
   rows: ImportPreviewRow[];
-  quizzes: AdminQuiz[];
+  banks: QuestionBank[];
 }
 
 // Todo: Parse the uploaded file, validate rows on the server and import them
-export function ImportPanel({ preview, quizzes }: ImportPanelProps) {
+export function ImportPanel({ preview, banks }: ImportPanelProps) {
   return (
     <Tabs defaultValue="users" className="gap-6">
       <TabsList>
@@ -34,14 +35,14 @@ export function ImportPanel({ preview, quizzes }: ImportPanelProps) {
       </TabsList>
       {(Object.keys(importKindLabels) as ImportKind[]).map((kind) => (
         <TabsContent key={kind} value={kind}>
-          <ImportTab kind={kind} rows={preview[kind]} quizzes={quizzes}/>
+          <ImportTab kind={kind} rows={preview[kind]} banks={banks}/>
         </TabsContent>
       ))}
     </Tabs>
   );
 }
 
-function ImportTab({ kind, rows, quizzes }: ImportTabProps) {
+function ImportTab({ kind, rows, banks }: ImportTabProps) {
   const problems = rows.filter((row) => row.problem).length;
   const fileId = `import-file-${kind}`;
 
@@ -57,11 +58,11 @@ function ImportTab({ kind, rows, quizzes }: ImportTabProps) {
         <CardContent className="space-y-4">
           {kind === "questions" && (
             <div className="grid gap-2 sm:w-80">
-              <Label htmlFor="import-quiz">Add questions to</Label>
-              <Select defaultValue={String(quizzes[0]?.id ?? "")}>
-                <SelectTrigger id="import-quiz" className="w-full"><SelectValue/></SelectTrigger>
+              <Label htmlFor="import-bank">Add questions to</Label>
+              <Select name="bank" defaultValue={banks[0] ? questionBankValue(banks[0]) : ""}>
+                <SelectTrigger id="import-bank" className="w-full"><SelectValue/></SelectTrigger>
                 <SelectContent>
-                  {quizzes.map((quiz) => <SelectItem key={quiz.id} value={String(quiz.id)}>{quiz.title}</SelectItem>)}
+                  {banks.map((bank) => <SelectItem key={questionBankValue(bank)} value={questionBankValue(bank)}>{bank.label}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

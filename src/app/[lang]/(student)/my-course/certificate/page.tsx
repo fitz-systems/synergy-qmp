@@ -54,6 +54,7 @@ export default async function CertificatePage() {
             courseTitle={course.title}
             details={certificateDetails(certificate, copy, locale)}
             credits={interpolate(copy.credits, { credits: certificate.credits.toLocaleString(locale) })}
+            referenceCode={interpolate(copy.referenceCode, { code: certificate.referenceCode })}
             labels={copy}
           />
         </div>

@@ -9,7 +9,7 @@ import { contact } from "@/constants/contact";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { formatDate, formatPercent, interpolate, plural } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
-import { resultScorePct } from "@/lib/helpers/student";
+import { isOutOfAttempts, resultScorePct } from "@/lib/helpers/student";
 import { getLatestExamResult } from "@/lib/student";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -24,7 +24,7 @@ export default async function ExamResultsPage() {
   if (!result) redirect(myCourseHref);
 
   const copy = dict.student.results;
-  const outOfAttempts = !result.passed && result.attemptsLeft === 0;
+  const outOfAttempts = isOutOfAttempts(result);
 
   return (
     <>
@@ -57,7 +57,9 @@ export default async function ExamResultsPage() {
                   ? copy.passedBody
                   : outOfAttempts
                     ? interpolate(copy.noAttemptsBody, { email: contact.email, phone: contact.phoneDisplay })
-                    : plural(locale, copy.failedBody, result.attemptsLeft)}
+                    : result.attemptsLeft === null
+                      ? copy.failedBodyUnlimited
+                      : plural(locale, copy.failedBody, result.attemptsLeft)}
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-4">
                 {result.passed

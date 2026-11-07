@@ -14,6 +14,7 @@ const scenarioEnrollments: Record<MockStudentScenario, StudentEnrollment> = {
   notStarted: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "notStarted", attemptsUsed: 0, maxAttempts: 3 },
   failed: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "failed", attemptsUsed: 1, maxAttempts: 3 },
   noAttemptsLeft: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "failed", attemptsUsed: 3, maxAttempts: 3 },
+  unlimitedAttempts: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "failed", attemptsUsed: 4, maxAttempts: null },
   passed: { courseCode: "ground", enrolledOn: "2026-10-28", examStatus: "passed", attemptsUsed: 1, maxAttempts: 3, passedOn: "2026-11-05", scorePct: 90 }
 }
 
@@ -60,7 +61,7 @@ export function mockExamResult(locale: Locale): ExamResult | null {
     questionCount: 20,
     passMarkPct: mockExamSettings.passMarkPct,
     passed,
-    attemptsLeft: mockEnrollment.maxAttempts - mockEnrollment.attemptsUsed,
+    attemptsLeft: mockEnrollment.maxAttempts === null ? null : mockEnrollment.maxAttempts - mockEnrollment.attemptsUsed,
     answers: mockExamQuestions(locale).map((question) => ({
       questionId: question.id,
       prompt: question.prompt,
@@ -74,6 +75,7 @@ export const mockCertificate: StudentCertificate | null = mockScenario !== "pass
   studentName: "Jordan Tremblay",
   courseCode: "ground",
   certificateNumber: "SQMP-2026-0418",
+  referenceCode: "SQMP-2020-114",
   issuedOn: "2026-11-05",
   validUntil: "2029-11-05",
   credits: 1

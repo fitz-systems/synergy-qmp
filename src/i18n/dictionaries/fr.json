@@ -487,6 +487,10 @@
           "retake": "Reprendre l'examen",
           "passed": "Réussi le {date} avec {score}",
           "attempts": "{used} tentatives sur {max} utilisées",
+          "attemptsUnlimited": {
+            "one": "{count} tentative utilisée, sans limite",
+            "other": "{count} tentatives utilisées, sans limite"
+          },
           "noAttempts": "Vous avez utilisé vos {max} tentatives. Communiquez avec nous pour obtenir une autre tentative.",
           "contact": "Nous joindre"
         },
@@ -507,6 +511,7 @@
         "examValue": "{questions} questions, {minutes} min",
         "passMark": "Note de passage",
         "attempts": "Tentatives",
+        "attemptsUnlimitedValue": "{used} utilisées, sans limite",
         "attemptsValue": "{used} sur {max} utilisées"
       },
       "help": {
@@ -561,6 +566,7 @@
         "one": "Il vous reste {count} tentative. Revoyez le matériel de cours avant de réessayer.",
         "other": "Il vous reste {count} tentatives. Revoyez le matériel de cours avant de réessayer."
       },
+      "failedBodyUnlimited": "Revoyez le matériel de cours avant de réessayer.",
       "noAttemptsBody": "Vous avez utilisé toutes vos tentatives. Communiquez avec nous à {email} ou au {phone} pour obtenir une autre tentative.",
       "contact": "Nous joindre",
       "viewCertificate": "Voir le certificat",
@@ -586,6 +592,7 @@
       "issued": "Délivré le",
       "validUntil": "Valide jusqu'au",
       "number": "N° de certificat",
+      "referenceCode": "Numéro de référence RCEEM : {code}",
       "credits": "{credits} crédit de catégorie A, ACTRM / CAMRT",
       "accreditedBy": "Agréé par"
     }

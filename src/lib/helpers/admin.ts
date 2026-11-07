@@ -1,5 +1,6 @@
 import { adminDateFormat, adminDateTimeFormat, adminRoutes, courseOptions, languageOptions } from "@/constants/admin";
-import type { AdminAttempt, AdminQuestion, AdminQuestionOption, AdminRoute, AdminUser, DashboardStat, QuestionType } from "@/types/admin";
+import { locales, type Locale } from "@/i18n/config";
+import type { AdminAttempt, AdminCourse, AdminQuestion, AdminQuestionOption, AdminRoute, AdminUser, DashboardStat, QuestionBank, QuestionType } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
 
 export function formatAdminDate(isoDate: string) {
@@ -18,16 +19,12 @@ export function adminUserEditHref(id: number) {
   return `/admin/users/${id}/edit`;
 }
 
-export function adminQuizHref(id: number) {
-  return `/admin/quizzes/${id}`;
+export function adminQuestionsHref(code: CourseCode, locale: Locale) {
+  return `/admin/courses/${code}/${locale}/questions`;
 }
 
-export function adminQuizQuestionsHref(id: number) {
-  return `/admin/quizzes/${id}/questions`;
-}
-
-export function adminQuestionHref(quizId: number, questionId: number | "new") {
-  return `/admin/quizzes/${quizId}/questions/${questionId}`;
+export function adminQuestionHref(code: CourseCode, locale: Locale, questionId: number | "new") {
+  return `${adminQuestionsHref(code, locale)}/${questionId}`;
 }
 
 export function adminReviewHref(id: number) {
@@ -52,6 +49,18 @@ export function courseLabel(code: CourseCode) {
 
 export function languageLabel(locale: string) {
   return languageOptions.find((option) => option.value === locale)?.label ?? locale;
+}
+
+export function questionBankLabel(code: CourseCode, locale: Locale) {
+  return `${courseLabel(code)} · ${languageLabel(locale)}`;
+}
+
+export function questionBanks(courses: Pick<AdminCourse, "code">[]): QuestionBank[] {
+  return courses.flatMap((course) => locales.map((locale) => ({ courseCode: course.code, locale, label: questionBankLabel(course.code, locale) })));
+}
+
+export function questionBankValue(bank: Pick<QuestionBank, "courseCode" | "locale">) {
+  return `${bank.courseCode}-${bank.locale}`;
 }
 
 export function attemptScorePct(attempt: AdminAttempt) {

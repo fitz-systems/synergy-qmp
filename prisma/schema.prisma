@@ -24,6 +24,7 @@ model User {
   sessions        Session[]
   accounts        Account[]
   enrollments     Enrollment[]
+  auditEntries    AuditLog[]
 
   @@map("users")
   @@schema("synergy")
@@ -95,7 +96,13 @@ model Course {
   certificateValidMonths Int            @default(36) @map("certificate_valid_months")
   passMarkPct            Int            @default(75) @map("pass_mark_pct")
   questionsPerAttempt    Int            @map("questions_per_attempt")
+  timeLimitMinutes       Int            @default(120) @map("time_limit_minutes")
+  maxAttempts            Int?           @default(3) @map("max_attempts")
+  shuffleQuestions       Boolean        @default(true) @map("shuffle_questions")
+  shuffleAnswers         Boolean        @default(true) @map("shuffle_answers")
   active                 Boolean        @default(true)
+  createdAt              DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
   locales                CourseLocale[]
 
   @@map("courses")
@@ -119,19 +126,23 @@ model CourseLocale {
 }
 
 model Enrollment {
-  id             Int           @id @default(autoincrement())
-  userId         Int           @map("user_id")
-  courseId       Int           @map("course_id")
-  locale         String
-  organizationId Int?          @map("organization_id")
-  passedOn       DateTime?     @map("passed_on") @db.Date
-  notes          String?
-  legacyUserId   Int?          @unique @map("legacy_user_id")
-  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseLocale   CourseLocale  @relation(fields: [courseId, locale], references: [courseId, locale])
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  attempts       Attempt[]
+  id                  Int           @id @default(autoincrement())
+  userId              Int           @map("user_id")
+  courseId            Int           @map("course_id")
+  locale              String
+  organizationId      Int?          @map("organization_id")
+  paid                Boolean       @default(false)
+  passedOn            DateTime?     @map("passed_on") @db.Date
+  certificateNumber   String?       @unique @map("certificate_number")
+  certificateIssuedAt DateTime?     @map("certificate_issued_at") @db.Timestamptz(6)
+  attemptsResetAt     DateTime?     @map("attempts_reset_at") @db.Timestamptz(6)
+  notes               String?
+  legacyUserId        Int?          @unique @map("legacy_user_id")
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseLocale        CourseLocale  @relation(fields: [courseId, locale], references: [courseId, locale])
+  organization        Organization? @relation(fields: [organizationId], references: [id])
+  attempts            Attempt[]
 
   @@index([userId])
   @@index([organizationId])
@@ -143,9 +154,12 @@ model Question {
   id           Int             @id @default(autoincrement())
   courseId     Int             @map("course_id")
   locale       String
+  type         String          @default("multipleChoice")
   prompt       String
   options      String[]
   correctIndex Int             @map("correct_index")
+  explanation  String?
+  sortOrder    Int             @default(0) @map("sort_order")
   active       Boolean         @default(true)
   createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -161,7 +175,9 @@ model Attempt {
   id            Int             @id @default(autoincrement())
   enrollmentId  Int             @map("enrollment_id")
   startedAt     DateTime        @default(now()) @map("started_at") @db.Timestamptz(6)
+  expiresAt     DateTime        @map("expires_at") @db.Timestamptz(6)
   submittedAt   DateTime?       @map("submitted_at") @db.Timestamptz(6)
+  passMarkPct   Int             @map("pass_mark_pct")
   questionCount Int             @map("question_count")
   correctCount  Int?            @map("correct_count")
   passed        Boolean?
@@ -177,7 +193,10 @@ model AttemptAnswer {
   id                Int       @id @default(autoincrement())
   attemptId         Int       @map("attempt_id")
   questionId        Int?      @map("question_id")
+  sortOrder         Int       @default(0) @map("sort_order")
   questionText      String    @map("question_text")
+  options           String[]
+  selectedIndex     Int?      @map("selected_index")
   answerText        String?   @map("answer_text")
   correctAnswerText String?   @map("correct_answer_text")
   isCorrect         Boolean   @default(false) @map("is_correct")
@@ -190,16 +209,36 @@ model AttemptAnswer {
 }
 
 model Review {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   locale      String
   author      String
-  roleCompany String? @map("role_company")
+  roleCompany String?  @map("role_company")
   body        String
   rating      Int?
-  photoKey    String? @map("photo_key")
-  published   Boolean @default(false)
-  sortOrder   Int     @default(0) @map("sort_order")
+  photoKey    String?  @map("photo_key")
+  published   Boolean  @default(false)
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@map("reviews")
+  @@schema("synergy")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  adminId     Int?     @map("admin_id")
+  action      String
+  entity      String
+  entityId    String?  @map("entity_id")
+  entityLabel String   @map("entity_label")
+  details     String?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  admin       User?    @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entity, entityId])
+  @@index([adminId])
+  @@map("audit_log")
   @@schema("synergy")
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface AdminFormSectionProps {
   title: string;
@@ -16,6 +17,14 @@ interface AdminFieldProps {
   hint?: string;
   className?: string;
   children: React.ReactNode;
+}
+
+interface AdminSwitchFieldProps {
+  name: string;
+  label: string;
+  hint: string;
+  checked: boolean;
+  className?: string;
 }
 
 interface AdminFormActionsProps {
@@ -41,6 +50,18 @@ export function AdminField({ id, label, hint, className, children }: AdminFieldP
       <Label htmlFor={id}>{label}</Label>
       {children}
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+    </div>
+  );
+}
+
+export function AdminSwitchField({ name, label, hint, checked, className = "" }: AdminSwitchFieldProps) {
+  return (
+    <div className={`flex items-center justify-between gap-4 rounded-lg border p-4 ${className}`}>
+      <div>
+        <p className="text-sm font-medium">{label}</p>
+        <p className="text-xs text-muted-foreground">{hint}</p>
+      </div>
+      <Switch name={name} defaultChecked={checked} aria-label={label}/>
     </div>
   );
 }

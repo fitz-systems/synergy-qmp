@@ -1,4 +1,4 @@
-import { BookOpen, ClipboardList, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
+import { BookOpen, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
 import type { ChartConfig } from "@/components/ui/chart";
 import type { AdminNavGroup, AdminRoute, AdminThemeOption, EnrollmentStatus, ImportKind, QuestionType, SelectOption, StatusTone } from "@/types/admin";
 
@@ -8,8 +8,6 @@ export const adminRoutes: Record<AdminRoute, string> = {
   newUser: "/admin/users/new",
   importData: "/admin/import",
   courses: "/admin/courses",
-  quizzes: "/admin/quizzes",
-  newQuiz: "/admin/quizzes/new",
   reviews: "/admin/reviews",
   newReview: "/admin/reviews/new",
   auditLog: "/admin/audit-log",
@@ -29,7 +27,6 @@ export const adminNav: AdminNavGroup[] = [
     label: "Content",
     items: [
       { route: "courses", label: "Courses", icon: BookOpen },
-      { route: "quizzes", label: "Quizzes", icon: ClipboardList },
       { route: "reviews", label: "Reviews", icon: MessageSquareQuote }
     ]
   },
@@ -67,7 +64,7 @@ export const importKindLabels: Record<ImportKind, string> = {
 
 export const importColumns: Record<ImportKind, string[]> = {
   users: ["first_name", "last_name", "email", "company", "course", "language"],
-  questions: ["quiz", "prompt", "option_a", "option_b", "option_c", "option_d", "correct", "explanation"]
+  questions: ["prompt", "option_a", "option_b", "option_c", "option_d", "correct", "explanation"]
 }
 
 export const adminPageSize = 10;
@@ -90,7 +87,7 @@ export const passRateChartConfig = {
 
 export const ratingOptions: SelectOption[] = [5, 4, 3, 2, 1].map((rating) => ({ value: String(rating), label: `${rating} out of 5` }));
 
-export const auditEntityOptions: SelectOption[] = ["User", "Question", "Quiz", "Review", "Course", "Certificate", "Import"].map((entity) => ({ value: entity.toLowerCase(), label: entity }));
+export const auditEntityOptions: SelectOption[] = ["User", "Question", "Review", "Course", "Certificate", "Import"].map((entity) => ({ value: entity.toLowerCase(), label: entity }));
 
 export const adminThemeOptions: AdminThemeOption[] = [
   { value: "light", label: "Light", icon: Sun },
