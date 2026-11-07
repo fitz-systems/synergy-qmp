@@ -1,4 +1,5 @@
-import type { LegacyCourseRef, LegacyQuestionSource } from "@/types/legacy-migration";
+import type { CourseCode } from "@/types/courses";
+import type { CourseCopy, LegacyCourseRef, LegacyQuestionSource } from "@/types/legacy-migration";
 
 export const legacyCourses: Record<string, LegacyCourseRef> = {
   "ground-en": { code: "ground", locale: "en" },
@@ -89,4 +90,67 @@ export const htmlEntities: Record<string, string> = {
   Icirc: "Î",
   Ocirc: "Ô",
   Ugrave: "Ù"
+}
+
+const sharedOutcomes = {
+  en: [
+    "Understand the classification of dangerous goods.",
+    "Choose the proper packaging for the transportation of Class 7 packages.",
+    "Assign safety marks to radioactive packages.",
+    "Apply the standard procedures for shipping, handling and receiving radioactive packages.",
+    "React appropriately in case of emergency."
+  ],
+  fr: [
+    "Comprendre la classification des matières dangereuses.",
+    "Choisir l'emballage approprié pour le transport de matières de classe 7.",
+    "Apposer les signes d'avertissement nécessaires sur les colis radioactifs.",
+    "Suivre les procédures concernant la réception, la manutention et l'envoi de colis radioactifs.",
+    "Suivre les procédures en cas de situation d'urgence."
+  ]
+}
+
+const sharedDescription = {
+  en: "Transportation of Dangerous Goods certification course for Class 7 radioactive materials.",
+  fr: "Cours de certification en transport des marchandises dangereuses pour les matières radioactives de classe 7."
+}
+
+export const legacyCourseCopy: Record<CourseCode, CourseCopy> = {
+  ground: {
+    priceCents: 9900,
+    durationHours: 2,
+    lectureMinutes: 60,
+    locales: {
+      en: {
+        name: "TDG – Class 7 Ground",
+        description: sharedDescription.en,
+        lectureTitle: "TDG Class 7 Ground",
+        outcomes: ["Become familiar with the regulations for transporting radioactive materials by ground.", ...sharedOutcomes.en]
+      },
+      fr: {
+        name: "TMD – Classe 7, transport terrestre",
+        description: sharedDescription.fr,
+        lectureTitle: "TMD classe 7, transport terrestre",
+        outcomes: ["Maîtriser les règlements qui régissent le transport de matières radioactives par route.", ...sharedOutcomes.fr]
+      }
+    }
+  },
+  air: {
+    priceCents: 9900,
+    durationHours: 2,
+    lectureMinutes: 60,
+    locales: {
+      en: {
+        name: "TDG – Class 7 Air",
+        description: sharedDescription.en,
+        lectureTitle: "TDG Class 7 Air",
+        outcomes: ["Become familiar with the regulations for transporting radioactive materials by air.", ...sharedOutcomes.en]
+      },
+      fr: {
+        name: "TMD – Classe 7, transport aérien",
+        description: sharedDescription.fr,
+        lectureTitle: "TMD classe 7, transport aérien",
+        outcomes: ["Maîtriser les règlements qui régissent le transport de matières radioactives par voie aérienne.", ...sharedOutcomes.fr]
+      }
+    }
+  }
 }

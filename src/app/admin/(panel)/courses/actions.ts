@@ -1,8 +1,9 @@
 "use server";
 
-import { refresh } from "next/cache";
+import { refresh, updateTag } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { adminRoutes, courseActionMessages, questionActionMessages } from "@/constants/admin";
+import { coursesCacheTag } from "@/constants/cache";
 import { hasLocale } from "@/i18n/config";
 import { deleteQuestion as deleteBankQuestion, saveQuestion as saveBankQuestion, setCourseMaterial, updateCourse } from "@/lib/admin-course-mutations";
 import { adminQuestionsHref, isCourseOption } from "@/lib/helpers/admin";
@@ -27,6 +28,7 @@ export async function saveCourse(code: string, _previous: CourseFormState, formD
   if (!result) notFound();
   if ("errors" in result) return { status: "invalid", values, errors: result.errors }
 
+  updateTag(coursesCacheTag);
   redirect(adminRoutes.courses);
 }
 

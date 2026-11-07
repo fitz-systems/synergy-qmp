@@ -287,10 +287,13 @@ export const adminCourseSelect = {
   timeLimitMinutes: true,
   maxAttempts: true,
   certificateValidMonths: true,
+  priceCents: true,
+  durationHours: true,
+  lectureMinutes: true,
   shuffleQuestions: true,
   shuffleAnswers: true,
   active: true,
-  locales: { select: { locale: true, name: true, description: true, materialFileKey: true, certificateCode: true, questions: { select: { active: true } } } }
+  locales: { select: { locale: true, name: true, description: true, lectureTitle: true, outcomes: true, materialFileKey: true, certificateCode: true, questions: { select: { active: true } } } }
 } satisfies Prisma.CourseSelect;
 
 export const adminQuestionSelect = {
@@ -311,7 +314,9 @@ export const courseSettingLabels: Record<CourseSetting, string> = {
   questionsPerAttempt: "Questions per attempt",
   timeLimitMinutes: "Time limit",
   maxAttempts: "Maximum attempts",
-  certificateValidMonths: "Certificate validity"
+  certificateValidMonths: "Certificate validity",
+  durationHours: "Course duration",
+  lectureMinutes: "Lecture length"
 }
 
 export const courseSettings = Object.keys(courseSettingLabels) as CourseSetting[];
@@ -319,6 +324,8 @@ export const courseSettings = Object.keys(courseSettingLabels) as CourseSetting[
 export const courseLocaleFieldLabels: Record<CourseLocaleField, string> = {
   name: "name",
   description: "description",
+  lectureTitle: "lecture title",
+  outcomes: "learning outcomes",
   certificateCode: "certificate code"
 }
 
@@ -329,7 +336,9 @@ export const courseSettingUnits: Record<CourseSetting, string> = {
   questionsPerAttempt: "",
   timeLimitMinutes: " min",
   maxAttempts: "",
-  certificateValidMonths: " months"
+  certificateValidMonths: " months",
+  durationHours: " hours",
+  lectureMinutes: " min"
 }
 
 export const courseSettingRanges: Record<CourseSetting, { min: number; max: number }> = {
@@ -337,8 +346,12 @@ export const courseSettingRanges: Record<CourseSetting, { min: number; max: numb
   questionsPerAttempt: { min: 1, max: 200 },
   timeLimitMinutes: { min: 1, max: 600 },
   maxAttempts: { min: 1, max: 20 },
-  certificateValidMonths: { min: 1, max: 120 }
+  certificateValidMonths: { min: 1, max: 120 },
+  durationHours: { min: 1, max: 200 },
+  lectureMinutes: { min: 1, max: 600 }
 }
+
+export const coursePriceMaxCents = 9_999_999;
 
 export const courseFormFailedNotice = "The course couldn't be saved. Please try again.";
 

@@ -1,17 +1,17 @@
 import type { Locale } from "@/i18n/config";
-import type { CourseContent } from "@/types/courses";
+import type { CourseCode } from "@/types/courses";
 import type { AttemptSeed, CourseSeed, LegacyAnswer, LegacyDump, LegacyQuestion, LegacyUser, MigrationPlan, MigrationReport, PersonSeed, PersonSplit } from "@/types/legacy-migration";
-import { legacyAttemptGapSeconds, legacyCertificateValidMonths, legacyCourses, legacyMd5Pattern, legacyPassMarkPct, legacyQuestionsPerAttempt } from "../../constants/legacy-migration.ts";
+import { legacyAttemptGapSeconds, legacyCertificateValidMonths, legacyCourseCopy, legacyCourses, legacyMd5Pattern, legacyPassMarkPct, legacyQuestionsPerAttempt } from "../../constants/legacy-migration.ts";
 import { legacyTimestamp } from "./legacy-dump.ts";
 import { buildQuestionBanks, createAnswerLinker } from "./legacy-questions.ts";
 import { comparableName, createTextCleaner, normalizeEmail, unprefixedEmail } from "./legacy-text.ts";
 
 type AnswerLinker = ReturnType<typeof createAnswerLinker>["link"];
 
-export function buildMigrationPlan(dump: LegacyDump, courseContent: CourseContent[], questionRows: LegacyQuestion[] | null): MigrationPlan {
+export function buildMigrationPlan(dump: LegacyDump, questionRows: LegacyQuestion[] | null): MigrationPlan {
   const cleaner = createTextCleaner();
   const users = dump.users.map((user) => cleanUser(user, cleaner.clean));
-  const courses = buildCourses(dump, courseContent);
+  const courses = buildCourses(dump);
   const organizations = buildOrganizations(users);
   const { people, splits } = buildPeople(users);
   const banks = questionRows ? buildQuestionBanks(questionRows, cleaner.clean) : null;
@@ -52,19 +52,22 @@ function cleanUser(user: LegacyUser, clean: (value: string) => string): LegacyUs
   }
 }
 
-function buildCourses(dump: LegacyDump, courseContent: CourseContent[]): CourseSeed[] {
-  return courseContent.map((course) => ({
-    code: course.code,
-    questionsPerAttempt: legacyQuestionsPerAttempt[course.code],
-    certificateValidMonths: legacyCertificateValidMonths[course.code],
-    locales: (Object.keys(course.locales) as Locale[]).map((locale) => {
-      const legacyCourse = `${course.code}-${locale}`;
-      const certificateCode = dump.certificateCodes[legacyCourse];
-      if (!certificateCode) throw new Error(`No RCEEM certificate code for ${legacyCourse}`);
-      const content = course.locales[locale];
-      return { locale, name: content.title, description: content.description, certificateCode }
-    })
-  }));
+function buildCourses(dump: LegacyDump): CourseSeed[] {
+  return (Object.keys(legacyCourseCopy) as CourseCode[]).map((code) => {
+    const { locales, ...copy } = legacyCourseCopy[code];
+    return {
+      ...copy,
+      code,
+      questionsPerAttempt: legacyQuestionsPerAttempt[code],
+      certificateValidMonths: legacyCertificateValidMonths[code],
+      locales: (Object.keys(locales) as Locale[]).map((locale) => {
+        const legacyCourse = `${code}-${locale}`;
+        const certificateCode = dump.certificateCodes[legacyCourse];
+        if (!certificateCode) throw new Error(`No RCEEM certificate code for ${legacyCourse}`);
+        return { ...locales[locale], locale, certificateCode }
+      })
+    }
+  });
 }
 
 export function organizationKey(name: string) {

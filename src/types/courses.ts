@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 
 export type CourseCode = "ground" | "air";
@@ -16,25 +15,18 @@ export type CourseFeatureKey = "lectures" | "quizzes" | "duration" | "skillLevel
 
 export type CurriculumItemKind = "lecture" | "quiz";
 
-export interface CourseLocaleContent {
+export interface Course {
+  code: CourseCode;
   title: string;
   description: string;
   lectureTitle: string;
   outcomes: string[];
-}
-
-export interface CourseContent {
-  code: CourseCode;
   price: number;
   lectures: number;
   quizzes: number;
   durationHours: number;
   lectureMinutes: number;
   examQuestions: number;
-  locales: Record<Locale, CourseLocaleContent>;
-}
-
-export interface Course extends Omit<CourseContent, "locales">, CourseLocaleContent {
   students: number;
 }
 

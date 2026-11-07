@@ -1,4 +1,4 @@
-import { adminFilterAll, adminSearchParam, courseLocaleFieldLabels, courseLocaleFields, courseOptions, courseSettingLabels, courseSettings, courseSettingRanges, courseSettingUnits, importColumns, maxQuestionOptions, minQuestionOptions, questionCsvBom, questionStatusLabels, questionTypeLabels, trueFalseOptions } from "@/constants/admin";
+import { adminFilterAll, adminSearchParam, courseLocaleFieldLabels, courseLocaleFields, courseOptions, courseSettingLabels, courseSettings, courseSettingRanges, courseSettingUnits, coursePriceMaxCents, importColumns, maxQuestionOptions, minQuestionOptions, questionCsvBom, questionStatusLabels, questionTypeLabels, trueFalseOptions } from "@/constants/admin";
 import { locales, type Locale } from "@/i18n/config";
 import type { AdminCourse, AdminCourseRecord, AdminQuestion, AdminQuestionListQuery, AdminQuestionOption, AdminQuestionRecord, AdminSearchParams, CourseFormState, CourseFormValues, CourseLocaleField, CourseSetting, CourseSettings, QuestionFormState, QuestionFormValues, QuestionStatus, QuestionType } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
@@ -24,6 +24,8 @@ export function adminCourse(record: AdminCourseRecord): AdminCourse {
     code: courseCodeOf(record.code),
     names: perLocale((locale) => row(locale)?.name ?? ""),
     descriptions: perLocale((locale) => row(locale)?.description ?? ""),
+    lectureTitles: perLocale((locale) => row(locale)?.lectureTitle ?? ""),
+    outcomes: perLocale((locale) => row(locale)?.outcomes ?? []),
     materialUploaded: perLocale((locale) => Boolean(row(locale)?.materialFileKey)),
     certificateCodes: perLocale((locale) => row(locale)?.certificateCode ?? ""),
     questionCounts: perLocale((locale) => row(locale)?.questions.length ?? 0),
@@ -33,6 +35,9 @@ export function adminCourse(record: AdminCourseRecord): AdminCourse {
     timeLimitMinutes: record.timeLimitMinutes,
     maxAttempts: record.maxAttempts,
     certificateValidMonths: record.certificateValidMonths,
+    priceCents: record.priceCents,
+    durationHours: record.durationHours,
+    lectureMinutes: record.lectureMinutes,
     shuffleQuestions: record.shuffleQuestions,
     shuffleAnswers: record.shuffleAnswers,
     active: record.active
@@ -42,7 +47,23 @@ export function adminCourse(record: AdminCourseRecord): AdminCourse {
 function courseLocaleValue(course: AdminCourse, field: CourseLocaleField, locale: Locale) {
   if (field === "name") return course.names[locale];
   if (field === "description") return course.descriptions[locale];
+  if (field === "lectureTitle") return course.lectureTitles[locale];
+  if (field === "outcomes") return course.outcomes[locale].join("\n");
   return course.certificateCodes[locale];
+}
+
+export function outcomeLines(value: string) {
+  return value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+}
+
+export function parseCoursePrice(value: string) {
+  if (!/^\d{1,5}(\.\d{1,2})?$/.test(value)) return null;
+  const cents = Math.round(Number(value) * 100);
+  return cents <= coursePriceMaxCents ? cents : null;
+}
+
+function priceLabel(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function courseLocaleEntries(make: (field: CourseLocaleField, locale: Locale) => string) {
@@ -57,6 +78,9 @@ export function courseFormValues(course: AdminCourse): CourseFormValues {
     timeLimitMinutes: String(course.timeLimitMinutes),
     maxAttempts: course.maxAttempts === null ? "" : String(course.maxAttempts),
     certificateValidMonths: String(course.certificateValidMonths),
+    durationHours: String(course.durationHours),
+    lectureMinutes: String(course.lectureMinutes),
+    price: (course.priceCents / 100).toFixed(2),
     shuffleQuestions: course.shuffleQuestions,
     shuffleAnswers: course.shuffleAnswers,
     active: course.active
@@ -69,8 +93,12 @@ export function initialCourseFormState(course: AdminCourse): CourseFormState {
 
 export function readCourseForm(formData: FormData): CourseFormValues {
   return {
-    ...courseLocaleEntries((field, locale) => readFormString(formData, `${field}.${locale}`)),
+    ...courseLocaleEntries((field, locale) => {
+      const value = readFormString(formData, `${field}.${locale}`);
+      return field === "outcomes" ? outcomeLines(value).join("\n") : value;
+    }),
     ...Object.fromEntries(courseSettings.map((setting) => [setting, readFormString(formData, setting)])),
+    price: readFormString(formData, "price").replace(/[$,\s]/g, ""),
     shuffleQuestions: formData.get("shuffleQuestions") === "on",
     shuffleAnswers: formData.get("shuffleAnswers") === "on",
     active: formData.get("active") === "on"
@@ -92,6 +120,8 @@ export function validateCourseForm(values: CourseFormValues): CourseFormState["e
   for (const locale of locales) {
     const language = languageLabel(locale);
     if (!values[`name.${locale}`]) errors[`name.${locale}`] = `Enter the ${language} name.`;
+    if (!values[`lectureTitle.${locale}`]) errors[`lectureTitle.${locale}`] = `Enter the ${language} lecture title.`;
+    if (!values[`outcomes.${locale}`]) errors[`outcomes.${locale}`] = `Enter at least one ${language} learning outcome.`;
     if (!values[`certificateCode.${locale}`]) errors[`certificateCode.${locale}`] = `Enter the ${language} certificate code.`;
   }
   for (const setting of courseSettings) {
@@ -101,6 +131,7 @@ export function validateCourseForm(values: CourseFormValues): CourseFormState["e
       errors[setting] = `Enter a whole number from ${min} to ${max}.`;
     }
   }
+  if (parseCoursePrice(values.price) === null) errors.price = `Enter a price from $0 to ${priceLabel(coursePriceMaxCents)}, like 99 or 99.50.`;
   return errors;
 }
 
@@ -110,7 +141,9 @@ export function parseCourseSettings(values: CourseFormValues): CourseSettings {
     questionsPerAttempt: settingValue(values, "questionsPerAttempt") ?? 0,
     timeLimitMinutes: settingValue(values, "timeLimitMinutes") ?? 0,
     maxAttempts: values.maxAttempts === "" ? null : settingValue(values, "maxAttempts"),
-    certificateValidMonths: settingValue(values, "certificateValidMonths") ?? 0
+    certificateValidMonths: settingValue(values, "certificateValidMonths") ?? 0,
+    durationHours: settingValue(values, "durationHours") ?? 0,
+    lectureMinutes: settingValue(values, "lectureMinutes") ?? 0
   }
 }
 
@@ -129,6 +162,8 @@ export function courseChanges(before: AdminCourse, values: CourseFormValues, set
   const changes = courseSettings
     .filter((setting) => before[setting] !== settings[setting])
     .map((setting) => `${courseSettingLabels[setting].toLowerCase()} ${settingLabel(setting, before[setting])} → ${settingLabel(setting, settings[setting])}`);
+  const priceCents = parseCoursePrice(values.price);
+  if (priceCents !== null && priceCents !== before.priceCents) changes.push(`price ${priceLabel(before.priceCents)} → ${priceLabel(priceCents)}`);
   if (before.shuffleQuestions !== values.shuffleQuestions) changes.push(`question shuffling ${values.shuffleQuestions ? "on" : "off"}`);
   if (before.shuffleAnswers !== values.shuffleAnswers) changes.push(`answer shuffling ${values.shuffleAnswers ? "on" : "off"}`);
   for (const locale of locales) {

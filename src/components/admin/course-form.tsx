@@ -14,7 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { courseFormFailedNotice, courseSettingRanges } from "@/constants/admin";
 import { locales, type Locale } from "@/i18n/config";
 import { adminQuestionsHref, languageLabel } from "@/lib/helpers/admin";
-import type { AdminCourse, CourseFormField, CourseFormState } from "@/types/admin";
+import type { AdminCourse, CourseFormField, CourseFormState, CourseSetting } from "@/types/admin";
 
 interface CourseFormProps {
   action: (state: CourseFormState, formData: FormData) => Promise<CourseFormState>;
@@ -59,7 +59,7 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
     return { error, inputProps: { "aria-invalid": error ? true : undefined, "aria-describedby": error ? `${fieldId(field)}-error` : undefined } }
   }
 
-  function numberField(field: Exclude<CourseFormField, `${string}.${string}`>, label: string, hint?: string, placeholder?: string) {
+  function numberField(field: CourseSetting, label: string, hint?: string, placeholder?: string) {
     const { error, inputProps } = invalid(field);
     const { min, max } = courseSettingRanges[field];
     return (
@@ -80,8 +80,8 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
 
       <Card>
         <CardHeader>
-          <CardTitle>Name, description and material</CardTitle>
-          <CardDescription>Each language has its own name, description, course material PDF, certificate code and exam questions.</CardDescription>
+          <CardTitle>Course content</CardTitle>
+          <CardDescription>Each language has its own name, description, lecture title, learning outcomes, course material PDF, certificate code and exam questions.</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={tab} onValueChange={setTab} className="gap-5">
@@ -91,6 +91,8 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
             {locales.map((locale) => {
               const label = languageLabel(locale);
               const name = invalid(`name.${locale}`);
+              const lectureTitle = invalid(`lectureTitle.${locale}`);
+              const outcomes = invalid(`outcomes.${locale}`);
               const certificateCode = invalid(`certificateCode.${locale}`);
               return (
                 <TabsContent key={locale} value={locale} forceMount className="grid gap-5 data-[state=inactive]:hidden">
@@ -99,6 +101,12 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
                   </AdminField>
                   <AdminField id={fieldId(`description.${locale}`)} label={`Description (${label})`}>
                     <Textarea id={fieldId(`description.${locale}`)} name={`description.${locale}`} rows={3} defaultValue={values[`description.${locale}`]}/>
+                  </AdminField>
+                  <AdminField id={fieldId(`lectureTitle.${locale}`)} label={`Lecture title (${label})`} hint="Shown in the curriculum on the course page." error={lectureTitle.error}>
+                    <Input id={fieldId(`lectureTitle.${locale}`)} name={`lectureTitle.${locale}`} defaultValue={values[`lectureTitle.${locale}`]} required {...lectureTitle.inputProps}/>
+                  </AdminField>
+                  <AdminField id={fieldId(`outcomes.${locale}`)} label={`Learning outcomes (${label})`} hint="One per line. Listed under “Learning outcomes” on the course page." error={outcomes.error}>
+                    <Textarea id={fieldId(`outcomes.${locale}`)} name={`outcomes.${locale}`} rows={6} defaultValue={values[`outcomes.${locale}`]} required {...outcomes.inputProps}/>
                   </AdminField>
                   <AdminField id={fieldId(`certificateCode.${locale}`)} label={`Certificate code (${label})`} hint={`RCEEM reference code printed on ${label} certificates.`} error={certificateCode.error}>
                     <Input id={fieldId(`certificateCode.${locale}`)} name={`certificateCode.${locale}`} defaultValue={values[`certificateCode.${locale}`]} className="font-mono" required {...certificateCode.inputProps}/>
@@ -120,6 +128,14 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
           </Tabs>
         </CardContent>
       </Card>
+
+      <AdminFormSection title="Course page" description="Shown on the public course pages in both languages.">
+        <AdminField id={fieldId("price")} label="Price (CAD)" hint="Shown next to the enroll button. Enrollment is still through the contact page." error={invalid("price").error}>
+          <Input id={fieldId("price")} name="price" inputMode="decimal" defaultValue={values.price} {...invalid("price").inputProps}/>
+        </AdminField>
+        {numberField("durationHours", "Course duration (hours)")}
+        {numberField("lectureMinutes", "Lecture length (minutes)")}
+      </AdminFormSection>
 
       <AdminFormSection title="Exam" description="Applies to both languages and to new attempts. Past attempts keep the pass mark and questions they were taken with.">
         {numberField("passMarkPct", "Pass mark (%)")}

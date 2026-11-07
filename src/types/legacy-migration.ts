@@ -38,17 +38,29 @@ export interface LegacyCourseRef {
   locale: Locale;
 }
 
-export interface CourseSeed {
+export interface CourseLocaleCopy {
+  name: string;
+  description: string;
+  lectureTitle: string;
+  outcomes: string[];
+}
+
+export interface CourseCopy {
+  priceCents: number;
+  durationHours: number;
+  lectureMinutes: number;
+  locales: Record<Locale, CourseLocaleCopy>;
+}
+
+export interface CourseSeed extends Omit<CourseCopy, "locales"> {
   code: CourseCode;
   questionsPerAttempt: number;
   certificateValidMonths: number;
   locales: CourseLocaleSeed[];
 }
 
-export interface CourseLocaleSeed {
+export interface CourseLocaleSeed extends CourseLocaleCopy {
   locale: Locale;
-  name: string;
-  description: string;
   certificateCode: string;
 }
 

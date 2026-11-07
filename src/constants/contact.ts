@@ -23,6 +23,13 @@ export const contactFieldLimits: Record<ContactField, number> = {
   message: 5000
 }
 
+export const contactEmailCopy = {
+  subject: "Website message: {subject}",
+  heading: "New message from the synergyqmp.com contact form",
+  labels: { name: "Name", email: "Email", locale: "Site language", subject: "Subject", message: "Message" },
+  replyHint: "Reply to this email to answer {name} directly."
+}
+
 export const contactHoneypotField = "website";
 
 export const contactHoneypotLabel = "Website";

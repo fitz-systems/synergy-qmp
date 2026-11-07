@@ -1,5 +1,5 @@
 import { Award, ChartNoAxesColumn, ClipboardCheck, Clock, FileText, Languages, LayoutGrid, List, Plane, Truck, UserCheck, Users, type LucideIcon } from "lucide-react";
-import type { CourseArchiveState, CourseFeatureKey, CurriculumItemKind } from "@/types/courses";
+import type { CourseArchiveState, CourseCode, CourseFeatureKey, CurriculumItemKind } from "@/types/courses";
 
 export const courseArchiveParams = {
   view: "view",
@@ -42,3 +42,9 @@ export const curriculumIcons: Record<CurriculumItemKind, LucideIcon> = {
 export const ratingMax = 5;
 
 export const ratingScale = [5, 4, 3, 2, 1];
+
+export const courseCodes: CourseCode[] = ["ground", "air"];
+
+export const courseLectureCount = 1;
+
+export const courseQuizCount = 1;

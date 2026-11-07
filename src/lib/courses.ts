@@ -1,12 +1,10 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
-import { enrollmentsCacheTag, reviewsCacheTag } from "@/constants/cache";
-import { courses } from "@/content/courses";
+import { coursesCacheTag, enrollmentsCacheTag, reviewsCacheTag } from "@/constants/cache";
+import { courseCodes, courseLectureCount, courseQuizCount } from "@/constants/courses";
 import type { Locale } from "@/i18n/config";
 import { prisma } from "@/lib/prisma";
-import type { Course, CourseCode, CourseContent, CourseReview } from "@/types/courses";
-
-export const courseCodes = courses.map((course) => course.code);
+import type { Course, CourseCode, CourseReview } from "@/types/courses";
 
 export function isCourseCode(value: string): value is CourseCode {
   return courseCodes.includes(value as CourseCode);
@@ -35,19 +33,49 @@ async function getStudentCounts(): Promise<Partial<Record<CourseCode, number>>> 
   }
 }
 
-function localize(course: CourseContent, locale: Locale, students: number): Course {
-  const { locales, ...rest } = course;
-  return { ...rest, ...locales[locale], students }
+async function getCourseCopy(locale: Locale): Promise<Omit<Course, "students">[]> {
+  "use cache";
+  cacheTag(coursesCacheTag);
+  cacheLife("hours");
+
+  const rows = await prisma.courseLocale.findMany({
+    where: { locale, course: { code: { in: courseCodes } } },
+    select: {
+      name: true,
+      description: true,
+      lectureTitle: true,
+      outcomes: true,
+      course: { select: { code: true, priceCents: true, durationHours: true, lectureMinutes: true, questionsPerAttempt: true } }
+    }
+  });
+
+  return rows
+    .map(({ course, ...copy }) => ({
+      code: course.code as CourseCode,
+      title: copy.name,
+      description: copy.description ?? "",
+      lectureTitle: copy.lectureTitle,
+      outcomes: copy.outcomes,
+      price: course.priceCents / 100,
+      lectures: courseLectureCount,
+      quizzes: courseQuizCount,
+      durationHours: course.durationHours,
+      lectureMinutes: course.lectureMinutes,
+      examQuestions: course.questionsPerAttempt
+    }))
+    .sort((a, b) => courseCodes.indexOf(a.code) - courseCodes.indexOf(b.code));
 }
 
 export async function getCourses(locale: Locale): Promise<Course[]> {
-  const counts = await getStudentCounts();
-  return courses.map((course) => localize(course, locale, counts[course.code] ?? 0));
+  const [copy, counts] = await Promise.all([getCourseCopy(locale), getStudentCounts()]);
+  return copy.map((course) => ({ ...course, students: counts[course.code] ?? 0 }));
 }
 
 export async function getCourse(code: CourseCode, locale: Locale): Promise<Course> {
   const all = await getCourses(locale);
-  return all.find((course) => course.code === code)!;
+  const course = all.find((item) => item.code === code);
+  if (!course) notFound();
+  return course;
 }
 
 export async function getPublishedReviews(locale: Locale): Promise<CourseReview[]> {

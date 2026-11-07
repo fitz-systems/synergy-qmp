@@ -5,7 +5,11 @@ import { resolveLocale } from "@/lib/helpers/locale";
 import type { AuthUserProfile } from "@/types/auth";
 import type { OutgoingEmail } from "@/types/email";
 
-export async function sendEmail({ to, subject, html, text }: OutgoingEmail) {
+export function isEmailConfigured() {
+  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+}
+
+export async function sendEmail({ to, replyTo, subject, html, text }: OutgoingEmail) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
 
@@ -15,7 +19,7 @@ export async function sendEmail({ to, subject, html, text }: OutgoingEmail) {
     return;
   }
 
-  const { error } = await new Resend(apiKey).emails.send({ from, to, subject, html, text });
+  const { error } = await new Resend(apiKey).emails.send({ from, to, replyTo, subject, html, text });
   if (error) throw new Error(`Resend couldn't send "${subject}" to ${to}: ${error.message}`);
 }
 

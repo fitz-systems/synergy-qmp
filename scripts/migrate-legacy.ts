@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
 
-import { courses } from "../src/content/courses.ts";
 import { readLegacyDump } from "../src/lib/helpers/legacy-dump.ts";
 import { buildMigrationPlan } from "../src/lib/helpers/legacy-migration.ts";
 import { readQuestionCsv } from "../src/lib/helpers/legacy-questions.ts";
@@ -24,7 +23,7 @@ if (existsSync(".env.local")) {
 }
 
 const questionRows = questionsPath ? readQuestionCsv(readFileSync(questionsPath)) : null;
-const plan = buildMigrationPlan(readLegacyDump(readFileSync(dumpPath, "utf8")), courses, questionRows);
+const plan = buildMigrationPlan(readLegacyDump(readFileSync(dumpPath, "utf8")), questionRows);
 console.log(formatMigrationReport(plan.report, args.includes("--verbose")));
 
 if (!args.includes("--write")) {

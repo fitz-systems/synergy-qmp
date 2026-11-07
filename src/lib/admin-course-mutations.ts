@@ -5,7 +5,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { locales, type Locale } from "@/i18n/config";
 import { recordAudit } from "@/lib/audit";
 import { languageLabel } from "@/lib/helpers/admin";
-import { adminCourse, adminQuestion, courseChanges, hiddenQuestionError, notEnoughQuestionsError, parseCourseSettings, questionChanges, questionLabel, questionSnippet } from "@/lib/helpers/admin-courses";
+import { adminCourse, adminQuestion, courseChanges, hiddenQuestionError, notEnoughQuestionsError, outcomeLines, parseCoursePrice, parseCourseSettings, questionChanges, questionLabel, questionSnippet } from "@/lib/helpers/admin-courses";
 import { prisma } from "@/lib/prisma";
 import type { AdminActionResult, CourseFormState, CourseFormValues, QuestionFormState, QuestionFormValues } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
@@ -26,10 +26,16 @@ export async function updateCourse(adminId: number, code: CourseCode, values: Co
 
     await tx.course.update({
       where: { id: record.id },
-      data: { ...settings, shuffleQuestions: values.shuffleQuestions, shuffleAnswers: values.shuffleAnswers, active: values.active }
+      data: { ...settings, priceCents: parseCoursePrice(values.price) ?? before.priceCents, shuffleQuestions: values.shuffleQuestions, shuffleAnswers: values.shuffleAnswers, active: values.active }
     });
     for (const locale of locales) {
-      const data = { name: values[`name.${locale}`], description: values[`description.${locale}`] || null, certificateCode: values[`certificateCode.${locale}`] };
+      const data = {
+        name: values[`name.${locale}`],
+        description: values[`description.${locale}`] || null,
+        lectureTitle: values[`lectureTitle.${locale}`],
+        outcomes: outcomeLines(values[`outcomes.${locale}`]),
+        certificateCode: values[`certificateCode.${locale}`]
+      }
       await tx.courseLocale.upsert({ where: { courseId_locale: { courseId: record.id, locale } }, update: data, create: { ...data, courseId: record.id, locale } });
     }
 

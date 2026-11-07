@@ -101,6 +101,8 @@ export interface AdminCourse {
   code: CourseCode;
   names: Record<Locale, string>;
   descriptions: Record<Locale, string>;
+  lectureTitles: Record<Locale, string>;
+  outcomes: Record<Locale, string[]>;
   materialUploaded: Record<Locale, boolean>;
   certificateCodes: Record<Locale, string>;
   questionCounts: Record<Locale, number>;
@@ -110,20 +112,24 @@ export interface AdminCourse {
   timeLimitMinutes: number;
   maxAttempts: number | null;
   certificateValidMonths: number;
+  priceCents: number;
+  durationHours: number;
+  lectureMinutes: number;
   shuffleQuestions: boolean;
   shuffleAnswers: boolean;
   active: boolean;
 }
 
-export type CourseSetting = "passMarkPct" | "questionsPerAttempt" | "timeLimitMinutes" | "maxAttempts" | "certificateValidMonths";
+export type CourseSetting = "passMarkPct" | "questionsPerAttempt" | "timeLimitMinutes" | "maxAttempts" | "certificateValidMonths" | "durationHours" | "lectureMinutes";
 
-export type CourseLocaleField = "name" | "description" | "certificateCode";
+export type CourseLocaleField = "name" | "description" | "lectureTitle" | "outcomes" | "certificateCode";
 
 export type CourseSettings = Record<Exclude<CourseSetting, "maxAttempts">, number> & { maxAttempts: number | null }
 
-export type CourseFormField = CourseSetting | `${Exclude<CourseLocaleField, "description">}.${Locale}`;
+export type CourseFormField = CourseSetting | "price" | `${Exclude<CourseLocaleField, "description">}.${Locale}`;
 
 export type CourseFormValues = Record<CourseSetting, string> & Record<`${CourseLocaleField}.${Locale}`, string> & {
+  price: string;
   shuffleQuestions: boolean;
   shuffleAnswers: boolean;
   active: boolean;

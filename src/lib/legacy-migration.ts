@@ -103,15 +103,15 @@ async function writeCourses(client: pg.Client, plan: MigrationPlan) {
   const courseIds = new Map<string, number>();
   for (const course of plan.courses) {
     await client.query(
-      `INSERT INTO "synergy"."courses" (code, questions_per_attempt, certificate_valid_months, updated_at) VALUES ($1, $2, $3, now()) ON CONFLICT (code) DO NOTHING`,
-      [course.code, course.questionsPerAttempt, course.certificateValidMonths]
+      `INSERT INTO "synergy"."courses" (code, questions_per_attempt, certificate_valid_months, price_cents, duration_hours, lecture_minutes, updated_at) VALUES ($1, $2, $3, $4, $5, $6, now()) ON CONFLICT (code) DO NOTHING`,
+      [course.code, course.questionsPerAttempt, course.certificateValidMonths, course.priceCents, course.durationHours, course.lectureMinutes]
     );
     const { rows } = await client.query<{ id: number }>(`SELECT id FROM "synergy"."courses" WHERE code = $1`, [course.code]);
     courseIds.set(course.code, rows[0].id);
     for (const locale of course.locales) {
       await client.query(
-        `INSERT INTO "synergy"."course_locales" (course_id, locale, name, description, certificate_code) VALUES ($1, $2, $3, $4, $5) ON CONFLICT (course_id, locale) DO NOTHING`,
-        [rows[0].id, locale.locale, locale.name, locale.description, locale.certificateCode]
+        `INSERT INTO "synergy"."course_locales" (course_id, locale, name, description, lecture_title, outcomes, certificate_code) VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (course_id, locale) DO NOTHING`,
+        [rows[0].id, locale.locale, locale.name, locale.description, locale.lectureTitle, locale.outcomes, locale.certificateCode]
       );
     }
   }

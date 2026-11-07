@@ -10,4 +10,5 @@ export interface EmailContent {
 
 export interface OutgoingEmail extends EmailContent {
   to: string;
+  replyTo?: string;
 }

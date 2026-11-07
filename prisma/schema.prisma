@@ -96,6 +96,9 @@ model Course {
   certificateValidMonths Int            @default(36) @map("certificate_valid_months")
   passMarkPct            Int            @default(75) @map("pass_mark_pct")
   questionsPerAttempt    Int            @map("questions_per_attempt")
+  priceCents             Int            @map("price_cents")
+  durationHours          Int            @map("duration_hours")
+  lectureMinutes         Int            @map("lecture_minutes")
   timeLimitMinutes       Int            @default(120) @map("time_limit_minutes")
   maxAttempts            Int?           @default(3) @map("max_attempts")
   shuffleQuestions       Boolean        @default(true) @map("shuffle_questions")
@@ -114,6 +117,8 @@ model CourseLocale {
   locale          String
   name            String
   description     String?
+  lectureTitle    String       @map("lecture_title")
+  outcomes        String[]
   materialFileKey String?      @map("material_file_key")
   certificateCode String       @map("certificate_code")
   course          Course       @relation(fields: [courseId], references: [id])
