@@ -1,3 +1,4 @@
+import { studentEnrollmentSelect } from "@/constants/student";
 import { isCourseCode } from "@/lib/courses";
 import { getCurrentEnrollment, loadCurrentEnrollment } from "@/lib/enrollment";
 import { certificateNumber, studentCertificate } from "@/lib/helpers/certificate";
@@ -5,7 +6,7 @@ import { resolveLocale } from "@/lib/helpers/locale";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/session";
 import type { SessionUser } from "@/types/auth";
-import type { StudentCertificate, StudentEnrollmentRecord } from "@/types/student";
+import type { CertificateHolder, StudentCertificate, StudentEnrollmentRecord } from "@/types/student";
 
 async function assignCertificateNumber(record: StudentEnrollmentRecord, passedOn: Date) {
   const number = certificateNumber(record.id, passedOn);
@@ -14,7 +15,7 @@ async function assignCertificateNumber(record: StudentEnrollmentRecord, passedOn
   return stored.certificateNumber ?? number;
 }
 
-async function issueCertificate(record: StudentEnrollmentRecord | null, holder: SessionUser): Promise<StudentCertificate | null> {
+async function issueCertificate(record: StudentEnrollmentRecord | null, holder: CertificateHolder): Promise<StudentCertificate | null> {
   const courseCode = record?.courseLocale.course.code;
   const passedOn = record?.passedOn;
   if (!record || !passedOn || !courseCode || !isCourseCode(courseCode)) return null;
@@ -30,4 +31,12 @@ export async function getStudentCertificate() {
 
 export async function getCertificateForUser(user: SessionUser) {
   return issueCertificate(await loadCurrentEnrollment(user.id), user);
+}
+
+export async function getCertificateForEnrollment(enrollmentId: number) {
+  const record = await prisma.enrollment.findUnique({
+    where: { id: enrollmentId },
+    select: { ...studentEnrollmentSelect, user: { select: { firstName: true, lastName: true } } }
+  });
+  return record ? issueCertificate(record, record.user) : null;
 }

@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminTablePagination, AdminTableToolbar } from "@/components/admin/admin-table-parts";
+import { AdminTablePagination } from "@/components/admin/admin-table-parts";
+import { AdminTableToolbar } from "@/components/admin/admin-table-toolbar";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { adminRoutes, auditEntityOptions } from "@/constants/admin";
+import { adminRoutes, auditEntityFilter, auditEntityOptions } from "@/constants/admin";
 import { getAuditLog } from "@/lib/admin";
 import { formatAdminDateTime } from "@/lib/helpers/admin";
 
@@ -22,7 +23,7 @@ export default async function AdminAuditLogPage() {
         description="Every change made by an admin, newest first. Entries can't be edited or deleted."
         crumbs={[{ label: "Dashboard", href: adminRoutes.dashboard }, { label: "Audit log" }]}
       />
-      <AdminTableToolbar searchLabel="Search actions or records" filters={[{ label: "Record type", options: auditEntityOptions }]}/>
+      <AdminTableToolbar searchLabel="Search actions or records" filters={[{ param: auditEntityFilter, label: "Record type", allLabel: "All records", options: auditEntityOptions }]}/>
       <Card className="gap-0 overflow-hidden py-0">
         <Table>
           <TableHeader>

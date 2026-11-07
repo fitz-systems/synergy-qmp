@@ -3,22 +3,25 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { FileUp, MoreHorizontal, Plus } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
-import { AdminTablePagination, AdminTableToolbar, StatusBadge, ToggleBadge } from "@/components/admin/admin-table-parts";
+import { AdminTablePagination, StatusBadge, ToggleBadge } from "@/components/admin/admin-table-parts";
+import { AdminTableToolbar } from "@/components/admin/admin-table-toolbar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { adminPageSize, adminRoutes, courseOptions, enrollmentStatusOptions } from "@/constants/admin";
-import { getAdminUsers } from "@/lib/admin";
-import { adminUserEditHref, adminUserHref, courseLabel, formatAdminDate, fullName, languageLabel } from "@/lib/helpers/admin";
+import { adminRoutes, userListFilters } from "@/constants/admin";
+import { getAdminUserPage } from "@/lib/admin-users";
+import { adminListHref, adminUserEditHref, adminUserHref, enrollmentLabel, formatAdminDate, fullName, parseUserListQuery, userListFilterValues } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {
   title: "Users"
 }
 
-export default async function AdminUsersPage() {
-  const users = await getAdminUsers();
-  const page = users.slice(0, adminPageSize);
+export default async function AdminUsersPage({ searchParams }: PageProps<"/admin/users">) {
+  const query = parseUserListQuery(await searchParams);
+  const result = await getAdminUserPage(query);
+  const values = userListFilterValues(query);
+  const filtered = query.search !== "" || query.course !== undefined || query.status !== undefined;
 
   return (
     <>
@@ -33,10 +36,7 @@ export default async function AdminUsersPage() {
           </>
         )}
       />
-      <AdminTableToolbar
-        searchLabel="Search name, email or company"
-        filters={[{ label: "Course", options: courseOptions }, { label: "Status", options: enrollmentStatusOptions }]}
-      />
+      <AdminTableToolbar searchLabel="Search name, email or company" filters={userListFilters} values={values}/>
       <Card className="gap-0 overflow-hidden py-0">
         <Table>
           <TableHeader>
@@ -51,16 +51,16 @@ export default async function AdminUsersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {page.map((user) => (
+            {result.rows.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="pl-4">
                   <Link href={adminUserHref(user.id)} className="font-medium hover:underline">{fullName(user)}</Link>
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                 </TableCell>
-                <TableCell>{user.company}</TableCell>
-                <TableCell>{courseLabel(user.courseCode)} · {languageLabel(user.locale)}</TableCell>
-                <TableCell><StatusBadge status={user.status}/></TableCell>
-                <TableCell className="text-muted-foreground">{formatAdminDate(user.enrolledOn)}</TableCell>
+                <TableCell>{user.company ?? "—"}</TableCell>
+                <TableCell>{user.courseCode && user.locale ? enrollmentLabel(user.courseCode, user.locale) : "—"}</TableCell>
+                <TableCell>{user.status ? <StatusBadge status={user.status}/> : "—"}</TableCell>
+                <TableCell className="text-muted-foreground">{user.enrolledOn ? formatAdminDate(user.enrolledOn) : "—"}</TableCell>
                 <TableCell><ToggleBadge on={user.active} onLabel="Active" offLabel="Deactivated"/></TableCell>
                 <TableCell className="pr-4">
                   <DropdownMenu>
@@ -70,17 +70,28 @@ export default async function AdminUsersPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem asChild><Link href={adminUserHref(user.id)}>View</Link></DropdownMenuItem>
                       <DropdownMenuItem asChild><Link href={adminUserEditHref(user.id)}>Edit</Link></DropdownMenuItem>
-                      <DropdownMenuItem>Send password reset email</DropdownMenuItem>
-                      <DropdownMenuSeparator/>
-                      <DropdownMenuItem variant="destructive">{user.active ? "Deactivate" : "Reactivate"}</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
+            {result.rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                  {filtered ? "No students match these filters." : "No students yet."}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
-        <AdminTablePagination from={1} to={page.length} total={users.length} noun="users"/>
+        <AdminTablePagination
+          from={result.from}
+          to={result.to}
+          total={result.total}
+          noun="students"
+          previousHref={result.page > 1 ? adminListHref(adminRoutes.users, values, result.page - 1) : undefined}
+          nextHref={result.page < result.pageCount ? adminListHref(adminRoutes.users, values, result.page + 1) : undefined}
+        />
       </Card>
     </>
   );

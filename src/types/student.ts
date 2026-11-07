@@ -164,6 +164,11 @@ export interface ExamResult {
   answers: ExamAnswerReview[];
 }
 
+export interface CertificateHolder {
+  firstName: string;
+  lastName: string;
+}
+
 export interface StudentCertificate {
   studentName: string;
   courseCode: CourseCode;

@@ -1,5 +1,5 @@
 import { locales } from "@/i18n/config";
-import type { AdminAttempt, AdminAttemptAnswer, ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview, AdminUser, AuditEntry, CoursePassRate, EnrollmentStatus, MonthlyRegistrations } from "@/types/admin";
+import type { AdminAttempt, ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview, AdminUser, AuditEntry, CoursePassRate, EnrollmentStatus, MonthlyRegistrations } from "@/types/admin";
 
 // Todo: Placeholder data for designing the admin; replace with database queries once the migration has run
 
@@ -50,12 +50,6 @@ export const mockAdminAttempts: AdminAttempt[] = mockAdminUsers
     questionCount: user.courseCode === "air" ? 28 : 20,
     passed: user.status === "passed"
   }));
-
-export const mockAttemptAnswers: AdminAttemptAnswer[] = Array.from({ length: 6 }, (_, index) => ({
-  question: `Sample question ${index + 1}. Placeholder text for a real exam question.`,
-  answer: `Sample answer ${"ABCD"[index % 4]}`,
-  correct: index !== 3
-}));
 
 export const mockAdminCourses: AdminCourse[] = [
   {

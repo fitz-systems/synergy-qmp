@@ -1,7 +1,7 @@
 import { certificateCredits, certificateNumberDigits, certificateNumberPrefix, pdfLetterFallbacks, pdfWinAnsiExtras } from "@/constants/student";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "@/types/courses";
-import type { StudentCertificate, StudentEnrollmentRecord } from "@/types/student";
+import type { CertificateHolder, StudentCertificate, StudentEnrollmentRecord } from "@/types/student";
 
 export function certificateNumber(enrollmentId: number, passedOn: Date) {
   return `${certificateNumberPrefix}${passedOn.getUTCFullYear()}-${String(enrollmentId).padStart(certificateNumberDigits, "0")}`;
@@ -11,11 +11,6 @@ export function addMonths(date: Date, months: number) {
   const result = new Date(date);
   result.setUTCMonth(result.getUTCMonth() + months);
   return result;
-}
-
-interface CertificateHolder {
-  firstName: string;
-  lastName: string;
 }
 
 export function studentCertificate(record: StudentEnrollmentRecord & { passedOn: Date }, holder: CertificateHolder, courseCode: CourseCode, courseLocale: Locale, number: string): StudentCertificate {

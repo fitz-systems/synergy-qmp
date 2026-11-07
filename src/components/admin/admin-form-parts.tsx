@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,7 @@ interface AdminFieldProps {
   id: string;
   label: string;
   hint?: string;
+  error?: string;
   className?: string;
   children: React.ReactNode;
 }
@@ -30,6 +32,8 @@ interface AdminSwitchFieldProps {
 interface AdminFormActionsProps {
   submitLabel: string;
   cancelHref: string;
+  submits?: boolean;
+  pending?: boolean;
 }
 
 export function AdminFormSection({ title, description, children }: AdminFormSectionProps) {
@@ -44,11 +48,12 @@ export function AdminFormSection({ title, description, children }: AdminFormSect
   );
 }
 
-export function AdminField({ id, label, hint, className, children }: AdminFieldProps) {
+export function AdminField({ id, label, hint, error, className, children }: AdminFieldProps) {
   return (
     <div className={className ?? "grid gap-2"}>
       <Label htmlFor={id}>{label}</Label>
       {children}
+      {error && <p id={`${id}-error`} className="text-sm text-destructive">{error}</p>}
       {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
     </div>
   );
@@ -66,12 +71,15 @@ export function AdminSwitchField({ name, label, hint, checked, className = "" }:
   );
 }
 
-// Todo: Submit through a server action
-export function AdminFormActions({ submitLabel, cancelHref }: AdminFormActionsProps) {
+// Todo: Submit the review, question and course forms through server actions, then drop the submits prop
+export function AdminFormActions({ submitLabel, cancelHref, submits = false, pending = false }: AdminFormActionsProps) {
   return (
     <div className="flex justify-end gap-2">
       <Button variant="outline" asChild><Link href={cancelHref}>Cancel</Link></Button>
-      <Button type="button">{submitLabel}</Button>
+      <Button type={submits ? "submit" : "button"} disabled={pending}>
+        {pending && <LoaderCircle aria-hidden className="animate-spin"/>}
+        {submitLabel}
+      </Button>
     </div>
   );
 }

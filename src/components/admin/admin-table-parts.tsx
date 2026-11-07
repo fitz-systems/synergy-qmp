@@ -1,11 +1,11 @@
-import { Search } from "lucide-react";
+import Link from "next/link";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { enrollmentStatusLabels, statusToneStyles } from "@/constants/admin";
 import { cn } from "@/lib/helpers/class-names";
-import type { AdminTableFilter, EnrollmentStatus } from "@/types/admin";
+import type { EnrollmentStatus } from "@/types/admin";
 
 interface StatusBadgeProps {
   status: EnrollmentStatus;
@@ -17,16 +17,19 @@ interface ToggleBadgeProps {
   offLabel: string;
 }
 
-interface AdminTableToolbarProps {
-  searchLabel: string;
-  filters?: AdminTableFilter[];
-}
-
 interface AdminTablePaginationProps {
   from: number;
   to: number;
   total: number;
   noun: string;
+  previousHref?: string;
+  nextHref?: string;
+}
+
+interface PageLinkProps {
+  href?: string;
+  label: string;
+  children: React.ReactNode;
 }
 
 const statusStyles: Record<EnrollmentStatus, string> = {
@@ -48,40 +51,21 @@ export function ToggleBadge({ on, onLabel, offLabel }: ToggleBadgeProps) {
   );
 }
 
-// Todo: Wire search, filters and paging to server-side queries (TanStack Table)
-export function AdminTableToolbar({ searchLabel, filters = [] }: AdminTableToolbarProps) {
-  return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-      <div className="relative sm:w-80">
-        <Search aria-hidden className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"/>
-        <Input type="search" placeholder={searchLabel} aria-label={searchLabel} className="bg-background pl-8"/>
-      </div>
-      {filters.map((filter) => (
-        <Select key={filter.label}>
-          <SelectTrigger aria-label={filter.label} className="bg-background sm:w-44">
-            <SelectValue placeholder={filter.label}/>
-          </SelectTrigger>
-          <SelectContent>
-            {filter.options.map((option) => (
-              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ))}
-    </div>
-  );
+function PageLink({ href, label, children }: PageLinkProps) {
+  if (!href) return <Button variant="ghost" size="sm" disabled aria-label={label}>{children}</Button>;
+  return <Button variant="ghost" size="sm" asChild><Link href={href} aria-label={label} scroll={false}>{children}</Link></Button>;
 }
 
-export function AdminTablePagination({ from, to, total, noun }: AdminTablePaginationProps) {
+export function AdminTablePagination({ from, to, total, noun, previousHref, nextHref }: AdminTablePaginationProps) {
   return (
     <div className="flex flex-col items-center justify-between gap-3 border-t px-4 py-3 sm:flex-row">
-      <p className="text-sm text-muted-foreground">Showing {from}–{to} of {total} {noun}</p>
-      <Pagination className="mx-0 w-auto">
-        <PaginationContent>
-          <PaginationItem><PaginationPrevious href="#" aria-disabled className="pointer-events-none opacity-50"/></PaginationItem>
-          <PaginationItem><PaginationNext href="#"/></PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <p className="text-sm text-muted-foreground">
+        {total === 0 ? `No ${noun}` : `Showing ${from.toLocaleString("en-CA")}–${to.toLocaleString("en-CA")} of ${total.toLocaleString("en-CA")} ${noun}`}
+      </p>
+      <nav aria-label="Pagination" className="flex gap-1">
+        <PageLink href={previousHref} label="Previous page"><ChevronLeft/>Previous</PageLink>
+        <PageLink href={nextHref} label="Next page">Next<ChevronRight/></PageLink>
+      </nav>
     </div>
   );
 }
