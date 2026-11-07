@@ -483,7 +483,8 @@
           "title": "Read the course material",
           "body": "Work through the course material at your own pace. You can come back to it at any time.",
           "open": "Open course material",
-          "download": "Download PDF"
+          "download": "Download PDF",
+          "unavailable": "The course material will be available here shortly."
         },
         "exam": {
           "title": "Take the final exam",
@@ -612,8 +613,9 @@
       "issued": "Issued",
       "validUntil": "Valid until",
       "number": "Certificate no.",
-      "credits": "{credits} Category A credit, CAMRT / ACTRM",
+      "credits": "Has earned {credits} Category A credit(s)",
       "referenceCode": "RCEEM reference code: {code}",
+      "accreditation": "This educational activity has been approved for Category A credit by the CAMRT and is also recognized by the American Registry of Radiologic Technologists (ARRT).",
       "accreditedBy": "Accredited by",
       "walletHint": "Wallet card: cut along the dotted line and keep it with you.",
       "walletLabel": "{label}:"

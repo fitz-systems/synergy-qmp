@@ -16,9 +16,6 @@ export const examTimeWarningMinutes = [5, 1];
 
 export const examTimerTickMs = 1000;
 
-// Todo: Point at the auth-checked course material route once the PDFs are in private storage
-export const courseMaterialPlaceholderHref = "#course-material";
-
 export const certificatePdfHref = "/api/certificate";
 
 export const certificateNumberPrefix = "SQMP-C";
@@ -51,6 +48,7 @@ export const studentEnrollmentSelect = {
     select: {
       name: true,
       certificateCode: true,
+      materialFileKey: true,
       course: {
         select: { code: true, passMarkPct: true, questionsPerAttempt: true, timeLimitMinutes: true, maxAttempts: true, shuffleQuestions: true, shuffleAnswers: true, certificateValidMonths: true }
       }

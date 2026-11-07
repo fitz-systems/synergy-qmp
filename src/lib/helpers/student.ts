@@ -87,10 +87,11 @@ export function courseStepContent(steps: CourseStep[], enrollment: StudentEnroll
         ...step,
         title: labels.material.title,
         body: labels.material.body,
-        actions: [
-          { label: labels.material.open, href: hrefs.material, variant: "primary" },
-          { label: labels.material.download, href: hrefs.materialDownload, variant: "secondary", icon: "download" }
-        ]
+        note: enrollment.materialAvailable ? undefined : labels.material.unavailable,
+        actions: enrollment.materialAvailable ? [
+          { label: labels.material.open, href: hrefs.material, variant: "primary", file: true },
+          { label: labels.material.download, href: hrefs.materialDownload, variant: "secondary", icon: "download", file: true }
+        ] : []
       }
     }
     if (step.key === "exam") {
@@ -173,6 +174,7 @@ export function studentCourse(record: StudentEnrollmentRecord, courseCode: Cours
       examStatus: passed ? "passed" : attempts.some((attempt) => attempt.submittedAt) ? "failed" : "notStarted",
       attemptsUsed: attempts.length,
       maxAttempts: course.maxAttempts,
+      materialAvailable: record.courseLocale.materialFileKey !== null,
       examInProgress: !passed && record.attempts.some((attempt) => isAttemptInProgress(attempt, now)),
       passedOn: record.passedOn?.toISOString(),
       scorePct: passed && passingAttempt ? attemptScorePct(passingAttempt) : undefined

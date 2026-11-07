@@ -4,7 +4,7 @@ import { PDFDocument, StandardFonts, setCharacterSpacing } from "pdf-lib";
 import type { Color, PDFFont, PDFImage, PDFPage } from "pdf-lib";
 import { certificateColors, certificateImages, certificatePage, walletCard } from "@/constants/certificate";
 import { getDictionaryFor } from "@/i18n/dictionaries";
-import { pdfSafeText } from "@/lib/helpers/certificate";
+import { formatCredits, pdfSafeText } from "@/lib/helpers/certificate";
 import { interpolate } from "@/lib/helpers/format";
 import { certificateDetails } from "@/lib/helpers/student";
 import type { StudentCertificate } from "@/types/student";
@@ -39,6 +39,16 @@ function drawText(page: PDFPage, value: string, x: number, y: number, style: Tex
 function drawCentered(page: PDFPage, value: string, centerX: number, y: number, style: TextStyle) {
   const text = pdfSafeText(value);
   drawText(page, text, centerX - textWidth(text, style) / 2, y, style);
+}
+
+function wrapText(value: string, style: TextStyle, maxWidth: number) {
+  const lines: string[] = [];
+  for (const word of pdfSafeText(value).split(" ")) {
+    const candidate = lines.length > 0 ? `${lines[lines.length - 1]} ${word}` : word;
+    if (lines.length > 0 && style.font.widthOfTextAtSize(candidate, style.size) <= maxWidth) lines[lines.length - 1] = candidate;
+    else lines.push(word);
+  }
+  return lines;
 }
 
 function drawImageCentered(page: PDFPage, image: PDFImage, centerX: number, y: number, width: number) {
@@ -89,9 +99,11 @@ export async function renderCertificatePdf(certificate: StudentCertificate) {
     drawCentered(page, detail.value, columnCenter, 234, { font: bold, size: 13, color: colors.ink, maxWidth: columnWidth - 16 });
   });
 
-  drawCentered(page, interpolate(copy.credits, { credits: certificate.credits.toLocaleString(locale) }), center, 176, { font: regular, size: 10, color: colors.inkMuted });
-  drawCentered(page, interpolate(copy.referenceCode, { code: certificate.referenceCode }), center, 160, { font: bold, size: 10, color: colors.ink });
-  drawImageCentered(page, images.accreditation, center, 100, 120);
+  drawCentered(page, interpolate(copy.credits, { credits: formatCredits(locale, certificate.credits) }), center, 190, { font: bold, size: 12, color: colors.ink });
+  drawCentered(page, interpolate(copy.referenceCode, { code: certificate.referenceCode }), center, 172, { font: bold, size: 10, color: colors.ink });
+  const accreditationStyle = { font: regular, size: 8.5, color: colors.inkMuted }
+  wrapText(copy.accreditation, accreditationStyle, 380).forEach((line, index) => drawCentered(page, line, center, 154 - index * 11, accreditationStyle));
+  drawImageCentered(page, images.accreditation, center, 70, 120);
 
   const wallet = pdf.addPage([width, height]);
   const cardX = center - walletCard.width / 2;

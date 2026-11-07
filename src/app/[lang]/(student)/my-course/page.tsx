@@ -7,9 +7,10 @@ import { StudentCourseSidebar } from "@/components/student/course-sidebar";
 import { ButtonLink } from "@/components/ui/button-link";
 import { CourseSteps } from "@/components/student/course-steps";
 import { contact } from "@/constants/contact";
-import { courseMaterialPlaceholderHref } from "@/constants/student";
+import { courseMaterialHref } from "@/constants/course-material";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourse } from "@/lib/courses";
+import { courseMaterialDownloadHref } from "@/lib/helpers/course-material";
 import { interpolate } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
 import { courseDetailRows, courseStepContent, courseSteps } from "@/lib/helpers/student";
@@ -41,8 +42,8 @@ export default async function MyCoursePage() {
   const course = await getCourse(enrollment.courseCode, locale);
 
   const steps = courseStepContent(courseSteps(enrollment), enrollment, settings, {
-    material: courseMaterialPlaceholderHref,
-    materialDownload: courseMaterialPlaceholderHref,
+    material: courseMaterialHref,
+    materialDownload: courseMaterialDownloadHref(),
     exam: localizedHref(locale, "exam"),
     certificate: localizedHref(locale, "certificate"),
     contact: localizedHref(locale, "contact")

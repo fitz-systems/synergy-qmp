@@ -8,6 +8,7 @@ import { certificatePdfHref } from "@/constants/student";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getStudentCertificate } from "@/lib/certificate";
 import { getCourse } from "@/lib/courses";
+import { formatCredits } from "@/lib/helpers/certificate";
 import { interpolate } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
 import { certificateDetails } from "@/lib/helpers/student";
@@ -53,7 +54,8 @@ export default async function CertificatePage() {
             studentName={certificate.studentName}
             courseTitle={course.title}
             details={certificateDetails(certificate, copy, locale)}
-            credits={interpolate(copy.credits, { credits: certificate.credits.toLocaleString(locale) })}
+            credits={interpolate(copy.credits, { credits: formatCredits(locale, certificate.credits) })}
+            accreditation={copy.accreditation}
             referenceCode={interpolate(copy.referenceCode, { code: certificate.referenceCode })}
             labels={copy}
           />

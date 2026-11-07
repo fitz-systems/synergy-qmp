@@ -47,16 +47,24 @@ export function CourseSteps({ steps, labels }: CourseStepsProps) {
 
                 {step.actions.length > 0 && (
                   <div className="mt-5 flex flex-wrap gap-3">
-                    {step.actions.map((action) => (
-                      <Link
-                        key={action.label}
-                        href={action.href}
-                        className={`inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-[0.9375rem] font-semibold transition-colors duration-200 ${action.variant === "primary" ? "bg-brand text-ink hover:bg-brand-hover" : "border border-line-strong text-ink hover:border-ink"}`}
-                      >
-                        {action.icon === "download" && <Download aria-hidden className="size-4" strokeWidth={2}/>}
-                        {action.label}
-                      </Link>
-                    ))}
+                    {step.actions.map((action) => {
+                      const className = `inline-flex h-11 items-center justify-center gap-2 rounded-md px-5 text-[0.9375rem] font-semibold transition-colors duration-200 ${action.variant === "primary" ? "bg-brand text-ink hover:bg-brand-hover" : "border border-line-strong text-ink hover:border-ink"}`;
+                      const content = (
+                        <>
+                          {action.icon === "download" && <Download aria-hidden className="size-4" strokeWidth={2}/>}
+                          {action.label}
+                        </>
+                      );
+                      if (action.file) {
+                        const opensInTab = action.icon !== "download";
+                        return (
+                          <a key={action.label} href={action.href} target={opensInTab ? "_blank" : undefined} rel={opensInTab ? "noopener" : undefined} className={className}>
+                            {content}
+                          </a>
+                        );
+                      }
+                      return <Link key={action.label} href={action.href} className={className}>{content}</Link>;
+                    })}
                   </div>
                 )}
               </div>

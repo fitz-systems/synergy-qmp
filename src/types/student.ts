@@ -45,6 +45,7 @@ export interface StudentEnrollment {
   attemptsUsed: number;
   maxAttempts: number | null;
   examInProgress: boolean;
+  materialAvailable: boolean;
   passedOn?: string;
   scorePct?: number;
 }
@@ -59,6 +60,7 @@ export interface CourseStepAction {
   href: string;
   variant: "primary" | "secondary";
   icon?: "download";
+  file?: boolean;
 }
 
 export interface CourseStepContent extends CourseStep {

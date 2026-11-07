@@ -483,7 +483,8 @@
           "title": "Lire le matériel de cours",
           "body": "Parcourez le matériel de cours à votre rythme. Vous pouvez y revenir en tout temps.",
           "open": "Ouvrir le matériel de cours",
-          "download": "Télécharger le PDF"
+          "download": "Télécharger le PDF",
+          "unavailable": "Le matériel de cours sera bientôt disponible ici."
         },
         "exam": {
           "title": "Passer l'examen final",
@@ -613,7 +614,8 @@
       "validUntil": "Valide jusqu'au",
       "number": "N° de certificat",
       "referenceCode": "Numéro de référence RCEEM : {code}",
-      "credits": "{credits} crédit de catégorie A, ACTRM / CAMRT",
+      "accreditation": "Cette activité éducative a été approuvée par l'ACTRM et est reconnu par les organismes provinciaux de American Registry of Radiologic Technologists (ARRT).",
+      "credits": "A obtenu {credits} crédits Catégorie A",
       "accreditedBy": "Agréé par",
       "walletHint": "Carte de poche : découpez le long du pointillé et gardez-la sur vous.",
       "walletLabel": "{label} :"

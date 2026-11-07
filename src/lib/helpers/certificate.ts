@@ -33,6 +33,10 @@ export function studentCertificate(record: StudentEnrollmentRecord & { passedOn:
   }
 }
 
+export function formatCredits(locale: Locale, credits: number) {
+  return credits.toLocaleString(`${locale}-CA`, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
 export function certificateFileName(certificate: StudentCertificate) {
   return `synergy-qmp-certificate-${certificate.certificateNumber}.pdf`;
 }
