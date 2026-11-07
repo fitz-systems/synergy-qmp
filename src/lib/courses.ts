@@ -1,5 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
+import { enrollmentsCacheTag, reviewsCacheTag } from "@/constants/cache";
 import { courses } from "@/content/courses";
 import type { Locale } from "@/i18n/config";
 import { prisma } from "@/lib/prisma";
@@ -19,7 +20,7 @@ export async function courseCodeFromParams(params: Promise<{ code: string }>) {
 
 async function getStudentCounts(): Promise<Partial<Record<CourseCode, number>>> {
   "use cache";
-  cacheTag("enrollments");
+  cacheTag(enrollmentsCacheTag);
 
   try {
     const rows = await prisma.course.findMany({
@@ -49,9 +50,9 @@ export async function getCourse(code: CourseCode, locale: Locale): Promise<Cours
   return all.find((course) => course.code === code)!;
 }
 
-export async function getCourseReviews(locale: Locale): Promise<CourseReview[]> {
+export async function getPublishedReviews(locale: Locale): Promise<CourseReview[]> {
   "use cache";
-  cacheTag("reviews");
+  cacheTag(reviewsCacheTag);
 
   try {
     const reviews = await prisma.review.findMany({
@@ -62,7 +63,7 @@ export async function getCourseReviews(locale: Locale): Promise<CourseReview[]> 
     cacheLife("hours");
     return reviews;
   } catch (error) {
-    console.error("Failed to load course reviews", error);
+    console.error("Failed to load published reviews", error);
     cacheLife("seconds");
     return [];
   }

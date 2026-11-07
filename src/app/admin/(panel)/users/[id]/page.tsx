@@ -82,7 +82,7 @@ export default async function AdminUserPage({ params, searchParams }: PageProps<
       {searchParamValue(query, welcomeFailedParam) && (
         <div role="alert" className={cn("flex gap-2 rounded-md border px-4 py-3 text-sm", statusToneStyles.warning)}>
           <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0"/>
-          The account was created, but the welcome email couldn&apos;t be sent. Use Send password reset to try again.
+          The account was created, but the welcome email couldn&apos;t be sent. Use Send password reset to send it again.
         </div>
       )}
 

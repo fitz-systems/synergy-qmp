@@ -629,6 +629,14 @@
       "button": "Choisir un nouveau mot de passe",
       "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :",
       "ignore": "Si vous n'avez pas fait cette demande, vous pouvez ignorer ce courriel. Votre mot de passe ne changera pas."
+    },
+    "welcome": {
+      "subject": "Votre compte Synergy QMP est prêt",
+      "greeting": "Bonjour {name},",
+      "body": "Synergy QMP a créé un compte pour vous afin que vous puissiez suivre votre cours TMD classe 7 en ligne. Utilisez le bouton ci-dessous pour choisir un mot de passe, puis connectez-vous avec cette adresse courriel. Le lien expire dans 7 jours.",
+      "button": "Choisir mon mot de passe",
+      "fallback": "Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :",
+      "ignore": "Si vous ne vous attendiez pas à ce courriel, vous pouvez l'ignorer ou communiquer avec Synergy QMP."
     }
   }
 }

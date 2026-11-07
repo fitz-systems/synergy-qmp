@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidateTag } from "next/cache";
-import { enrollmentsCacheTag, importMessages } from "@/constants/admin";
+import { importMessages } from "@/constants/admin";
+import { enrollmentsCacheTag } from "@/constants/cache";
 import { importRows, previewImportRows } from "@/lib/admin-import";
 import { requireAdmin } from "@/lib/session";
 import type { ImportPreview, ImportRequest, ImportResult } from "@/types/admin";

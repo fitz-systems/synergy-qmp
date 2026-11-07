@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 import { getDictionaryFor } from "@/i18n/dictionaries";
-import { passwordResetEmail } from "@/lib/helpers/email";
+import { linkEmail } from "@/lib/helpers/email";
 import { resolveLocale } from "@/lib/helpers/locale";
 import type { AuthUserProfile } from "@/types/auth";
 import type { OutgoingEmail } from "@/types/email";
@@ -21,5 +21,10 @@ export async function sendEmail({ to, subject, html, text }: OutgoingEmail) {
 
 export async function sendPasswordResetEmail(user: AuthUserProfile, url: string) {
   const dict = await getDictionaryFor(resolveLocale(user.preferredLocale));
-  await sendEmail({ to: user.email, ...passwordResetEmail(dict.emails.passwordReset, { name: user.firstName ?? "", url }) });
+  await sendEmail({ to: user.email, ...linkEmail(dict.emails.passwordReset, { name: user.firstName ?? "", url }) });
+}
+
+export async function sendWelcomeEmail(user: AuthUserProfile, url: string) {
+  const dict = await getDictionaryFor(resolveLocale(user.preferredLocale));
+  await sendEmail({ to: user.email, ...linkEmail(dict.emails.welcome, { name: user.firstName ?? "", url }) });
 }

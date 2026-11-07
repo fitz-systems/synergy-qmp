@@ -4,8 +4,9 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import { nextCookies } from "better-auth/next-js";
-import { passwordMinLength, passwordResetTokenSeconds } from "@/constants/auth";
-import { sendPasswordResetEmail } from "@/lib/email";
+import { passwordMinLength, passwordResetTokenSeconds, resetTokenPrefix, welcomeTokenSeconds } from "@/constants/auth";
+import { hasPassword } from "@/lib/accounts";
+import { sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
 const LEGACY_MD5 = /^[a-f0-9]{32}$/i;
@@ -46,8 +47,13 @@ export const auth = betterAuth({
         return verifyPassword({ hash, password });
       }
     },
-    sendResetPassword: async ({ user, url }) => {
-      await sendPasswordResetEmail(user, url);
+    sendResetPassword: async ({ user, url, token }) => {
+      if (await hasPassword(Number(user.id))) {
+        await sendPasswordResetEmail(user, url);
+        return;
+      }
+      await prisma.verification.updateMany({ where: { identifier: `${resetTokenPrefix}${token}` }, data: { expiresAt: new Date(Date.now() + welcomeTokenSeconds * 1000) } });
+      await sendWelcomeEmail(user, url);
     }
   },
   databaseHooks: {

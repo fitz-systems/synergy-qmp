@@ -4,9 +4,9 @@ import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
 interface TestimonialItem {
-  id: string;
+  id: number;
   name: string;
-  role: string;
+  role: string | null;
   quote: string;
 }
 
@@ -101,7 +101,7 @@ export function Testimonials({ items, labels }: TestimonialsProps) {
           </blockquote>
           <figcaption className="mt-6">
             <span className="block font-semibold text-ink">{current.name}</span>
-            <span className="mt-0.5 block text-[0.9375rem] text-ink-subtle">{current.role}</span>
+            {current.role && <span className="mt-0.5 block text-[0.9375rem] text-ink-subtle">{current.role}</span>}
           </figcaption>
         </div>
       </figure>

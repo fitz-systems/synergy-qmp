@@ -121,7 +121,7 @@ function ImportTab({ kind, banks }: ImportTabProps) {
           <CardTitle>Upload a CSV file</CardTitle>
           <CardDescription>
             Columns: <span className="font-mono text-xs">{importColumns[kind].join(", ")}</span>
-            {kind === "users" && <span className="mt-1 block">Course is ground or air, language is en or fr. No emails are sent: use Send password reset on each student to give them access.</span>}
+            {kind === "users" && <span className="mt-1 block">Course is ground or air, language is en or fr. No emails are sent. Use Send password reset on each student to email them a welcome link to set their password.</span>}
             {kind === "questions" && <span className="mt-1 block">Correct is the letter of the right answer (A to D). Two answers like True / False or Vrai / Faux make a true / false question.</span>}
           </CardDescription>
         </CardHeader>

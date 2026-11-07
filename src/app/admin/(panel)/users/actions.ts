@@ -2,7 +2,8 @@
 
 import { refresh, revalidateTag } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { enrollmentsCacheTag, userActionMessages, welcomeFailedParam } from "@/constants/admin";
+import { userActionMessages, welcomeFailedParam } from "@/constants/admin";
+import { enrollmentsCacheTag } from "@/constants/cache";
 import { Prisma } from "@/generated/prisma/client";
 import { clearStudentPass, createStudent, markStudentPassed, reissueStudentCertificate, resetStudentAttempts, sendStudentPasswordReset, setStudentActive, setStudentPaid, updateStudent } from "@/lib/admin-user-mutations";
 import { adminUserHref, parseDateInput, readUserForm, validateUserForm } from "@/lib/helpers/admin";
@@ -38,7 +39,6 @@ export async function saveUser(userId: number | null, _previous: UserFormState, 
   revalidateTag(enrollmentsCacheTag, "max");
   let welcomeFailed = false;
   if (userId === null && values.sendWelcome) {
-    // Todo: Send a dedicated welcome email instead of the password reset email
     try {
       await requestPasswordResetLink(values.email, resolveLocale(values.locale));
     } catch (error) {

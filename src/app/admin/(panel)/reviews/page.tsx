@@ -22,7 +22,7 @@ export default async function AdminReviewsPage() {
     <>
       <AdminPageHeader
         title="Reviews"
-        description="Published reviews appear on the course pages in their language. Only publish reviews from real students who agreed to be quoted."
+        description="Published reviews appear on the home page and course pages in their language. The home page section is hidden when a language has none."
         crumbs={[{ label: "Dashboard", href: adminRoutes.dashboard }, { label: "Reviews" }]}
         actions={<Button asChild><Link href={adminRoutes.newReview}><Plus/>Add review</Link></Button>}
       />

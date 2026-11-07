@@ -265,6 +265,7 @@ export const adminAnswerSelect = {
 
 export const userActionMessages = {
   resetSent: "Password reset email sent.",
+  welcomeSent: "This student hasn't set a password yet, so they were sent the welcome email.",
   emailFailed: "The email couldn't be sent. Please try again.",
   notFound: "This student no longer exists.",
   noEnrollment: "This student isn't enrolled in a course.",
@@ -399,10 +400,6 @@ export const reviewActionMessages = {
   notFound: "This review no longer exists.",
   failed: "Something went wrong. Please try again."
 }
-
-export const reviewsCacheTag = "reviews";
-
-export const enrollmentsCacheTag = "enrollments";
 
 export const importMaxRows = 5000;
 

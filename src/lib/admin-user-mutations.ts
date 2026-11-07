@@ -2,6 +2,7 @@ import { auditActionLabels, userActionMessages } from "@/constants/admin";
 import { adminRole } from "@/constants/auth";
 import type { Prisma } from "@/generated/prisma/client";
 import { withEnrollmentLock } from "@/lib/attempts";
+import { hasPassword } from "@/lib/accounts";
 import { recordAudit } from "@/lib/audit";
 import { formatAdminDate, fullName, userChanges } from "@/lib/helpers/admin";
 import { certificateNumber } from "@/lib/helpers/certificate";
@@ -116,6 +117,7 @@ export async function updateStudent(adminId: number, userId: number, values: Use
 export async function sendStudentPasswordReset(adminId: number, userId: number): Promise<AdminActionResult> {
   const user = await findStudent(prisma, userId);
   if (!user) return { ok: false, error: userActionMessages.notFound }
+  const welcome = !await hasPassword(userId);
 
   try {
     await requestPasswordResetLink(user.email, resolveLocale(user.preferredLocale));
@@ -124,8 +126,8 @@ export async function sendStudentPasswordReset(adminId: number, userId: number):
     return { ok: false, error: userActionMessages.emailFailed }
   }
 
-  await recordAudit(prisma, { adminId, action: "passwordResetSent", entity: "user", entityId: userId, entityLabel: fullName(user), details: `Sent to ${user.email}` });
-  return { ok: true, message: userActionMessages.resetSent }
+  await recordAudit(prisma, { adminId, action: "passwordResetSent", entity: "user", entityId: userId, entityLabel: fullName(user), details: `${welcome ? "Welcome email" : "Password reset"} sent to ${user.email}` });
+  return { ok: true, message: welcome ? userActionMessages.welcomeSent : userActionMessages.resetSent }
 }
 
 export async function setStudentActive(adminId: number, userId: number, active: boolean): Promise<AdminActionResult> {

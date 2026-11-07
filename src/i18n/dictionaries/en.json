@@ -629,6 +629,14 @@
       "button": "Set a new password",
       "fallback": "If the button doesn't work, copy this link into your browser:",
       "ignore": "If you didn't ask for this, you can ignore this email. Your password won't change."
+    },
+    "welcome": {
+      "subject": "Your Synergy QMP account is ready",
+      "greeting": "Hello {name},",
+      "body": "Synergy QMP has created an account for you to take your TDG Class 7 course online. Use the button below to choose a password, then log in with this email address. The link expires in 7 days.",
+      "button": "Set your password",
+      "fallback": "If the button doesn't work, copy this link into your browser:",
+      "ignore": "If you weren't expecting this email, you can ignore it or contact Synergy QMP."
     }
   }
 }

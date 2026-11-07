@@ -2,7 +2,8 @@
 
 import { updateTag } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { adminRoutes, reviewActionMessages, reviewsCacheTag } from "@/constants/admin";
+import { adminRoutes, reviewActionMessages } from "@/constants/admin";
+import { reviewsCacheTag } from "@/constants/cache";
 import { deleteReview as deleteStoredReview, saveReview as saveStoredReview } from "@/lib/admin-review-mutations";
 import { readReviewForm, validateReviewForm } from "@/lib/helpers/admin-reviews";
 import { requireAdmin } from "@/lib/session";

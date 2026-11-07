@@ -1,12 +1,12 @@
 import { emailColors } from "@/constants/email";
-import type { EmailContent, PasswordResetEmailCopy } from "@/types/email";
+import type { EmailContent, LinkEmailCopy } from "@/types/email";
 import { interpolate } from "./format";
 
 export function escapeHtml(value: string) {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-export function passwordResetEmail(copy: PasswordResetEmailCopy, { name, url }: { name: string; url: string }): EmailContent {
+export function linkEmail(copy: LinkEmailCopy, { name, url }: { name: string; url: string }): EmailContent {
   const greeting = interpolate(copy.greeting, { name }).replace(/\s+,/, ",");
   const href = escapeHtml(url);
   const paragraph = `margin:0 0 16px;font-size:16px;line-height:1.6;color:${emailColors.ink}`;

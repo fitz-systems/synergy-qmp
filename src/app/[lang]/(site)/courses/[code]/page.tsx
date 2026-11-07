@@ -15,7 +15,7 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourseListItems } from "@/lib/course-list";
-import { courseCodeFromParams, courseCodes, getCourse, getCourseReviews } from "@/lib/courses";
+import { courseCodeFromParams, courseCodes, getCourse, getPublishedReviews } from "@/lib/courses";
 import { formatPrice, interpolate, plural } from "@/lib/helpers/format";
 import { summarizeRatings } from "@/lib/helpers/reviews";
 import { courseHref, localizedHref } from "@/lib/helpers/routes";
@@ -73,7 +73,7 @@ async function CourseShell() {
 async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[code]">, "params">) {
   const code = await courseCodeFromParams(params);
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
-  const [course, reviews, listItems] = await Promise.all([getCourse(code, locale), getCourseReviews(locale), getCourseListItems()]);
+  const [course, reviews, listItems] = await Promise.all([getCourse(code, locale), getPublishedReviews(locale), getCourseListItems()]);
 
   const copy = dict.coursesPage;
   const detail = copy.detail;

@@ -27,6 +27,10 @@ export const passwordMinLength = 8;
 
 export const passwordResetTokenSeconds = 60 * 60;
 
+export const welcomeTokenSeconds = 7 * 24 * 60 * 60;
+
+export const resetTokenPrefix = "reset-password:";
+
 export const resetTokenField = "token";
 
 export const invalidTokenCode = "INVALID_TOKEN";
