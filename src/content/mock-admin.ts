@@ -1,55 +1,7 @@
 import { locales } from "@/i18n/config";
-import type { AdminAttempt, ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview, AdminUser, AuditEntry, CoursePassRate, EnrollmentStatus, MonthlyRegistrations } from "@/types/admin";
+import type { ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview } from "@/types/admin";
 
 // Todo: Placeholder data for designing the admin; replace with database queries once the migration has run
-
-const people = [
-  ["Jordan", "Tremblay"], ["Priya", "Natarajan"], ["Marc", "Gagnon"], ["Aisha", "Okafor"], ["Daniel", "Kowalski"],
-  ["Sophie", "Bouchard"], ["Ethan", "Li"], ["Fatima", "Haddad"], ["Lucas", "Roy"], ["Grace", "MacDonald"],
-  ["Noah", "Singh"], ["Chloé", "Pelletier"], ["Omar", "Farah"], ["Hannah", "Wright"], ["Mateo", "Silva"],
-  ["Isabelle", "Côté"], ["Ryan", "O'Brien"], ["Mei", "Chen"], ["Samuel", "Bergeron"], ["Leila", "Ahmadi"],
-  ["Thomas", "Fortin"], ["Ava", "Thompson"], ["Gabriel", "Lavoie"], ["Nadia", "Petrova"]
-];
-
-const companies = ["Northview Health", "Lakeshore Imaging", "Centre hospitalier Rive-Sud", "Maple Radiopharmacy", "Summit Medical Physics", "Bay Street Diagnostics"];
-
-const statuses: EnrollmentStatus[] = ["passed", "passed", "inProgress", "notStarted", "passed", "failed", "passed", "inProgress"];
-
-export const mockAdminUsers: AdminUser[] = people.map(([firstName, lastName], index) => {
-  const status = statuses[index % statuses.length];
-  const locale = index % 3 === 1 ? "fr" : "en";
-  const day = String(1 + (index * 3) % 27).padStart(2, "0");
-  return {
-    id: 1001 + index,
-    firstName,
-    lastName,
-    email: `${firstName}.${lastName}`.toLowerCase().normalize("NFD").replace(/[^a-z.]/g, "") + "@example.com",
-    company: companies[index % companies.length],
-    courseCode: index % 4 === 3 ? "air" : "ground",
-    locale,
-    status,
-    enrolledOn: `2026-${index < 12 ? "10" : "09"}-${day}`,
-    passedOn: status === "passed" ? `2026-10-${String(Number(day) + 1).padStart(2, "0")}` : undefined,
-    certificateNumber: status === "passed" ? `SQMP-2026-${String(400 + index).padStart(4, "0")}` : undefined,
-    attemptsUsed: status === "notStarted" ? 0 : status === "failed" ? 2 : 1,
-    active: index !== 9,
-    notes: index === 0 ? "Employer arranged enrollment for three staff." : undefined
-  }
-});
-
-export const mockAdminAttempts: AdminAttempt[] = mockAdminUsers
-  .filter((user) => user.status === "passed" || user.status === "failed")
-  .map((user, index) => ({
-    id: 5001 + index,
-    userId: user.id,
-    userName: `${user.firstName} ${user.lastName}`,
-    courseCode: user.courseCode,
-    locale: user.locale,
-    submittedAt: `2026-11-0${1 + (index % 5)}T1${index % 9}:2${index % 6}:00Z`,
-    correctCount: user.status === "passed" ? 16 + (index % 5) : 12,
-    questionCount: user.courseCode === "air" ? 28 : 20,
-    passed: user.status === "passed"
-  }));
 
 export const mockAdminCourses: AdminCourse[] = [
   {
@@ -112,33 +64,6 @@ export const mockAdminReviews: AdminReview[] = [
   { id: 1, author: "Sample reviewer A", roleCompany: "Field service representative", locale: "en", body: "Placeholder review. Real, approved reviews from certified students will replace this text.", rating: 5, published: true, sortOrder: 1 },
   { id: 2, author: "Sample reviewer B", roleCompany: "SPECT lab technician", locale: "en", body: "Placeholder review. Real, approved reviews from certified students will replace this text.", rating: 4, published: false, sortOrder: 2 },
   { id: 3, author: "Exemple d'avis C", roleCompany: "Technologue en électronique", locale: "fr", body: "Avis provisoire. De vrais avis approuvés d'étudiants certifiés remplaceront ce texte.", rating: 5, published: true, sortOrder: 1 }
-];
-
-export const mockAuditLog: AuditEntry[] = [
-  { id: 1, at: "2026-11-05T14:12:00Z", admin: "Sample Admin", action: "Created user", entity: "User", entityLabel: "Jordan Tremblay", details: "Enrolled in TDG – Class 7 Ground (English)" },
-  { id: 2, at: "2026-11-05T13:40:00Z", admin: "Sample Admin", action: "Reset attempts", entity: "User", entityLabel: "Sophie Bouchard", details: "Attempts reset from 2 to 0" },
-  { id: 3, at: "2026-11-05T11:05:00Z", admin: "Sample Admin", action: "Edited question", entity: "Question", entityLabel: "Ground · English #12", details: "Prompt wording changed" },
-  { id: 4, at: "2026-11-04T16:22:00Z", admin: "Sample Admin", action: "Published review", entity: "Review", entityLabel: "Sample reviewer A", details: "Shown on the English home page" },
-  { id: 5, at: "2026-11-04T10:18:00Z", admin: "Sample Admin", action: "Imported users", entity: "Import", entityLabel: "users-november.csv", details: "14 created, 2 skipped (duplicate email)" },
-  { id: 6, at: "2026-11-03T15:51:00Z", admin: "Sample Admin", action: "Reissued certificate", entity: "Certificate", entityLabel: "SQMP-2026-0404", details: "New PDF generated" },
-  { id: 7, at: "2026-11-03T09:30:00Z", admin: "Sample Admin", action: "Deactivated user", entity: "User", entityLabel: "Grace MacDonald", details: "Left employer" },
-  { id: 8, at: "2026-11-02T14:02:00Z", admin: "Sample Admin", action: "Updated exam settings", entity: "Course", entityLabel: "TDG – Class 7 Air", details: "Time limit changed from 90 to 120 minutes" }
-];
-
-export const mockMonthlyRegistrations: MonthlyRegistrations[] = [
-  { month: "Jun", registrations: 31 },
-  { month: "Jul", registrations: 24 },
-  { month: "Aug", registrations: 38 },
-  { month: "Sep", registrations: 52 },
-  { month: "Oct", registrations: 61 },
-  { month: "Nov", registrations: 19 }
-];
-
-export const mockPassRates: CoursePassRate[] = [
-  { course: "Ground EN", passRate: 91 },
-  { course: "Ground FR", passRate: 88 },
-  { course: "Air EN", passRate: 84 },
-  { course: "Air FR", passRate: 79 }
 ];
 
 export const mockImportPreview: Record<ImportKind, ImportPreviewRow[]> = {

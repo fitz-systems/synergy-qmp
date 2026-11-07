@@ -1,7 +1,8 @@
 import { BookOpen, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
 import type { ChartConfig } from "@/components/ui/chart";
+import { businessTimeZone } from "@/constants/student";
 import type { Prisma } from "@/generated/prisma/client";
-import type { AdminLoginField, AdminNavGroup, AdminRoute, AdminTableFilter, AdminThemeOption, AuditAction, EnrollmentStatus, ImportKind, QuestionType, SelectOption, StatusTone, UserFormError, UserFormField } from "@/types/admin";
+import type { AdminLoginField, AdminNavGroup, AdminRoute, AdminTableFilter, AdminThemeOption, AuditAction, AuditEntity, EnrollmentStatus, ImportKind, QuestionType, SelectOption, StatusTone, UserFormError, UserFormField } from "@/types/admin";
 import type { LoginFailureStatus, LoginField, LoginFieldError } from "@/types/auth";
 
 export const adminRoutes: Record<AdminRoute, string> = {
@@ -114,7 +115,7 @@ export const adminSidebarWidth = "16rem";
 
 export const adminDateFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: "UTC" });
 
-export const adminDateTimeFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" });
+export const adminDateTimeFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: businessTimeZone });
 
 export const adminLoginNotices: Record<LoginFailureStatus, string> = {
   invalidCredentials: "The email or password is incorrect, or this account doesn't have admin access.",
@@ -145,7 +146,49 @@ export const ratingOptions: SelectOption[] = [5, 4, 3, 2, 1].map((rating) => ({ 
 
 export const auditEntityFilter = "entity";
 
-export const auditEntityOptions: SelectOption[] = ["User", "Question", "Review", "Course", "Certificate", "Import"].map((entity) => ({ value: entity.toLowerCase(), label: entity }));
+export const auditEntityLabels: Record<AuditEntity, string> = {
+  user: "User",
+  certificate: "Certificate",
+  course: "Course",
+  question: "Question",
+  review: "Review",
+  import: "Import"
+}
+
+export const auditEntityOptions: SelectOption[] = Object.entries(auditEntityLabels).map(([value, label]) => ({ value, label }));
+
+export const auditLogFilters: AdminTableFilter[] = [
+  { param: auditEntityFilter, label: "Record type", allLabel: "All records", options: auditEntityOptions }
+];
+
+export const auditLogSelect = {
+  id: true,
+  action: true,
+  entity: true,
+  entityId: true,
+  entityLabel: true,
+  details: true,
+  createdAt: true,
+  admin: { select: { firstName: true, lastName: true, email: true } }
+} satisfies Prisma.AuditLogSelect;
+
+export const removedAdminLabel = "Removed admin";
+
+export const dashboardAttemptSelect = {
+  id: true,
+  startedAt: true,
+  submittedAt: true,
+  correctCount: true,
+  questionCount: true,
+  passed: true,
+  enrollment: { select: { locale: true, user: { select: { id: true, firstName: true, lastName: true } }, courseLocale: { select: { course: { select: { code: true } } } } } }
+} satisfies Prisma.AttemptSelect;
+
+export const dashboardRecentAttempts = 6;
+
+export const dashboardMonths = 12;
+
+export const dashboardMonthFormat = new Intl.DateTimeFormat("en-CA", { month: "short", year: "2-digit", timeZone: "UTC" });
 
 export const adminThemeOptions: AdminThemeOption[] = [
   { value: "light", label: "Light", icon: Sun },

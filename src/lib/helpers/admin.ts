@@ -1,6 +1,6 @@
-import { adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, courseOptions, enrollmentStatusLabels, languageOptions, userFormErrors } from "@/constants/admin";
+import { adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, userFormErrors } from "@/constants/admin";
 import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
-import type { AdminAttempt, AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminQuestionOption, AdminRoute, AdminSearchParams, AdminUser, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, DashboardStat, EnrollmentStatus, QuestionBank, QuestionType, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
+import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminQuestionOption, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, QuestionType, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
 import type { LoginField, LoginFormState, SessionUser } from "@/types/auth";
 import type { CourseCode } from "@/types/courses";
 import { businessDate, isAttemptInProgress } from "./exam";
@@ -46,7 +46,7 @@ export function adminCourseHref(code: string) {
   return `/admin/courses/${code}`;
 }
 
-export function fullName(user: Pick<AdminUser, "firstName" | "lastName">) {
+export function fullName(user: { firstName: string; lastName: string }) {
   return `${user.firstName} ${user.lastName}`;
 }
 
@@ -72,22 +72,6 @@ export function questionBanks(courses: Pick<AdminCourse, "code">[]): QuestionBan
 
 export function questionBankValue(bank: Pick<QuestionBank, "courseCode" | "locale">) {
   return `${bank.courseCode}-${bank.locale}`;
-}
-
-export function attemptScorePct(attempt: AdminAttempt) {
-  return Math.round((attempt.correctCount / attempt.questionCount) * 100);
-}
-
-export function dashboardStats(users: AdminUser[], attempts: AdminAttempt[]): DashboardStat[] {
-  const active = users.filter((user) => user.active).length;
-  const passed = attempts.filter((attempt) => attempt.passed).length;
-  const passRate = attempts.length ? Math.round((passed / attempts.length) * 100) : 0;
-  return [
-    { label: "Active students", value: active.toLocaleString("en-CA"), note: `${users.length - active} deactivated` },
-    { label: "Attempts this month", value: attempts.length.toLocaleString("en-CA"), note: "Submitted exams" },
-    { label: "Pass rate", value: `${passRate}%`, note: "All courses" },
-    { label: "Certificates issued", value: users.filter((user) => user.certificateNumber).length.toLocaleString("en-CA"), note: "Valid for 3 years" }
-  ];
 }
 
 export function pageCount(total: number, pageSize: number) {
@@ -140,15 +124,19 @@ export function isCourseOption(value: string): value is CourseCode {
   return courseOptions.some((option) => option.value === value);
 }
 
+function pageParam(params: AdminSearchParams) {
+  const page = Number.parseInt(searchParamValue(params, adminPageParam), 10);
+  return Number.isInteger(page) && page > 0 ? page : 1;
+}
+
 export function parseUserListQuery(params: AdminSearchParams): AdminUserListQuery {
   const course = searchParamValue(params, "course");
   const status = searchParamValue(params, "status");
-  const page = Number.parseInt(searchParamValue(params, adminPageParam), 10);
   return {
     search: searchParamValue(params, adminSearchParam),
     course: isCourseOption(course) ? course : undefined,
     status: isEnrollmentStatus(status) ? status : undefined,
-    page: Number.isInteger(page) && page > 0 ? page : 1
+    page: pageParam(params)
   }
 }
 
@@ -369,4 +357,107 @@ export function userChanges(user: ProfileSnapshot, enrollment: EnrollmentSnapsho
     [(enrollment?.notes ?? "") !== values.notes, "notes"]
   ];
   return changes.filter(([changed]) => changed).map(([, label]) => label);
+}
+
+export function isAuditEntity(value: string): value is AuditEntity {
+  return value in auditEntityLabels;
+}
+
+export function parseAuditLogQuery(params: AdminSearchParams): AuditLogQuery {
+  const entity = searchParamValue(params, auditEntityFilter);
+  return {
+    search: searchParamValue(params, adminSearchParam),
+    entity: isAuditEntity(entity) ? entity : undefined,
+    page: pageParam(params)
+  }
+}
+
+export function auditLogFilterValues(query: AuditLogQuery): Record<string, string> {
+  return { [adminSearchParam]: query.search, [auditEntityFilter]: query.entity ?? adminFilterAll }
+}
+
+export function auditActionsMatching(search: string) {
+  const needle = search.toLowerCase();
+  return Object.entries(auditActionLabels).filter(([, label]) => label.toLowerCase().includes(needle)).map(([action]) => action);
+}
+
+function auditActionLabel(action: string) {
+  return action in auditActionLabels ? auditActionLabels[action as keyof typeof auditActionLabels] : action;
+}
+
+function auditEntityHref(entity: AuditEntity, entityId: string | null) {
+  const id = Number(entityId);
+  if (!Number.isInteger(id) || id <= 0) return undefined;
+  if (entity === "user") return adminUserHref(id);
+  if (entity === "certificate") return adminCertificateHref(id);
+  return undefined;
+}
+
+export function auditEntry(record: AuditLogRecord): AuditEntry {
+  const entity = isAuditEntity(record.entity) ? record.entity : "user";
+  return {
+    id: record.id,
+    at: record.createdAt.toISOString(),
+    admin: record.admin ? fullName(record.admin).trim() || record.admin.email : removedAdminLabel,
+    action: auditActionLabel(record.action),
+    entity,
+    entityLabel: record.entityLabel,
+    href: auditEntityHref(entity, record.entityId),
+    details: record.details
+  }
+}
+
+function percent(part: number, whole: number) {
+  return whole === 0 ? 0 : Math.round((part / whole) * 100);
+}
+
+function formatCount(value: number) {
+  return value.toLocaleString("en-CA");
+}
+
+export function dashboardStats(counts: DashboardCountsRecord, passRates: PassRateRecord[]): DashboardStat[] {
+  const submitted = passRates.reduce((sum, row) => sum + row.submitted, 0);
+  const passed = passRates.reduce((sum, row) => sum + row.passed, 0);
+  return [
+    { label: "Active students", value: formatCount(counts.active_students), note: `${formatCount(counts.deactivated_students)} deactivated` },
+    { label: "Attempts this month", value: formatCount(counts.attempts_this_month), note: `${formatCount(counts.passed_attempts_this_month)} passed` },
+    { label: "Pass rate", value: `${percent(passed, submitted)}%`, note: `${formatCount(passed)} of ${formatCount(submitted)} exams, last 12 months` },
+    { label: "Passed this year", value: formatCount(counts.passed_this_year), note: `${formatCount(counts.passed_total)} passed in total` }
+  ];
+}
+
+function bankOrder(row: PassRateRecord) {
+  const courseIndex = courseOptions.findIndex((option) => option.value === row.course_code);
+  return courseIndex * locales.length + locales.indexOf(localeOf(row.locale));
+}
+
+export function coursePassRates(records: PassRateRecord[]): CoursePassRate[] {
+  return records
+    .filter((row) => row.submitted > 0)
+    .toSorted((a, b) => bankOrder(a) - bankOrder(b))
+    .map((row) => ({ course: `${courseLabel(courseCodeOf(row.course_code))} ${row.locale.toUpperCase()}`, passRate: percent(row.passed, row.submitted) }));
+}
+
+export function monthlyRegistrations(records: MonthlyRegistrationsRecord[], now: Date): MonthlyRegistrations[] {
+  const today = businessDate(now);
+  const counts = new Map(records.map((row) => [row.month, row.registrations]));
+  return Array.from({ length: dashboardMonths }, (_, index) => {
+    const month = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - (dashboardMonths - 1 - index), 1));
+    return { month: dashboardMonthFormat.format(month), registrations: counts.get(month.toISOString().slice(0, 7)) ?? 0 }
+  });
+}
+
+export function dashboardAttempt(record: DashboardAttemptRecord): DashboardAttempt {
+  const { enrollment } = record;
+  return {
+    id: record.id,
+    userId: enrollment.user.id,
+    userName: fullName(enrollment.user),
+    courseCode: courseCodeOf(enrollment.courseLocale.course.code),
+    locale: localeOf(enrollment.locale),
+    submittedAt: (record.submittedAt ?? record.startedAt).toISOString(),
+    correctCount: record.correctCount,
+    questionCount: record.questionCount,
+    passed: record.passed === true
+  }
 }

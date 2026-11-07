@@ -1,17 +1,9 @@
-import { mockAdminAttempts, mockAdminCourses, mockAdminQuestions, mockAdminReviews, mockAdminUsers, mockAuditLog, mockImportPreview, mockMonthlyRegistrations, mockPassRates } from "@/content/mock-admin";
+import { mockAdminCourses, mockAdminQuestions, mockAdminReviews, mockImportPreview } from "@/content/mock-admin";
 import { hasLocale, type Locale } from "@/i18n/config";
-import type { AdminAttempt, ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview, CourseQuestionBank, AdminUser, AuditEntry, CoursePassRate, MonthlyRegistrations } from "@/types/admin";
+import type { ImportKind, ImportPreviewRow, AdminCourse, AdminQuestion, AdminReview, CourseQuestionBank } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
 
 // Todo: Query the database (and check the admin session) instead of returning placeholder data
-
-export async function getAdminUsers(): Promise<AdminUser[]> {
-  return mockAdminUsers;
-}
-
-export async function getAdminAttempts(userId?: number): Promise<AdminAttempt[]> {
-  return userId ? mockAdminAttempts.filter((attempt) => attempt.userId === userId) : mockAdminAttempts;
-}
 
 export async function getAdminCourses(): Promise<AdminCourse[]> {
   return mockAdminCourses;
@@ -41,18 +33,6 @@ export async function getAdminReviews(): Promise<AdminReview[]> {
 
 export async function getAdminReview(id: number): Promise<AdminReview | undefined> {
   return mockAdminReviews.find((review) => review.id === id);
-}
-
-export async function getAuditLog(): Promise<AuditEntry[]> {
-  return mockAuditLog;
-}
-
-export async function getMonthlyRegistrations(): Promise<MonthlyRegistrations[]> {
-  return mockMonthlyRegistrations;
-}
-
-export async function getPassRates(): Promise<CoursePassRate[]> {
-  return mockPassRates;
 }
 
 export async function getImportPreview(): Promise<Record<ImportKind, ImportPreviewRow[]>> {

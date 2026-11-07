@@ -8,16 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { adminRoutes, statusToneStyles } from "@/constants/admin";
-import { getAdminAttempts, getAdminUsers, getMonthlyRegistrations, getPassRates } from "@/lib/admin";
-import { adminUserHref, attemptScorePct, courseLabel, dashboardStats, formatAdminDateTime, languageLabel } from "@/lib/helpers/admin";
+import { getAdminDashboard } from "@/lib/admin-dashboard";
+import { adminUserHref, enrollmentLabel, formatAdminDateTime, scoreLabel } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {
   title: "Dashboard"
 }
 
 export default async function AdminDashboardPage() {
-  const [users, attempts, registrations, passRates] = await Promise.all([getAdminUsers(), getAdminAttempts(), getMonthlyRegistrations(), getPassRates()]);
-  const recent = attempts.toSorted((a, b) => b.submittedAt.localeCompare(a.submittedAt)).slice(0, 6);
+  const { stats, registrations, passRates, recentAttempts } = await getAdminDashboard();
 
   return (
     <>
@@ -28,7 +27,7 @@ export default async function AdminDashboardPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {dashboardStats(users, attempts).map((stat) => (
+        {stats.map((stat) => (
           <Card key={stat.label} className="gap-2">
             <CardHeader>
               <CardDescription>{stat.label}</CardDescription>
@@ -62,14 +61,14 @@ export default async function AdminDashboardPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recent.map((attempt) => (
+            {recentAttempts.map((attempt) => (
               <TableRow key={attempt.id}>
                 <TableCell className="pl-6 font-medium">
                   <Link href={adminUserHref(attempt.userId)} className="hover:underline">{attempt.userName}</Link>
                 </TableCell>
-                <TableCell>{courseLabel(attempt.courseCode)} · {languageLabel(attempt.locale)}</TableCell>
+                <TableCell>{enrollmentLabel(attempt.courseCode, attempt.locale)}</TableCell>
                 <TableCell className="text-muted-foreground">{formatAdminDateTime(attempt.submittedAt)}</TableCell>
-                <TableCell className="text-right tabular-nums">{attempt.correctCount}/{attempt.questionCount} ({attemptScorePct(attempt)}%)</TableCell>
+                <TableCell className="text-right tabular-nums">{scoreLabel(attempt.correctCount, attempt.questionCount)}</TableCell>
                 <TableCell className="pr-6 text-right">
                   <Badge variant="outline" className={attempt.passed ? statusToneStyles.success : statusToneStyles.danger}>
                     {attempt.passed ? "Passed" : "Failed"}
@@ -77,6 +76,11 @@ export default async function AdminDashboardPage() {
                 </TableCell>
               </TableRow>
             ))}
+            {recentAttempts.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">No exams submitted yet.</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </Card>

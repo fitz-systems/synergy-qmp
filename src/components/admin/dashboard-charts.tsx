@@ -17,7 +17,7 @@ export function DashboardCharts({ registrations, passRates }: DashboardChartsPro
       <Card>
         <CardHeader>
           <CardTitle>Registrations</CardTitle>
-          <CardDescription>New students per month, last 6 months</CardDescription>
+          <CardDescription>New enrollments per month, last 12 months</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={registrationsChartConfig} className="h-64 w-full">
@@ -34,7 +34,7 @@ export function DashboardCharts({ registrations, passRates }: DashboardChartsPro
       <Card>
         <CardHeader>
           <CardTitle>Pass rate by course</CardTitle>
-          <CardDescription>Share of submitted exams that passed</CardDescription>
+          <CardDescription>Share of submitted exams that passed, last 12 months</CardDescription>
         </CardHeader>
         <CardContent>
           <ChartContainer config={passRateChartConfig} className="h-64 w-full">

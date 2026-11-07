@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { adminUserDetailSelect } from "@/constants/admin";
+import type { adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
@@ -39,31 +39,14 @@ export interface AdminCrumb {
   href?: string;
 }
 
-export interface AdminUser {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  company: string;
-  courseCode: CourseCode;
-  locale: Locale;
-  status: EnrollmentStatus;
-  enrolledOn: string;
-  passedOn?: string;
-  certificateNumber?: string;
-  attemptsUsed: number;
-  active: boolean;
-  notes?: string;
-}
-
-export interface AdminAttempt {
+export interface DashboardAttempt {
   id: number;
   userId: number;
   userName: string;
   courseCode: CourseCode;
   locale: Locale;
   submittedAt: string;
-  correctCount: number;
+  correctCount: number | null;
   questionCount: number;
   passed: boolean;
 }
@@ -117,9 +100,44 @@ export interface AuditEntry {
   at: string;
   admin: string;
   action: string;
-  entity: string;
+  entity: AuditEntity;
   entityLabel: string;
-  details: string;
+  href?: string;
+  details: string | null;
+}
+
+export interface AuditLogQuery {
+  search: string;
+  entity?: AuditEntity;
+  page: number;
+}
+
+export interface DashboardCountsRecord {
+  active_students: number;
+  deactivated_students: number;
+  attempts_this_month: number;
+  passed_attempts_this_month: number;
+  passed_this_year: number;
+  passed_total: number;
+}
+
+export interface PassRateRecord {
+  course_code: string;
+  locale: string;
+  submitted: number;
+  passed: number;
+}
+
+export interface MonthlyRegistrationsRecord {
+  month: string;
+  registrations: number;
+}
+
+export interface AdminDashboard {
+  stats: DashboardStat[];
+  registrations: MonthlyRegistrations[];
+  passRates: CoursePassRate[];
+  recentAttempts: DashboardAttempt[];
 }
 
 export interface DashboardStat {
@@ -172,14 +190,18 @@ export interface AdminUserRow {
   active: boolean;
 }
 
-export interface AdminUserPage {
-  rows: AdminUserRow[];
+export interface AdminListPage<Row> {
+  rows: Row[];
   total: number;
   page: number;
   pageCount: number;
   from: number;
   to: number;
 }
+
+export type AdminUserPage = AdminListPage<AdminUserRow>;
+
+export type AuditLogPage = AdminListPage<AuditEntry>;
 
 export interface AdminUserListRecord {
   id: number;
@@ -273,7 +295,7 @@ export type AdminActionResult = { ok: true; message?: string } | { ok: false; er
 
 export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued";
 
-export type AuditEntity = "user" | "certificate";
+export type AuditEntity = "user" | "certificate" | "course" | "question" | "review" | "import";
 
 export interface AuditInput {
   adminId: number;
@@ -314,5 +336,9 @@ export interface AdminLoginField {
 }
 
 export type AdminUserDetailRecord = Prisma.UserGetPayload<{ select: typeof adminUserDetailSelect }>;
+
+export type DashboardAttemptRecord = Prisma.AttemptGetPayload<{ select: typeof dashboardAttemptSelect }>;
+
+export type AuditLogRecord = Prisma.AuditLogGetPayload<{ select: typeof auditLogSelect }>;
 
 export type AdminEnrollmentRecord = AdminUserDetailRecord["enrollments"][number];
