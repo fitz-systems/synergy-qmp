@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
+import type { adminCourseSelect, adminQuestionSelect, adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
@@ -83,16 +83,63 @@ export interface AdminCourse {
   code: CourseCode;
   names: Record<Locale, string>;
   descriptions: Record<Locale, string>;
-  materialFiles: Record<Locale, string | null>;
+  materialUploaded: Record<Locale, boolean>;
   certificateCodes: Record<Locale, string>;
   questionCounts: Record<Locale, number>;
+  activeQuestionCounts: Record<Locale, number>;
   questionsPerAttempt: number;
   passMarkPct: number;
   timeLimitMinutes: number;
   maxAttempts: number | null;
+  certificateValidMonths: number;
   shuffleQuestions: boolean;
   shuffleAnswers: boolean;
   active: boolean;
+}
+
+export type CourseSetting = "passMarkPct" | "questionsPerAttempt" | "timeLimitMinutes" | "maxAttempts" | "certificateValidMonths";
+
+export type CourseLocaleField = "name" | "description" | "certificateCode";
+
+export type CourseSettings = Record<Exclude<CourseSetting, "maxAttempts">, number> & { maxAttempts: number | null }
+
+export type CourseFormField = CourseSetting | `${Exclude<CourseLocaleField, "description">}.${Locale}`;
+
+export type CourseFormValues = Record<CourseSetting, string> & Record<`${CourseLocaleField}.${Locale}`, string> & {
+  shuffleQuestions: boolean;
+  shuffleAnswers: boolean;
+  active: boolean;
+}
+
+export interface CourseFormState {
+  status: "idle" | "invalid" | "failed";
+  values: CourseFormValues;
+  errors: Partial<Record<CourseFormField, string>>;
+}
+
+export type QuestionFormField = "prompt" | "options" | "sortOrder" | "active";
+
+export interface QuestionFormValues {
+  type: QuestionType;
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+  explanation: string;
+  sortOrder: string;
+  active: boolean;
+}
+
+export interface QuestionFormState {
+  status: "idle" | "invalid" | "failed";
+  values: QuestionFormValues;
+  errors: Partial<Record<QuestionFormField, string>>;
+}
+
+export type QuestionStatus = "active" | "hidden";
+
+export interface AdminQuestionListQuery {
+  search: string;
+  status?: QuestionStatus;
 }
 
 export interface AuditEntry {
@@ -270,7 +317,7 @@ export interface AdminUserDetail {
 
 export type UserFormField = "firstName" | "lastName" | "email" | "course" | "locale";
 
-export type UserFormError = "required" | "invalidEmail" | "emailTaken" | "invalidCourse" | "courseLocked";
+export type UserFormError = "required" | "invalidEmail" | "emailTaken" | "invalidCourse" | "courseLocked" | "inactiveCourse";
 
 export interface UserFormValues {
   firstName: string;
@@ -293,7 +340,7 @@ export interface UserFormState {
 
 export type AdminActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
-export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued";
+export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued" | "courseUpdated" | "courseMaterialUploaded" | "questionCreated" | "questionUpdated" | "questionDeleted";
 
 export type AuditEntity = "user" | "certificate" | "course" | "question" | "review" | "import";
 
@@ -301,7 +348,7 @@ export interface AuditInput {
   adminId: number;
   action: AuditAction;
   entity: AuditEntity;
-  entityId: number;
+  entityId: number | string;
   entityLabel: string;
   details?: string;
 }
@@ -340,5 +387,9 @@ export type AdminUserDetailRecord = Prisma.UserGetPayload<{ select: typeof admin
 export type DashboardAttemptRecord = Prisma.AttemptGetPayload<{ select: typeof dashboardAttemptSelect }>;
 
 export type AuditLogRecord = Prisma.AuditLogGetPayload<{ select: typeof auditLogSelect }>;
+
+export type AdminCourseRecord = Prisma.CourseGetPayload<{ select: typeof adminCourseSelect }>;
+
+export type AdminQuestionRecord = Prisma.QuestionGetPayload<{ select: typeof adminQuestionSelect }>;
 
 export type AdminEnrollmentRecord = AdminUserDetailRecord["enrollments"][number];

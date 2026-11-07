@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { AdminPageHeader } from "@/components/admin/admin-page-header";
 import { ImportPanel } from "@/components/admin/import-panel";
 import { adminRoutes } from "@/constants/admin";
-import { getAdminCourses, getImportPreview } from "@/lib/admin";
+import { getImportPreview } from "@/lib/admin";
+import { getAdminCourses } from "@/lib/admin-courses";
 import { questionBanks } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {

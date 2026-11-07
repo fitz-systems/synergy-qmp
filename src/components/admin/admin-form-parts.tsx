@@ -26,6 +26,8 @@ interface AdminSwitchFieldProps {
   label: string;
   hint: string;
   checked: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  error?: string;
   className?: string;
 }
 
@@ -59,14 +61,19 @@ export function AdminField({ id, label, hint, error, className, children }: Admi
   );
 }
 
-export function AdminSwitchField({ name, label, hint, checked, className = "" }: AdminSwitchFieldProps) {
+export function AdminSwitchField({ name, label, hint, checked, onCheckedChange, error, className = "" }: AdminSwitchFieldProps) {
+  const errorId = `${name}-error`;
+  const state = onCheckedChange ? { checked, onCheckedChange } : { defaultChecked: checked }
   return (
-    <div className={`flex items-center justify-between gap-4 rounded-lg border p-4 ${className}`}>
-      <div>
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-muted-foreground">{hint}</p>
+    <div className={`grid gap-2 rounded-lg border p-4 ${className}`}>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium">{label}</p>
+          <p className="text-xs text-muted-foreground">{hint}</p>
+        </div>
+        <Switch name={name} {...state} aria-label={label} aria-invalid={error ? true : undefined} aria-describedby={error ? errorId : undefined}/>
       </div>
-      <Switch name={name} defaultChecked={checked} aria-label={label}/>
+      {error && <p id={errorId} className="text-sm text-destructive">{error}</p>}
     </div>
   );
 }

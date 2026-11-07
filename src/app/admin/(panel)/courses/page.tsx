@@ -9,8 +9,8 @@ import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { adminRoutes } from "@/constants/admin";
 import { locales } from "@/i18n/config";
-import { getAdminCourses } from "@/lib/admin";
-import { adminCourseHref, adminQuestionsHref } from "@/lib/helpers/admin";
+import { getAdminCourses } from "@/lib/admin-courses";
+import { adminCourseHref, adminCourseMaterialViewHref, adminQuestionsHref } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {
   title: "Courses"
@@ -48,11 +48,13 @@ export default async function AdminCoursesPage() {
                 </TableCell>
                 <TableCell>
                   <ul className="space-y-1 text-sm">
-                    {Object.entries(course.materialFiles).map(([locale, file]) => (
+                    {locales.map((locale) => (
                       <li key={locale} className="flex items-center gap-1.5">
                         <FileText aria-hidden className="size-3.5 text-muted-foreground"/>
                         <span className="uppercase text-muted-foreground">{locale}</span>
-                        {file ?? <span className="text-red-700 dark:text-red-400">Missing</span>}
+                        {course.materialUploaded[locale]
+                          ? <a href={adminCourseMaterialViewHref(course.code, locale)} target="_blank" rel="noreferrer" className="hover:underline">PDF</a>
+                          : <span className="text-red-700 dark:text-red-400">Missing</span>}
                       </li>
                     ))}
                   </ul>
@@ -69,14 +71,15 @@ export default async function AdminCoursesPage() {
                 </TableCell>
                 <TableCell className="text-sm tabular-nums">
                   {course.questionsPerAttempt} per attempt
-                  <p className="text-xs text-muted-foreground">{course.timeLimitMinutes} min · pass {course.passMarkPct}% · {course.maxAttempts === null ? "unlimited attempts" : `${course.maxAttempts} attempts`}</p>
+                  <p className="text-xs text-muted-foreground">{course.timeLimitMinutes} min · pass {course.passMarkPct}% · {course.maxAttempts === null ? "unlimited attempts" : `${course.maxAttempts} attempts`} · certificate {course.certificateValidMonths} months</p>
                 </TableCell>
                 <TableCell>
                   <ul className="space-y-1 text-sm">
                     {locales.map((locale) => (
                       <li key={locale} className="flex items-center gap-1.5">
                         <span className="uppercase text-muted-foreground">{locale}</span>
-                        <Link href={adminQuestionsHref(course.code, locale)} className="tabular-nums hover:underline">{course.questionCounts[locale]} questions</Link>
+                        <Link href={adminQuestionsHref(course.code, locale)} className="tabular-nums hover:underline">{course.activeQuestionCounts[locale]} active</Link>
+                        {course.activeQuestionCounts[locale] < course.questionsPerAttempt && <span className="text-red-700 dark:text-red-400">Too few</span>}
                       </li>
                     ))}
                   </ul>

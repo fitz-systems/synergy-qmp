@@ -1,6 +1,6 @@
-import { adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, userFormErrors } from "@/constants/admin";
+import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, userFormErrors } from "@/constants/admin";
 import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
-import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminQuestionOption, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, QuestionType, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
+import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
 import type { LoginField, LoginFormState, SessionUser } from "@/types/auth";
 import type { CourseCode } from "@/types/courses";
 import { businessDate, isAttemptInProgress } from "./exam";
@@ -44,6 +44,14 @@ export function adminReviewHref(id: number) {
 
 export function adminCourseHref(code: string) {
   return `/admin/courses/${code}`;
+}
+
+export function adminQuestionsExportHref(code: CourseCode, locale: Locale) {
+  return `${adminQuestionsHref(code, locale)}/export`;
+}
+
+export function adminCourseMaterialViewHref(code: CourseCode, locale: Locale) {
+  return `${adminCourseMaterialHref}?${new URLSearchParams({ code, locale })}`;
 }
 
 export function fullName(user: { firstName: string; lastName: string }) {
@@ -90,12 +98,6 @@ export function optionLetter(index: number) {
 export function correctAnswerText(question: AdminQuestion) {
   const index = question.options.findIndex((option) => option.correct);
   return index === -1 ? "—" : `${optionLetter(index)}. ${question.options[index].text}`;
-}
-
-export function defaultQuestionOptions(type: QuestionType): AdminQuestionOption[] {
-  return type === "trueFalse"
-    ? [{ text: "True", correct: true }, { text: "False", correct: false }]
-    : Array.from({ length: 4 }, (_, index) => ({ text: "", correct: index === 0 }));
 }
 
 export function adminIdentity(user: SessionUser): AdminIdentity {
@@ -243,11 +245,11 @@ export function scoreLabel(correctCount: number | null, questionCount: number) {
   return `${correctCount}/${questionCount} (${pct}%)`;
 }
 
-function courseCodeOf(value: string): CourseCode {
+export function courseCodeOf(value: string): CourseCode {
   return isCourseOption(value) ? value : courseOptions[0].value as CourseCode;
 }
 
-function localeOf(value: string): Locale {
+export function localeOf(value: string): Locale {
   return hasLocale(value) ? value : defaultLocale;
 }
 
@@ -386,6 +388,7 @@ function auditActionLabel(action: string) {
 }
 
 function auditEntityHref(entity: AuditEntity, entityId: string | null) {
+  if (entity === "course") return entityId && isCourseOption(entityId) ? adminCourseHref(entityId) : undefined;
   const id = Number(entityId);
   if (!Number.isInteger(id) || id <= 0) return undefined;
   if (entity === "user") return adminUserHref(id);

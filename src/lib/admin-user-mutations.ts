@@ -50,7 +50,7 @@ async function organizationIdFor(tx: Prisma.TransactionClient, company: string) 
 }
 
 async function courseLocaleFor(tx: Prisma.TransactionClient, values: UserFormValues) {
-  return tx.courseLocale.findFirstOrThrow({ where: { locale: values.locale, course: { code: values.course } }, select: { courseId: true, name: true } });
+  return tx.courseLocale.findFirstOrThrow({ where: { locale: values.locale, course: { code: values.course } }, select: { courseId: true, name: true, course: { select: { active: true } } } });
 }
 
 async function isEmailTaken(tx: Prisma.TransactionClient, email: string, userId?: number) {
@@ -73,6 +73,7 @@ export async function createStudent(adminId: number, values: UserFormValues): Pr
   return prisma.$transaction(async (tx) => {
     if (await isEmailTaken(tx, values.email)) return { errors: { email: "emailTaken" } }
     const courseLocale = await courseLocaleFor(tx, values);
+    if (!courseLocale.course.active) return { errors: { course: "inactiveCourse" } }
     const organizationId = await organizationIdFor(tx, values.company);
     const user = await tx.user.create({
       data: {
@@ -97,6 +98,7 @@ export async function updateStudent(adminId: number, userId: number, values: Use
     if (courseChanged && current.attempts.length > 0) return { errors: { course: "courseLocked", locale: "courseLocked" } }
 
     const courseLocale = await courseLocaleFor(tx, values);
+    if ((courseChanged || !current) && !courseLocale.course.active) return { errors: { course: "inactiveCourse" } }
     const organizationId = await organizationIdFor(tx, values.company);
     const enrollment = { courseId: courseLocale.courseId, locale: values.locale, organizationId, paid: values.paid, notes: values.notes || null };
 
