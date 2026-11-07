@@ -103,8 +103,8 @@ async function writeCourses(client: pg.Client, plan: MigrationPlan) {
   const courseIds = new Map<string, number>();
   for (const course of plan.courses) {
     await client.query(
-      `INSERT INTO "synergy"."courses" (code, questions_per_attempt, updated_at) VALUES ($1, $2, now()) ON CONFLICT (code) DO NOTHING`,
-      [course.code, course.questionsPerAttempt]
+      `INSERT INTO "synergy"."courses" (code, questions_per_attempt, certificate_valid_months, updated_at) VALUES ($1, $2, $3, now()) ON CONFLICT (code) DO NOTHING`,
+      [course.code, course.questionsPerAttempt, course.certificateValidMonths]
     );
     const { rows } = await client.query<{ id: number }>(`SELECT id FROM "synergy"."courses" WHERE code = $1`, [course.code]);
     courseIds.set(course.code, rows[0].id);

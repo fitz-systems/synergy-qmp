@@ -4,13 +4,13 @@ import { Download } from "lucide-react";
 import { CertificatePreview } from "@/components/student/certificate-preview";
 import { PrintButton } from "@/components/student/print-button";
 import { StudentPageHeader } from "@/components/student/student-page-header";
-import { certificatePdfPlaceholderHref } from "@/constants/student";
+import { certificatePdfHref } from "@/constants/student";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
+import { getStudentCertificate } from "@/lib/certificate";
 import { getCourse } from "@/lib/courses";
 import { interpolate } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
 import { certificateDetails } from "@/lib/helpers/student";
-import { getStudentCertificate } from "@/lib/student";
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary();
@@ -37,7 +37,7 @@ export default async function CertificatePage() {
           <p className="mt-4 max-w-2xl leading-relaxed text-ink-muted">{copy.intro}</p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
-              href={certificatePdfPlaceholderHref}
+              href={certificatePdfHref}
               className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand px-6 font-semibold text-ink transition-colors hover:bg-brand-hover"
             >
               <Download aria-hidden className="size-4" strokeWidth={2}/>

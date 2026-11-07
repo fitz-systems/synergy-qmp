@@ -12,9 +12,13 @@ function findLatestEnrollment(userId: number) {
   });
 }
 
+export async function loadCurrentEnrollment(userId: number) {
+  const record = await findLatestEnrollment(userId);
+  if (record && await finishAbandonedAttempts(record, new Date())) return findLatestEnrollment(userId);
+  return record;
+}
+
 export const getCurrentEnrollment = cache(async () => {
   const user = await requireUser();
-  const record = await findLatestEnrollment(user.id);
-  if (record && await finishAbandonedAttempts(record, new Date())) return findLatestEnrollment(user.id);
-  return record;
+  return loadCurrentEnrollment(user.id);
 });

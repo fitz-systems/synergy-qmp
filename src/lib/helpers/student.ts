@@ -1,4 +1,4 @@
-import { certificateCredits, certificateValidYears, examTimeWarningMinutes } from "@/constants/student";
+import { certificateCredits, examTimeWarningMinutes } from "@/constants/student";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "@/types/courses";
 import type { CertificateDetail, CourseDetailRow, CourseStep, CourseStepContent, CourseStepHrefs, ExamAnswers, ExamResult, ExamSettings, HeaderAccount, StudentAccount, StudentAttemptRecord, StudentCertificate, StudentCertificateLabels, StudentCopy, StudentCourse, StudentEnrollment, StudentEnrollmentRecord } from "@/types/student";
@@ -105,7 +105,7 @@ export function courseStepContent(steps: CourseStep[], enrollment: StudentEnroll
     return {
       ...step,
       title: labels.certificate.title,
-      body: interpolate(labels.certificate.body, { years: certificateValidYears, credits: certificateCredits.toLocaleString(locale) }),
+      body: interpolate(labels.certificate.body, { years: Math.round(settings.certificateValidMonths / 12), credits: certificateCredits.toLocaleString(locale) }),
       note: passed ? undefined : labels.certificate.locked,
       actions: passed ? [{ label: labels.certificate.view, href: hrefs.certificate, variant: "primary" }] : []
     }
@@ -180,7 +180,8 @@ export function studentCourse(record: StudentEnrollmentRecord, courseCode: Cours
     settings: {
       timeLimitMinutes: course.timeLimitMinutes,
       passMarkPct: course.passMarkPct,
-      questionCount: course.questionsPerAttempt
+      questionCount: course.questionsPerAttempt,
+      certificateValidMonths: course.certificateValidMonths
     }
   }
 }

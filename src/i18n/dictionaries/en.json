@@ -614,7 +614,9 @@
       "number": "Certificate no.",
       "credits": "{credits} Category A credit, CAMRT / ACTRM",
       "referenceCode": "RCEEM reference code: {code}",
-      "accreditedBy": "Accredited by"
+      "accreditedBy": "Accredited by",
+      "walletHint": "Wallet card: cut along the dotted line and keep it with you.",
+      "walletLabel": "{label}:"
     }
   },
   "emails": {

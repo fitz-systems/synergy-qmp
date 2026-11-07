@@ -23,6 +23,11 @@ export const legacyQuestionsPerAttempt = {
   air: 28
 }
 
+export const legacyCertificateValidMonths = {
+  ground: 36,
+  air: 24
+}
+
 export const legacyPassMarkPct = 75;
 
 export const legacyAttemptWindowMinutes = 120;

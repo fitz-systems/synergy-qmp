@@ -41,6 +41,7 @@ export interface LegacyCourseRef {
 export interface CourseSeed {
   code: CourseCode;
   questionsPerAttempt: number;
+  certificateValidMonths: number;
   locales: CourseLocaleSeed[];
 }
 

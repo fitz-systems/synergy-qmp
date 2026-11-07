@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18n/config";
 import type { CourseContent } from "@/types/courses";
 import type { AttemptSeed, CourseSeed, LegacyAnswer, LegacyDump, LegacyQuestion, LegacyUser, MigrationPlan, MigrationReport, PersonSeed, PersonSplit } from "@/types/legacy-migration";
-import { legacyAttemptGapSeconds, legacyCourses, legacyMd5Pattern, legacyPassMarkPct, legacyQuestionsPerAttempt } from "../../constants/legacy-migration.ts";
+import { legacyAttemptGapSeconds, legacyCertificateValidMonths, legacyCourses, legacyMd5Pattern, legacyPassMarkPct, legacyQuestionsPerAttempt } from "../../constants/legacy-migration.ts";
 import { legacyTimestamp } from "./legacy-dump.ts";
 import { buildQuestionBanks, createAnswerLinker } from "./legacy-questions.ts";
 import { comparableName, createTextCleaner, normalizeEmail, unprefixedEmail } from "./legacy-text.ts";
@@ -56,6 +56,7 @@ function buildCourses(dump: LegacyDump, courseContent: CourseContent[]): CourseS
   return courseContent.map((course) => ({
     code: course.code,
     questionsPerAttempt: legacyQuestionsPerAttempt[course.code],
+    certificateValidMonths: legacyCertificateValidMonths[course.code],
     locales: (Object.keys(course.locales) as Locale[]).map((locale) => {
       const legacyCourse = `${course.code}-${locale}`;
       const certificateCode = dump.certificateCodes[legacyCourse];

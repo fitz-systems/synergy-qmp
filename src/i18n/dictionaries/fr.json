@@ -614,7 +614,9 @@
       "number": "N° de certificat",
       "referenceCode": "Numéro de référence RCEEM : {code}",
       "credits": "{credits} crédit de catégorie A, ACTRM / CAMRT",
-      "accreditedBy": "Agréé par"
+      "accreditedBy": "Agréé par",
+      "walletHint": "Carte de poche : découpez le long du pointillé et gardez-la sur vous.",
+      "walletLabel": "{label} :"
     }
   },
   "emails": {

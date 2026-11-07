@@ -14,8 +14,6 @@ export type StudentCertificateLabels = StudentCopy["certificate"];
 
 export type ExamStatus = "notStarted" | "passed" | "failed";
 
-export type MockStudentScenario = "notStarted" | "failed" | "noAttemptsLeft" | "unlimitedAttempts" | "passed";
-
 export type CourseStepKey = "material" | "exam" | "certificate";
 
 export type CourseStepState = "done" | "current" | "locked";
@@ -103,6 +101,7 @@ export interface ExamSettings {
   timeLimitMinutes: number;
   passMarkPct: number;
   questionCount: number;
+  certificateValidMonths: number;
 }
 
 export interface StudentCourse {
@@ -166,6 +165,8 @@ export interface ExamResult {
 export interface StudentCertificate {
   studentName: string;
   courseCode: CourseCode;
+  courseLocale: Locale;
+  courseTitle: string;
   certificateNumber: string;
   referenceCode: string;
   issuedOn: string;

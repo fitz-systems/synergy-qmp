@@ -10,8 +10,6 @@ export const courseStepIcons: Record<CourseStepKey, LucideIcon> = {
 
 export const courseStepOrder: CourseStepKey[] = ["material", "exam", "certificate"];
 
-export const certificateValidYears = 3;
-
 export const certificateCredits = 1;
 
 export const examTimeWarningMinutes = [5, 1];
@@ -21,8 +19,25 @@ export const examTimerTickMs = 1000;
 // Todo: Point at the auth-checked course material route once the PDFs are in private storage
 export const courseMaterialPlaceholderHref = "#course-material";
 
-// Todo: Point at the generated certificate PDF route
-export const certificatePdfPlaceholderHref = "#certificate-pdf";
+export const certificatePdfHref = "/api/certificate";
+
+export const certificateNumberPrefix = "SQMP-C";
+
+export const certificateNumberDigits = 6;
+
+export const pdfWinAnsiExtras = new Set("€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ");
+
+export const pdfLetterFallbacks: Record<string, string> = {
+  Ł: "L",
+  ł: "l",
+  Đ: "D",
+  đ: "d",
+  Ħ: "H",
+  ħ: "h",
+  ı: "i",
+  Ŧ: "T",
+  ŧ: "t"
+}
 
 export const studentEnrollmentSelect = {
   id: true,
@@ -31,10 +46,13 @@ export const studentEnrollmentSelect = {
   createdAt: true,
   passedOn: true,
   attemptsResetAt: true,
+  certificateNumber: true,
   courseLocale: {
     select: {
+      name: true,
+      certificateCode: true,
       course: {
-        select: { code: true, passMarkPct: true, questionsPerAttempt: true, timeLimitMinutes: true, maxAttempts: true, shuffleQuestions: true, shuffleAnswers: true }
+        select: { code: true, passMarkPct: true, questionsPerAttempt: true, timeLimitMinutes: true, maxAttempts: true, shuffleQuestions: true, shuffleAnswers: true, certificateValidMonths: true }
       }
     }
   },
