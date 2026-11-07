@@ -72,6 +72,7 @@ export const importColumns: Record<ImportKind, string[]> = {
 }
 
 export const adminPageSize = 25;
+export const adminSkeletonRows = 8;
 
 export const adminSearchParam = "q";
 

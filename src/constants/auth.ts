@@ -17,6 +17,8 @@ export const postSignOutRoute: Route = "home";
 
 export const adminRole: UserRole = "admin";
 
+export const sessionShellStaleSeconds = 5 * 60;
+
 export const loginStatusByAuthError: Record<string, LoginFailureStatus> = {
   UNAUTHORIZED: "invalidCredentials",
   FORBIDDEN: "deactivated",

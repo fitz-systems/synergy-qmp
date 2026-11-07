@@ -1,8 +1,10 @@
+import { cacheLife } from "next/cache";
 import { headers } from "next/headers";
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { adminRoutes } from "@/constants/admin";
-import { adminRole } from "@/constants/auth";
+import { adminRole, sessionShellStaleSeconds } from "@/constants/auth";
 import type { Locale } from "@/i18n/config";
 import { getLocale } from "@/i18n/dictionaries";
 import { auth } from "@/lib/auth";
@@ -27,10 +29,21 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
   await auth.api.resetPassword({ body: { token, newPassword }, headers: await headers() });
 }
 
-export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
+async function readSessionUser(): Promise<SessionUser | null> {
   const session = await auth.api.getSession({ headers: await headers() });
   return session?.user.active ? sessionUser(session.user) : null;
+}
+
+export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
+  await connection();
+  return readSessionUser();
 });
+
+async function getShellUser(): Promise<SessionUser | null> {
+  "use cache: private";
+  cacheLife({ stale: sessionShellStaleSeconds });
+  return readSessionUser();
+}
 
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
@@ -40,6 +53,12 @@ export async function requireUser(): Promise<SessionUser> {
 
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await getCurrentUser();
+  if (user?.role !== adminRole) redirect(adminRoutes.login);
+  return user;
+}
+
+export async function requireAdminShell(): Promise<SessionUser> {
+  const user = await getShellUser();
   if (user?.role !== adminRole) redirect(adminRoutes.login);
   return user;
 }
