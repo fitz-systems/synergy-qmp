@@ -1,8 +1,10 @@
 import bannerImage from "@/assets/images/hero-hot-cell.jpg";
 
 import type { Metadata } from "next";
+import { AuthCard } from "@/components/auth/auth-card";
 import { PageBanner } from "@/components/shared/page-banner";
 import { StudentCourseSidebar } from "@/components/student/course-sidebar";
+import { ButtonLink } from "@/components/ui/button-link";
 import { CourseSteps } from "@/components/student/course-steps";
 import { contact } from "@/constants/contact";
 import { courseMaterialPlaceholderHref } from "@/constants/student";
@@ -11,7 +13,7 @@ import { getCourse } from "@/lib/courses";
 import { interpolate } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
 import { courseDetailRows, courseStepContent, courseSteps } from "@/lib/helpers/student";
-import { getExamQuestions, getExamSettings, getStudentAccount, getStudentEnrollment } from "@/lib/student";
+import { getStudentAccount, getStudentCourse } from "@/lib/student";
 
 export async function generateMetadata(): Promise<Metadata> {
   const dict = await getDictionary();
@@ -20,11 +22,25 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function MyCoursePage() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
-  const [account, enrollment, settings, questions] = await Promise.all([getStudentAccount(), getStudentEnrollment(), getExamSettings(), getExamQuestions(locale)]);
-  const course = await getCourse(enrollment.courseCode, locale);
+  const [account, studentCourse] = await Promise.all([getStudentAccount(), getStudentCourse()]);
   const copy = dict.student.myCourse;
+  const greeting = interpolate(copy.greeting, { name: account.firstName });
 
-  const steps = courseStepContent(courseSteps(enrollment), enrollment, settings, questions.length, {
+  if (!studentCourse) {
+    return (
+      <>
+        <PageBanner title={greeting} current={dict.nav.myCourse} image={bannerImage}/>
+        <AuthCard titleId="no-enrollment-title" title={copy.noEnrollment.title} body={interpolate(copy.noEnrollment.body, { email: contact.email })}>
+          <ButtonLink href={localizedHref(locale, "contact")} arrow className="mt-6 w-full">{copy.noEnrollment.action}</ButtonLink>
+        </AuthCard>
+      </>
+    );
+  }
+
+  const { enrollment, settings } = studentCourse;
+  const course = await getCourse(enrollment.courseCode, locale);
+
+  const steps = courseStepContent(courseSteps(enrollment), enrollment, settings, {
     material: courseMaterialPlaceholderHref,
     materialDownload: courseMaterialPlaceholderHref,
     exam: localizedHref(locale, "exam"),
@@ -35,7 +51,7 @@ export default async function MyCoursePage() {
   return (
     <>
       <PageBanner
-        title={interpolate(copy.greeting, { name: account.firstName })}
+        title={greeting}
         subtitle={course.title}
         current={dict.nav.myCourse}
         image={bannerImage}
@@ -45,7 +61,7 @@ export default async function MyCoursePage() {
           <CourseSteps steps={steps} labels={copy}/>
           <StudentCourseSidebar
             detailsTitle={copy.details.title}
-            rows={courseDetailRows(course.title, enrollment, settings, questions.length, copy.details, locale)}
+            rows={courseDetailRows(course.title, enrollment, settings, copy.details, locale)}
             helpTitle={copy.help.title}
             helpBody={interpolate(copy.help.body, { email: contact.email, phone: contact.phoneDisplay })}
           />

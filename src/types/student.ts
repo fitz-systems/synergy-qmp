@@ -1,3 +1,5 @@
+import type { bankQuestionSelect, examAnswerSelect, studentEnrollmentSelect } from "@/constants/student";
+import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries";
 import type { CourseCode } from "./courses";
@@ -39,10 +41,12 @@ export interface HeaderAccountMenu {
 
 export interface StudentEnrollment {
   courseCode: CourseCode;
+  courseLocale: Locale;
   enrolledOn: string;
   examStatus: ExamStatus;
   attemptsUsed: number;
   maxAttempts: number | null;
+  examInProgress: boolean;
   passedOn?: string;
   scorePct?: number;
 }
@@ -98,11 +102,42 @@ export interface ExamQuestion {
 export interface ExamSettings {
   timeLimitMinutes: number;
   passMarkPct: number;
+  questionCount: number;
 }
 
-export interface ExamAttempt {
-  startedAt: string;
+export interface StudentCourse {
+  enrollment: StudentEnrollment;
+  settings: ExamSettings;
 }
+
+export type StudentEnrollmentRecord = Prisma.EnrollmentGetPayload<{ select: typeof studentEnrollmentSelect }>;
+
+export type StudentAttemptRecord = StudentEnrollmentRecord["attempts"][number];
+
+export type BankQuestion = Prisma.QuestionGetPayload<{ select: typeof bankQuestionSelect }>;
+
+export type ExamAnswerRecord = Prisma.AttemptAnswerGetPayload<{ select: typeof examAnswerSelect }>;
+
+export interface ExamSession {
+  attemptId: number;
+  deadline: number;
+  questions: ExamQuestion[];
+  answers: ExamAnswers;
+}
+
+export interface QuestionDraw {
+  questionId: number;
+  questionText: string;
+  options: string[];
+  correctAnswerText: string;
+}
+
+export interface AttemptScore {
+  correctCount: number;
+  passed: boolean;
+}
+
+export type ExamSubmitStatus = "idle" | "failed";
 
 export interface CountdownCallbacks {
   onWarning: (minutesLeft: number) => void;

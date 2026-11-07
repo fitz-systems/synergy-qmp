@@ -6,14 +6,14 @@ import { StudentPageHeader } from "@/components/student/student-page-header";
 import type { Locale } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourse } from "@/lib/courses";
+import { startOrResumeExam } from "@/lib/exam";
 import { localizedHref } from "@/lib/helpers/routes";
-import { canTakeExam, examDeadline } from "@/lib/helpers/student";
-import { getExamQuestions, getExamSettings, getStudentEnrollment, startExamAttempt } from "@/lib/student";
-import type { ExamLabels, ExamQuestion, ExamSettings } from "@/types/student";
+import { canTakeExam } from "@/lib/helpers/student";
+import { getStudentCourse } from "@/lib/student";
+import type { ExamLabels, ExamSettings } from "@/types/student";
 
 interface ExamSessionProps {
   locale: Locale;
-  questions: ExamQuestion[];
   settings: ExamSettings;
   labels: ExamLabels;
 }
@@ -29,10 +29,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ExamPage() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
-  const enrollment = await getStudentEnrollment();
-  if (!canTakeExam(enrollment)) redirect(localizedHref(locale, "myCourse"));
+  const studentCourse = await getStudentCourse();
+  if (!studentCourse || !canTakeExam(studentCourse.enrollment)) redirect(localizedHref(locale, "myCourse"));
 
-  const [settings, questions] = await Promise.all([getExamSettings(), getExamQuestions(locale)]);
+  const { enrollment, settings } = studentCourse;
   const course = await getCourse(enrollment.courseCode, locale);
   const copy = dict.student.exam;
 
@@ -49,8 +49,8 @@ export default async function ExamPage() {
       </StudentPageHeader>
       <div className="bg-canvas-alt">
         <div className="container-site pt-10 md:pt-12 lg:pb-16">
-          <Suspense fallback={<ExamFallback count={questions.length}/>}>
-            <ExamSession locale={locale} questions={questions} settings={settings} labels={copy}/>
+          <Suspense fallback={<ExamFallback count={settings.questionCount}/>}>
+            <ExamSession locale={locale} settings={settings} labels={copy}/>
           </Suspense>
         </div>
       </div>
@@ -58,18 +58,11 @@ export default async function ExamPage() {
   );
 }
 
-async function ExamSession({ locale, questions, settings, labels }: ExamSessionProps) {
-  const attempt = await startExamAttempt();
-  return (
-    <ExamForm
-      locale={locale}
-      questions={questions}
-      timeLimitMinutes={settings.timeLimitMinutes}
-      deadline={examDeadline(attempt, settings)}
-      resultsHref={localizedHref(locale, "examResults")}
-      labels={labels}
-    />
-  );
+async function ExamSession({ locale, settings, labels }: ExamSessionProps) {
+  const session = await startOrResumeExam();
+  if (!session) redirect(localizedHref(locale, "myCourse"));
+
+  return <ExamForm locale={locale} session={session} timeLimitMinutes={settings.timeLimitMinutes} labels={labels}/>;
 }
 
 function ExamFallback({ count }: ExamFallbackProps) {

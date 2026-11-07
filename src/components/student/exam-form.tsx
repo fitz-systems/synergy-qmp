@@ -1,21 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useTransition } from "react";
 import { CircleAlert, Clock, Send, TimerOff } from "lucide-react";
+import { saveAnswer, submitExam } from "@/app/[lang]/(student)/my-course/exam/actions";
+import { FormNotice } from "@/components/ui/form-notice";
 import { useCountdown } from "@/hooks/use-countdown";
 import type { Locale } from "@/i18n/config";
 import { interpolate, plural } from "@/lib/helpers/format";
 import { answeredCount, examAnswerField, progressPct, questionAnchor, unansweredIds } from "@/lib/helpers/student";
-import type { ExamAnswers, ExamLabels, ExamQuestion } from "@/types/student";
+import type { ExamAnswers, ExamLabels, ExamSession } from "@/types/student";
 import { ExamTimer } from "./exam-timer";
 
 interface ExamFormProps {
   locale: Locale;
-  questions: ExamQuestion[];
+  session: ExamSession;
   timeLimitMinutes: number;
-  deadline: number;
-  resultsHref: string;
   labels: ExamLabels;
 }
 
@@ -27,19 +26,25 @@ interface ExamProgressProps {
   children?: React.ReactNode;
 }
 
-export function ExamForm({ locale, questions, timeLimitMinutes, deadline, resultsHref, labels }: ExamFormProps) {
-  const router = useRouter();
-  const [answers, setAnswers] = useState<ExamAnswers>({});
+export function ExamForm({ locale, session, timeLimitMinutes, labels }: ExamFormProps) {
+  const { attemptId, questions, deadline } = session;
+  const [answers, setAnswers] = useState<ExamAnswers>(session.answers);
   const [expired, setExpired] = useState(false);
+  const [submitFailed, setSubmitFailed] = useState(false);
+  const [submitting, startSubmit] = useTransition();
   const [timeAnnouncement, setTimeAnnouncement] = useState("");
   const dialogRef = useRef<HTMLDialogElement>(null);
   const timeUpRef = useRef<HTMLDialogElement>(null);
+  const failedRef = useRef<HTMLDivElement>(null);
 
   const total = questions.length;
   const answered = answeredCount(answers);
   const unanswered = unansweredIds(questions.map((question) => question.id), answers);
 
-  const choose = (questionId: number, optionId: string) => setAnswers((current) => ({ ...current, [questionId]: optionId }));
+  const choose = (questionId: number, optionId: string) => {
+    setAnswers((current) => ({ ...current, [questionId]: optionId }));
+    saveAnswer(attemptId, questionId, optionId).catch(() => undefined);
+  }
 
   const goToFirstUnanswered = () => {
     dialogRef.current?.close();
@@ -47,10 +52,17 @@ export function ExamForm({ locale, questions, timeLimitMinutes, deadline, result
     if (first) document.getElementById(questionAnchor(first))?.querySelector<HTMLInputElement>("input")?.focus();
   }
 
-  // Todo: Submit the answers to a server action that scores the attempt; the server must also reject submissions after the deadline
   const submit = () => {
     dialogRef.current?.close();
-    router.push(resultsHref);
+    setSubmitFailed(false);
+    startSubmit(async () => {
+      const status = await submitExam(locale, attemptId, answers);
+      if (status === "failed") {
+        timeUpRef.current?.close();
+        setSubmitFailed(true);
+        failedRef.current?.focus();
+      }
+    });
   }
 
   const remaining = useCountdown(deadline, {
@@ -67,16 +79,21 @@ export function ExamForm({ locale, questions, timeLimitMinutes, deadline, result
     <button
       type="button"
       onClick={() => dialogRef.current?.showModal()}
-      disabled={expired}
+      disabled={submitting || (expired && !submitFailed)}
       className={`inline-flex h-12 items-center justify-center gap-2 rounded-md bg-brand px-6 text-base font-semibold text-ink transition-colors duration-200 hover:bg-brand-hover disabled:pointer-events-none disabled:opacity-50 ${className}`}
     >
       <Send aria-hidden className="size-4" strokeWidth={2}/>
-      {labels.submit}
+      {submitting ? labels.submitting : labels.submit}
     </button>
   );
 
   return (
     <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-12">
+      {submitFailed && (
+        <div className="lg:col-span-2">
+          <FormNotice ref={failedRef} notice={labels.submitFailed}/>
+        </div>
+      )}
       <ol className="space-y-5">
         {questions.map((question, index) => (
           <li key={question.id} id={questionAnchor(question.id)} className="scroll-mt-28">

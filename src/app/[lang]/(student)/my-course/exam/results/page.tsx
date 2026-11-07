@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ExamResultsPage() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
-  const result = await getLatestExamResult(locale);
+  const result = await getLatestExamResult();
   const myCourseHref = localizedHref(locale, "myCourse");
   if (!result) redirect(myCourseHref);
 

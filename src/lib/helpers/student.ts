@@ -1,6 +1,8 @@
 import { certificateCredits, certificateValidYears, examTimeWarningMinutes } from "@/constants/student";
 import type { Locale } from "@/i18n/config";
-import type { CertificateDetail, CourseDetailRow, CourseStep, CourseStepContent, CourseStepHrefs, ExamAnswers, ExamAttempt, ExamResult, ExamSettings, HeaderAccount, StudentAccount, StudentCertificate, StudentCertificateLabels, StudentCopy, StudentEnrollment } from "@/types/student";
+import type { CourseCode } from "@/types/courses";
+import type { CertificateDetail, CourseDetailRow, CourseStep, CourseStepContent, CourseStepHrefs, ExamAnswers, ExamResult, ExamSettings, HeaderAccount, StudentAccount, StudentAttemptRecord, StudentCertificate, StudentCertificateLabels, StudentCopy, StudentCourse, StudentEnrollment, StudentEnrollmentRecord } from "@/types/student";
+import { isAttemptInProgress } from "./exam";
 import { formatDate, formatPercent, interpolate, plural } from "./format";
 
 export function headerAccount(account: StudentAccount): HeaderAccount {
@@ -17,7 +19,7 @@ export function attemptsLeft(enrollment: StudentEnrollment) {
 
 export function canTakeExam(enrollment: StudentEnrollment) {
   const left = attemptsLeft(enrollment);
-  return enrollment.examStatus !== "passed" && (left === null || left > 0);
+  return enrollment.examStatus !== "passed" && (enrollment.examInProgress || left === null || left > 0);
 }
 
 export function isOutOfAttempts(result: ExamResult) {
@@ -31,10 +33,6 @@ export function courseSteps(enrollment: StudentEnrollment): CourseStep[] {
     { key: "exam", state: passed ? "done" : canTakeExam(enrollment) ? "current" : "locked" },
     { key: "certificate", state: passed ? "current" : "locked" }
   ];
-}
-
-export function examDeadline(attempt: ExamAttempt, settings: ExamSettings) {
-  return new Date(attempt.startedAt).getTime() + settings.timeLimitMinutes * 60_000;
 }
 
 export function remainingMs(deadline: number, now: number) {
@@ -65,12 +63,12 @@ export function resultScorePct(result: ExamResult) {
   return Math.round((result.correctCount / result.questionCount) * 100);
 }
 
-export function courseDetailRows(courseTitle: string, enrollment: StudentEnrollment, settings: ExamSettings, questionCount: number, labels: StudentCopy["myCourse"]["details"], locale: Locale): CourseDetailRow[] {
+export function courseDetailRows(courseTitle: string, enrollment: StudentEnrollment, settings: ExamSettings, labels: StudentCopy["myCourse"]["details"], locale: Locale): CourseDetailRow[] {
   return [
     { label: labels.course, value: courseTitle },
-    { label: labels.language, value: labels.languageValue },
+    { label: labels.language, value: labels.languages[enrollment.courseLocale] },
     { label: labels.enrolled, value: formatDate(locale, enrollment.enrolledOn) },
-    { label: labels.exam, value: interpolate(labels.examValue, { questions: questionCount, minutes: settings.timeLimitMinutes }) },
+    { label: labels.exam, value: interpolate(labels.examValue, { questions: settings.questionCount, minutes: settings.timeLimitMinutes }) },
     { label: labels.passMark, value: formatPercent(locale, settings.passMarkPct) },
     {
       label: labels.attempts,
@@ -81,7 +79,7 @@ export function courseDetailRows(courseTitle: string, enrollment: StudentEnrollm
   ];
 }
 
-export function courseStepContent(steps: CourseStep[], enrollment: StudentEnrollment, settings: ExamSettings, questionCount: number, hrefs: CourseStepHrefs, labels: StudentCopy["myCourse"]["steps"], locale: Locale): CourseStepContent[] {
+export function courseStepContent(steps: CourseStep[], enrollment: StudentEnrollment, settings: ExamSettings, hrefs: CourseStepHrefs, labels: StudentCopy["myCourse"]["steps"], locale: Locale): CourseStepContent[] {
   const passed = enrollment.examStatus === "passed";
   return steps.map((step) => {
     if (step.key === "material") {
@@ -99,7 +97,7 @@ export function courseStepContent(steps: CourseStep[], enrollment: StudentEnroll
       return {
         ...step,
         title: labels.exam.title,
-        body: interpolate(labels.exam.body, { questions: questionCount, minutes: settings.timeLimitMinutes, passMark: formatPercent(locale, settings.passMarkPct) }),
+        body: interpolate(labels.exam.body, { questions: settings.questionCount, minutes: settings.timeLimitMinutes, passMark: formatPercent(locale, settings.passMarkPct) }),
         note: examStepNote(enrollment, labels.exam, locale),
         actions: examStepActions(enrollment, hrefs, labels.exam)
       }
@@ -116,7 +114,8 @@ export function courseStepContent(steps: CourseStep[], enrollment: StudentEnroll
 
 function examStepNote(enrollment: StudentEnrollment, labels: StudentCopy["myCourse"]["steps"]["exam"], locale: Locale) {
   if (enrollment.examStatus === "passed" && enrollment.passedOn) {
-    return interpolate(labels.passed, { date: formatDate(locale, enrollment.passedOn), score: formatPercent(locale, enrollment.scorePct ?? 0) });
+    const date = formatDate(locale, enrollment.passedOn);
+    return enrollment.scorePct === undefined ? interpolate(labels.passedNoScore, { date }) : interpolate(labels.passed, { date, score: formatPercent(locale, enrollment.scorePct) });
   }
   if (enrollment.maxAttempts === null) return plural(locale, labels.attemptsUnlimited, enrollment.attemptsUsed);
   if (enrollment.examStatus !== "passed" && !canTakeExam(enrollment)) return interpolate(labels.noAttempts, { max: enrollment.maxAttempts });
@@ -126,7 +125,8 @@ function examStepNote(enrollment: StudentEnrollment, labels: StudentCopy["myCour
 function examStepActions(enrollment: StudentEnrollment, hrefs: CourseStepHrefs, labels: StudentCopy["myCourse"]["steps"]["exam"]): CourseStepContent["actions"] {
   if (enrollment.examStatus === "passed") return [];
   if (!canTakeExam(enrollment)) return [{ label: labels.contact, href: hrefs.contact, variant: "secondary" }];
-  return [{ label: enrollment.attemptsUsed > 0 ? labels.retake : labels.start, href: hrefs.exam, variant: "primary" }];
+  const label = enrollment.examInProgress ? labels.resume : enrollment.attemptsUsed > 0 ? labels.retake : labels.start;
+  return [{ label, href: hrefs.exam, variant: "primary" }];
 }
 
 export function progressPct(done: number, total: number) {
@@ -143,4 +143,44 @@ export function certificateDetails(certificate: StudentCertificate, labels: Stud
     { label: labels.validUntil, value: formatDate(locale, certificate.validUntil) },
     { label: labels.number, value: certificate.certificateNumber }
   ];
+}
+
+export function countedAttempts(record: StudentEnrollmentRecord) {
+  const { attemptsResetAt } = record;
+  return attemptsResetAt ? record.attempts.filter((attempt) => attempt.startedAt > attemptsResetAt) : record.attempts;
+}
+
+export function canStartAttempt(record: StudentEnrollmentRecord) {
+  const { maxAttempts } = record.courseLocale.course;
+  return record.passedOn === null && (maxAttempts === null || countedAttempts(record).length < maxAttempts);
+}
+
+function attemptScorePct(attempt: StudentAttemptRecord) {
+  return attempt.correctCount === null || attempt.questionCount === 0 ? undefined : Math.round((attempt.correctCount / attempt.questionCount) * 100);
+}
+
+export function studentCourse(record: StudentEnrollmentRecord, courseCode: CourseCode, courseLocale: Locale, now: Date): StudentCourse {
+  const { course } = record.courseLocale;
+  const attempts = countedAttempts(record);
+  const passingAttempt = record.attempts.findLast((attempt) => attempt.passed);
+  const passed = record.passedOn !== null;
+
+  return {
+    enrollment: {
+      courseCode,
+      courseLocale,
+      enrolledOn: record.createdAt.toISOString(),
+      examStatus: passed ? "passed" : attempts.some((attempt) => attempt.submittedAt) ? "failed" : "notStarted",
+      attemptsUsed: attempts.length,
+      maxAttempts: course.maxAttempts,
+      examInProgress: !passed && record.attempts.some((attempt) => isAttemptInProgress(attempt, now)),
+      passedOn: record.passedOn?.toISOString(),
+      scorePct: passed && passingAttempt ? attemptScorePct(passingAttempt) : undefined
+    },
+    settings: {
+      timeLimitMinutes: course.timeLimitMinutes,
+      passMarkPct: course.passMarkPct,
+      questionCount: course.questionsPerAttempt
+    }
+  }
 }

@@ -490,7 +490,9 @@
           "body": "{questions} questions · {minutes} minutes · note de passage {passMark}",
           "start": "Commencer l'examen",
           "retake": "Reprendre l'examen",
+          "resume": "Reprendre l'examen",
           "passed": "Réussi le {date} avec {score}",
+          "passedNoScore": "Réussi le {date}",
           "attempts": "{used} tentatives sur {max} utilisées",
           "attemptsUnlimited": {
             "one": "{count} tentative utilisée, sans limite",
@@ -510,7 +512,10 @@
         "title": "Détails du cours",
         "course": "Cours",
         "language": "Langue",
-        "languageValue": "Français",
+        "languages": {
+          "en": "Anglais",
+          "fr": "Français"
+        },
         "enrolled": "Inscription",
         "exam": "Examen",
         "examValue": "{questions} questions, {minutes} min",
@@ -522,6 +527,11 @@
       "help": {
         "title": "Besoin d'aide?",
         "body": "Communiquez avec Synergy QMP à {email} ou au {phone}."
+      },
+      "noEnrollment": {
+        "title": "Vous n'êtes inscrit à aucun cours",
+        "body": "Aucun cours n'est associé à votre compte. Écrivez-nous à {email} et nous l'ajouterons.",
+        "action": "Nous joindre"
       }
     },
     "exam": {
@@ -546,6 +556,11 @@
       "answered": "répondue",
       "unanswered": "sans réponse",
       "submit": "Soumettre l'examen",
+      "submitting": "Envoi en cours…",
+      "submitFailed": {
+        "title": "Impossible d'envoyer votre examen",
+        "body": "Vos réponses sont enregistrées. Vérifiez votre connexion et réessayez."
+      },
       "confirm": {
         "title": "Soumettre votre examen?",
         "body": "Vous ne pourrez plus modifier vos réponses après l'avoir soumis.",
