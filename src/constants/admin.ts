@@ -132,7 +132,7 @@ export const adminDateTimeFormat = new Intl.DateTimeFormat("en-CA", { dateStyle:
 export const adminLoginNotices: Record<LoginFailureStatus, string> = {
   invalidCredentials: "The email or password is incorrect, or this account doesn't have admin access.",
   deactivated: "This account has been deactivated.",
-  rateLimited: "Too many attempts. Wait a minute, then try again.",
+  rateLimited: "Too many attempts. Wait 15 minutes, then try again.",
   failed: "Something went wrong. Please try again."
 }
 

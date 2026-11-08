@@ -379,7 +379,7 @@
         },
         "rateLimited": {
           "title": "Too many attempts",
-          "body": "Wait a minute, then try again."
+          "body": "Wait 15 minutes, then try again."
         },
         "failed": {
           "title": "Something went wrong",
@@ -419,6 +419,10 @@
     "sent": {
       "title": "Check your email",
       "body": "If an account exists for {email}, we've sent a link to set a new password. The link expires in 1 hour."
+    },
+    "rateLimited": {
+      "title": "Too many requests",
+      "body": "Wait a while before asking for another link, or contact us at {email} and we'll reset your password for you."
     },
     "failed": {
       "title": "We couldn't send the reset link",

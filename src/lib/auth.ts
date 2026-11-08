@@ -4,7 +4,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import { nextCookies } from "better-auth/next-js";
-import { passwordMinLength, passwordResetTokenSeconds, resetTokenPrefix, welcomeTokenSeconds } from "@/constants/auth";
+import { disabledAuthPaths, passwordMinLength, passwordResetTokenSeconds, resetTokenPrefix, welcomeTokenSeconds } from "@/constants/auth";
 import { hasPassword } from "@/lib/accounts";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
@@ -18,6 +18,7 @@ function verifyLegacyMd5(hash: string, password: string) {
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
+  disabledPaths: disabledAuthPaths,
   advanced: {
     database: {
       generateId: "serial"

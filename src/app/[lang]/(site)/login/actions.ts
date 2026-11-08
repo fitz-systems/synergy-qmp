@@ -6,6 +6,7 @@ import { formLocaleField } from "@/constants/forms";
 import { loginFailureState, loginFailureStatus, readLoginForm, validateLoginForm } from "@/lib/helpers/auth";
 import { resolveLocale } from "@/lib/helpers/locale";
 import { localizedHref } from "@/lib/helpers/routes";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { signInWithEmail } from "@/lib/session";
 import type { LoginFormState } from "@/types/auth";
 
@@ -13,6 +14,7 @@ export async function submitLogin(_previous: LoginFormState, formData: FormData)
   const credentials = readLoginForm(formData);
   const errors = validateLoginForm(credentials);
   if (Object.keys(errors).length > 0) return loginFailureState(credentials, "invalid", errors);
+  if (!(await consumeRateLimit("signIn", credentials.email))) return loginFailureState(credentials, "rateLimited");
 
   try {
     await signInWithEmail(credentials);

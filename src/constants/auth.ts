@@ -1,5 +1,5 @@
 import type { Route } from "@/constants/routes";
-import type { ForgotPasswordFormState, LoginFailureStatus, LoginField, LoginFormState, ResetPasswordField, ResetPasswordFormState, UserRole } from "@/types/auth";
+import type { ForgotPasswordFormState, LoginFailureStatus, LoginField, LoginFormState, RateLimitAction, RateLimitRule, ResetPasswordField, ResetPasswordFormState, UserRole } from "@/types/auth";
 
 export const loginFields: LoginField[] = ["email", "password"];
 
@@ -48,3 +48,22 @@ export const initialResetPasswordState: ResetPasswordFormState = {
   status: "idle",
   errors: {}
 }
+
+export const rateLimitRules: Record<RateLimitAction, RateLimitRule[]> = {
+  signIn: [
+    { scope: "ip", max: 20, windowSeconds: 15 * 60 },
+    { scope: "email", max: 5, windowSeconds: 15 * 60 }
+  ],
+  passwordReset: [
+    { scope: "ip", max: 5, windowSeconds: 15 * 60 },
+    { scope: "email", max: 3, windowSeconds: 60 * 60 }
+  ]
+}
+
+export const rateLimitRetentionSeconds = 24 * 60 * 60;
+
+export const clientIpHeaders = ["x-real-ip", "x-forwarded-for"];
+
+export const unknownClientIp = "unknown";
+
+export const disabledAuthPaths = ["/sign-in/email", "/request-password-reset", "/reset-password"];

@@ -56,8 +56,8 @@ export function ForgotPasswordForm({ locale, labels, loginHref, contactEmail }: 
   return (
     <form ref={formRef} action={action} noValidate className="mt-8 space-y-5">
       <input type="hidden" name={formLocaleField} value={locale}/>
-      {state.status === "failed" && (
-        <FormNotice ref={noticeRef} notice={{ title: labels.failed.title, body: interpolate(labels.failed.body, { email: contactEmail }) }}/>
+      {(state.status === "failed" || state.status === "rateLimited") && (
+        <FormNotice ref={noticeRef} notice={{ title: labels[state.status].title, body: interpolate(labels[state.status].body, { email: contactEmail }) }}/>
       )}
       <FormField
         name="email"

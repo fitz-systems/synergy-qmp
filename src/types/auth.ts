@@ -33,7 +33,7 @@ export type ResetPasswordCopy = Dictionary["resetPasswordPage"];
 export type ForgotPasswordError = "required" | "invalidEmail";
 
 export interface ForgotPasswordFormState {
-  status: "idle" | "invalid" | "sent" | "failed";
+  status: "idle" | "invalid" | "sent" | "rateLimited" | "failed";
   email: string;
   error?: ForgotPasswordError;
 }
@@ -71,4 +71,14 @@ export interface AuthUserProfile {
   email: string;
   firstName?: string;
   preferredLocale?: string;
+}
+
+export type RateLimitAction = "signIn" | "passwordReset";
+
+export type RateLimitScope = "ip" | "email";
+
+export interface RateLimitRule {
+  scope: RateLimitScope;
+  max: number;
+  windowSeconds: number;
 }

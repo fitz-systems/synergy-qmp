@@ -379,7 +379,7 @@
         },
         "rateLimited": {
           "title": "Trop de tentatives",
-          "body": "Attendez une minute, puis réessayez."
+          "body": "Attendez 15 minutes, puis réessayez."
         },
         "failed": {
           "title": "Un problème est survenu",
@@ -419,6 +419,10 @@
     "sent": {
       "title": "Vérifiez vos courriels",
       "body": "Si un compte existe pour {email}, nous avons envoyé un lien pour choisir un nouveau mot de passe. Le lien expire dans 1 heure."
+    },
+    "rateLimited": {
+      "title": "Trop de demandes",
+      "body": "Attendez un moment avant de demander un autre lien, ou écrivez-nous à {email} et nous réinitialiserons votre mot de passe."
     },
     "failed": {
       "title": "Impossible d'envoyer le lien",

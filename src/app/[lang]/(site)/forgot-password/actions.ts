@@ -4,6 +4,7 @@ import { formLocaleField } from "@/constants/forms";
 import { validateForgotPasswordEmail } from "@/lib/helpers/auth";
 import { readFormString } from "@/lib/helpers/forms";
 import { resolveLocale } from "@/lib/helpers/locale";
+import { consumeRateLimit } from "@/lib/rate-limit";
 import { requestPasswordResetLink } from "@/lib/session";
 import type { ForgotPasswordFormState } from "@/types/auth";
 
@@ -11,6 +12,7 @@ export async function requestPasswordReset(_previous: ForgotPasswordFormState, f
   const email = readFormString(formData, "email");
   const error = validateForgotPasswordEmail(email);
   if (error) return { status: "invalid", email, error }
+  if (!(await consumeRateLimit("passwordReset", email))) return { status: "rateLimited", email }
 
   try {
     await requestPasswordResetLink(email, resolveLocale(formData.get(formLocaleField)));
