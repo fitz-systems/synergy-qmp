@@ -1,11 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import logo from "@/assets/images/logo.png";
 
 import { usePathname } from "next/navigation";
 import { ExternalLink } from "lucide-react";
+import { AdminLogo } from "@/components/admin/admin-logo";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarRail } from "@/components/ui/sidebar";
 import { adminNav, adminRoutes } from "@/constants/admin";
 import { isAdminRouteActive } from "@/lib/helpers/admin";
@@ -17,7 +16,7 @@ export function AdminSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <Link href={adminRoutes.dashboard} className="flex h-10 items-center gap-2 rounded-md px-2 group-data-[collapsible=icon]:hidden">
-          <Image src={logo} alt="Synergy QMP" className="h-6 w-auto"/>
+          <AdminLogo className="h-6"/>
           <span className="rounded bg-sidebar-accent px-1.5 py-0.5 text-[0.6875rem] font-semibold text-sidebar-accent-foreground">Admin</span>
         </Link>
       </SidebarHeader>
