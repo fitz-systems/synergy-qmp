@@ -13,28 +13,28 @@ import { ShareLinks } from "@/components/courses/share-links";
 import { PageBanner } from "@/components/shared/page-banner";
 import { ButtonLink } from "@/components/ui/button-link";
 import { courseCodes } from "@/constants/courses";
-import { locales } from "@/i18n/config";
+import { siteName } from "@/constants/seo";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourseListItems } from "@/lib/course-list";
 import { courseCodeFromParams, getCourse, getPublishedReviews } from "@/lib/courses";
 import { formatPrice, interpolate, plural } from "@/lib/helpers/format";
 import { summarizeRatings } from "@/lib/helpers/reviews";
 import { courseHref, localizedHref } from "@/lib/helpers/routes";
+import { localizedMetadata } from "@/lib/helpers/seo";
 
 export async function generateStaticParams() {
   return courseCodes.map((code) => ({ code }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/[lang]/courses/[code]">): Promise<Metadata> {
-  const code = await courseCodeFromParams(params);
-  const course = await getCourse(code, await getLocale());
-  return {
-    title: `${course.title} | Synergy QMP`,
+  const [code, locale] = await Promise.all([courseCodeFromParams(params), getLocale()]);
+  const course = await getCourse(code, locale);
+  return localizedMetadata({
+    locale,
+    title: `${course.title} | ${siteName}`,
     description: course.description,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, courseHref(locale, code)]))
-    }
-  }
+    path: (language) => courseHref(language, code)
+  });
 }
 
 export default function CoursePage({ params }: PageProps<"/[lang]/courses/[code]">) {

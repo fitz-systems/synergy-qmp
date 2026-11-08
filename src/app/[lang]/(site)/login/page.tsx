@@ -6,19 +6,18 @@ import { ArrowRight } from "lucide-react";
 import { LoginForm } from "@/components/auth/login-form";
 import { PageBanner } from "@/components/shared/page-banner";
 import { contact } from "@/constants/contact";
-import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { localizedHref } from "@/lib/helpers/routes";
+import { localizedMetadata } from "@/lib/helpers/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = await getDictionary();
-  return {
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
+  return localizedMetadata({
+    locale,
     title: dict.loginPage.metaTitle,
     description: dict.loginPage.metaDescription,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, localizedHref(locale, "login")]))
-    }
-  }
+    path: (language) => localizedHref(language, "login")
+  });
 }
 
 export default async function LoginPage() {

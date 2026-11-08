@@ -5,19 +5,18 @@ import { ContactForm } from "@/components/contact/contact-form";
 import { ContactInfo } from "@/components/contact/contact-info";
 import { PageBanner } from "@/components/shared/page-banner";
 import { contact } from "@/constants/contact";
-import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { localizedHref } from "@/lib/helpers/routes";
+import { localizedMetadata } from "@/lib/helpers/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = await getDictionary();
-  return {
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
+  return localizedMetadata({
+    locale,
     title: dict.contactPage.metaTitle,
     description: dict.contactPage.metaDescription,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, localizedHref(locale, "contact")]))
-    }
-  }
+    path: (language) => localizedHref(language, "contact")
+  });
 }
 
 export default async function ContactPage() {

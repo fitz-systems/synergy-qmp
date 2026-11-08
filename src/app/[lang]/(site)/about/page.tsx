@@ -7,19 +7,18 @@ import { TdgCertification } from "@/components/about/tdg-certification";
 import { TeamBand } from "@/components/about/team-band";
 import { CtaBand } from "@/components/shared/cta-band";
 import { PageBanner } from "@/components/shared/page-banner";
-import { locales } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { localizedHref } from "@/lib/helpers/routes";
+import { localizedMetadata } from "@/lib/helpers/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = await getDictionary();
-  return {
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
+  return localizedMetadata({
+    locale,
     title: dict.aboutPage.metaTitle,
     description: dict.aboutPage.metaDescription,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, localizedHref(locale, "about")]))
-    }
-  }
+    path: (language) => localizedHref(language, "about")
+  });
 }
 
 export default async function AboutPage() {

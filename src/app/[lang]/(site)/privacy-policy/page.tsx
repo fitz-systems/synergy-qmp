@@ -5,21 +5,20 @@ import { PrivacyBody } from "@/components/privacy/privacy-body";
 import { PrivacyContents } from "@/components/privacy/privacy-contents";
 import { PageBanner } from "@/components/shared/page-banner";
 import { privacyLastUpdated } from "@/constants/privacy";
-import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { formatDate, interpolate } from "@/lib/helpers/format";
 import { privacySectionsFor } from "@/lib/helpers/privacy";
 import { localizedHref } from "@/lib/helpers/routes";
+import { localizedMetadata } from "@/lib/helpers/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = await getDictionary();
-  return {
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
+  return localizedMetadata({
+    locale,
     title: dict.privacyPage.metaTitle,
     description: dict.privacyPage.metaDescription,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, localizedHref(locale, "privacy")]))
-    }
-  }
+    path: (language) => localizedHref(language, "privacy")
+  });
 }
 
 export default async function PrivacyPage() {

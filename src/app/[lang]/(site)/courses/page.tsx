@@ -6,20 +6,19 @@ import { CourseArchive, CourseArchiveFallback } from "@/components/courses/cours
 import { OurCourses } from "@/components/courses/course-sidebar";
 import { CtaBand } from "@/components/shared/cta-band";
 import { PageBanner } from "@/components/shared/page-banner";
-import { locales } from "@/i18n/config";
-import { getDictionary } from "@/i18n/dictionaries";
+import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourseListItems } from "@/lib/course-list";
 import { localizedHref } from "@/lib/helpers/routes";
+import { localizedMetadata } from "@/lib/helpers/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = await getDictionary();
-  return {
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
+  return localizedMetadata({
+    locale,
     title: dict.coursesPage.metaTitle,
     description: dict.coursesPage.metaDescription,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, localizedHref(locale, "courses")]))
-    }
-  }
+    path: (language) => localizedHref(language, "courses")
+  });
 }
 
 export default async function CoursesPage() {

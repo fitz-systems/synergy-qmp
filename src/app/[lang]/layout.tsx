@@ -2,7 +2,7 @@ import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import { locales } from "@/i18n/config";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
-import { localizedHref } from "@/lib/helpers/routes";
+import { sharingMetadata, siteMetadataBase } from "@/lib/helpers/seo";
 
 import "../globals.css";
 
@@ -17,13 +17,12 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const dict = await getDictionary();
+  const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
   return {
+    metadataBase: siteMetadataBase(),
     title: dict.meta.title,
     description: dict.meta.description,
-    alternates: {
-      languages: Object.fromEntries(locales.map((locale) => [locale, localizedHref(locale, "home")]))
-    }
+    ...sharingMetadata(locale, dict.meta.title, dict.meta.description)
   }
 }
 
