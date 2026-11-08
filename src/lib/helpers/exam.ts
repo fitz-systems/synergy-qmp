@@ -51,7 +51,7 @@ export function scoreAttempt(correctCount: number, questionCount: number, passMa
 }
 
 export function optionIndex(optionId: unknown, optionCount: number) {
-  const index = Number(optionId);
+  const index = typeof optionId === "number" ? optionId : typeof optionId === "string" && /^\d+$/.test(optionId) ? Number(optionId) : NaN;
   return Number.isInteger(index) && index >= 0 && index < optionCount ? index : null;
 }
 

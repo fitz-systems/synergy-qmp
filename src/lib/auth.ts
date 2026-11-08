@@ -1,4 +1,3 @@
-import { createHash, timingSafeEqual } from "node:crypto";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
@@ -7,14 +6,8 @@ import { nextCookies } from "better-auth/next-js";
 import { disabledAuthPaths, passwordMinLength, passwordResetTokenSeconds, resetTokenPrefix, welcomeTokenSeconds } from "@/constants/auth";
 import { hasPassword } from "@/lib/accounts";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email";
+import { isLegacyMd5Hash, verifyLegacyMd5 } from "@/lib/helpers/legacy-password";
 import { prisma } from "@/lib/prisma";
-
-const LEGACY_MD5 = /^[a-f0-9]{32}$/i;
-
-function verifyLegacyMd5(hash: string, password: string) {
-  const candidate = createHash("md5").update(password).digest();
-  return timingSafeEqual(candidate, Buffer.from(hash, "hex"));
-}
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, { provider: "postgresql" }),
@@ -42,7 +35,7 @@ export const auth = betterAuth({
     password: {
       hash: hashPassword,
       verify: async ({ hash, password }) => {
-        if (LEGACY_MD5.test(hash)) {
+        if (isLegacyMd5Hash(hash)) {
           return verifyLegacyMd5(hash, password);
         }
         return verifyPassword({ hash, password });
@@ -82,7 +75,7 @@ export const auth = betterAuth({
         where: { userId: Number(newSession.user.id), providerId: "credential" },
         select: { id: true, password: true }
       });
-      if (account?.password && LEGACY_MD5.test(account.password)) {
+      if (account?.password && isLegacyMd5Hash(account.password)) {
         await prisma.account.update({
           where: { id: account.id },
           data: { password: await hashPassword(ctx.body.password) }
