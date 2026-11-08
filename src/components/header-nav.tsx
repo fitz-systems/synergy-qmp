@@ -3,13 +3,12 @@
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { BookOpen, Globe, Menu, X } from "lucide-react";
-import { SignOutForm } from "@/components/sign-out-form";
+import { Suspense, useEffect, useState } from "react";
+import { Globe, Menu, X } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/helpers/routes";
 import type { HeaderAccountMenu } from "@/types/student";
-import { AccountAvatar, AccountMenu } from "./account-menu";
+import { DesktopAccount, MobileAccount } from "./header-account";
 
 interface HeaderNavProps {
   locale: Locale;
@@ -17,7 +16,7 @@ interface HeaderNavProps {
   links: { href: string; label: string }[];
   loginHref: string;
   brand: React.ReactNode;
-  accountMenu?: HeaderAccountMenu;
+  accountMenu: Promise<HeaderAccountMenu | null>;
   labels: {
     login: string;
     menu: string;
@@ -82,16 +81,9 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accoun
           <Globe aria-hidden className="size-4" strokeWidth={1.75}/>
           {labels.switchLanguage}
         </Link>
-        {accountMenu ? (
-          <AccountMenu {...accountMenu}/>
-        ) : (
-          <Link
-            href={loginHref}
-            className="inline-flex h-10 items-center rounded-md border border-line-strong px-4 text-[0.9375rem] font-semibold text-ink transition-colors duration-200 hover:border-ink hover:bg-ink hover:text-canvas"
-          >
-            {labels.login}
-          </Link>
-        )}
+        <Suspense fallback={<div aria-hidden className="h-11 w-24"/>}>
+          <DesktopAccount accountMenu={accountMenu} loginHref={loginHref} loginLabel={labels.login}/>
+        </Suspense>
       </div>
 
       <button
@@ -135,40 +127,9 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accoun
             </Link>
           ))}
           <div className="mt-8 flex flex-col gap-3">
-            {accountMenu ? (
-              <div className="rounded-xl border border-line p-4">
-                <div className="flex items-center gap-3">
-                  <AccountAvatar initials={accountMenu.account.initials} className="size-11 text-base"/>
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-ink">{accountMenu.account.name}</p>
-                    <p className="truncate text-sm text-ink-muted">{accountMenu.account.email}</p>
-                  </div>
-                </div>
-                <div className="mt-4 grid gap-2">
-                  <Link
-                    href={accountMenu.myCourseHref}
-                    onClick={close}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-ink text-base font-semibold text-canvas"
-                  >
-                    <BookOpen aria-hidden className="size-4" strokeWidth={1.75}/>
-                    {accountMenu.labels.myCourse}
-                  </Link>
-                  <SignOutForm
-                    locale={locale}
-                    label={accountMenu.labels.logout}
-                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md border border-line-strong text-base font-medium text-ink"
-                  />
-                </div>
-              </div>
-            ) : (
-              <Link
-                href={loginHref}
-                onClick={close}
-                className="inline-flex h-12 items-center justify-center rounded-md bg-ink text-base font-semibold text-canvas"
-              >
-                {labels.login}
-              </Link>
-            )}
+            <Suspense fallback={<div aria-hidden className="h-12"/>}>
+              <MobileAccount accountMenu={accountMenu} locale={locale} loginHref={loginHref} loginLabel={labels.login} onNavigate={close}/>
+            </Suspense>
             <Link
               href={switchHref}
               onClick={close}

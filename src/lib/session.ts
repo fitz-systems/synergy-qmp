@@ -39,12 +39,6 @@ export const getCurrentUser = cache(async (): Promise<SessionUser | null> => {
   return readSessionUser();
 });
 
-async function getShellUser(): Promise<SessionUser | null> {
-  "use cache: private";
-  cacheLife({ stale: sessionShellStaleSeconds });
-  return readSessionUser();
-}
-
 export async function requireUser(): Promise<SessionUser> {
   const user = await getCurrentUser();
   if (!user) redirect(localizedHref(await getLocale(), "login"));
@@ -58,7 +52,9 @@ export async function requireAdmin(): Promise<SessionUser> {
 }
 
 export async function requireAdminShell(): Promise<SessionUser> {
-  const user = await getShellUser();
+  "use cache: private";
+  cacheLife({ stale: sessionShellStaleSeconds });
+  const user = await readSessionUser();
   if (user?.role !== adminRole) redirect(adminRoutes.login);
   return user;
 }

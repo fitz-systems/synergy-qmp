@@ -5,16 +5,13 @@ import logo from "@/assets/images/logo.png";
 import { headerLinks } from "@/constants/routes";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { localizedHref } from "@/lib/helpers/routes";
-import type { HeaderAccountMenu } from "@/types/student";
+import { getHeaderAccountMenu } from "@/lib/student";
 import { HeaderNav } from "./header-nav";
 
-interface SiteHeaderProps {
-  accountMenu?: HeaderAccountMenu;
-}
-
-export async function SiteHeader({ accountMenu }: SiteHeaderProps) {
+export async function SiteHeader() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
-  
+  const accountMenu = getHeaderAccountMenu(locale, dict.student.account);
+
   const otherLocale = locale === "en" ? "fr" : "en";
 
   const links = headerLinks.map((route) => ({ href: localizedHref(locale, route), label: dict.nav[route] }));
