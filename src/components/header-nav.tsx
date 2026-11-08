@@ -3,8 +3,9 @@
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { Globe, Menu, X } from "lucide-react";
+import { desktopMenuQuery } from "@/constants/ui";
 import type { Locale } from "@/i18n/config";
 import { localizedHref } from "@/lib/helpers/routes";
 import type { HeaderAccountMenu } from "@/types/student";
@@ -30,25 +31,31 @@ interface HeaderNavProps {
 export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accountMenu, labels }: HeaderNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDialogElement>(null);
 
   const switchHref = pathname.replace(new RegExp(`^/${locale}(?=/|$)`), `/${otherLocale}`);
   const isActive = (href: string) => (href === localizedHref(locale, "home") ? pathname === href : pathname.startsWith(href));
 
-  const close = () => setOpen(false);
+  const openMenu = () => {
+    menuRef.current?.showModal();
+    setOpen(true);
+  }
+
+  const close = () => menuRef.current?.close();
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
+    const desktop = window.matchMedia(desktopMenuQuery);
+    const onResize = () => {
+      if (desktop.matches) menuRef.current?.close();
+    }
+    desktop.addEventListener("change", onResize);
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onResize);
       document.body.style.overflow = "";
     }
-
   }, [open]);
 
   return (
@@ -88,7 +95,7 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accoun
 
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openMenu}
         aria-expanded={open}
         aria-controls="mobile-menu"
         className="-mr-2 inline-flex size-11 items-center justify-center rounded-md text-ink lg:hidden"
@@ -97,16 +104,18 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accoun
         <span className="sr-only">{labels.menu}</span>
       </button>
 
-      <div
+      <dialog
+        ref={menuRef}
         id="mobile-menu"
-        hidden={!open}
-        className="fixed inset-0 z-50 bg-canvas lg:hidden"
+        aria-label={labels.menu}
+        onClose={() => setOpen(false)}
+        className="m-0 size-full max-h-none max-w-none border-0 bg-canvas p-0 text-ink lg:hidden"
       >
         <div className="container-site flex h-[4.5rem] items-center justify-between">
           {brand}
           <button
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={close}
             className="-mr-2 inline-flex size-11 items-center justify-center rounded-md text-ink"
           >
             <X aria-hidden className="size-6" strokeWidth={1.75}/>
@@ -143,7 +152,7 @@ export function HeaderNav({ locale, otherLocale, links, loginHref, brand, accoun
             </Link>
           </div>
         </nav>
-      </div>
+      </dialog>
     </>
   );
 }

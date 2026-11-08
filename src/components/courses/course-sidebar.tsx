@@ -76,7 +76,7 @@ export function SidebarSearch({ title, action, label, placeholder, submit }: Sid
           type="search"
           name="q"
           placeholder={placeholder}
-          className="h-11 w-full rounded-md border border-line-strong bg-canvas pl-3.5 pr-11 text-[0.9375rem] text-ink placeholder:text-ink-subtle transition-colors hover:border-ink-subtle focus:border-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
+          className="h-11 w-full rounded-md border border-line-input bg-canvas pl-3.5 pr-11 text-[0.9375rem] text-ink placeholder:text-ink-subtle transition-colors hover:border-ink-subtle focus:border-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15"
         />
         <button
           type="submit"

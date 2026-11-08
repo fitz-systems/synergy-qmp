@@ -23,7 +23,7 @@ export async function PageBanner({ title, image, subtitle, current = title, trai
   const Title = titleAsHeading ? "h1" : "p";
 
   return (
-    <section className="relative isolate overflow-hidden bg-night">
+    <section className="relative isolate overflow-hidden bg-night [--focus-ring:var(--color-canvas)]">
       <Image
         src={image}
         alt=""
@@ -33,7 +33,7 @@ export async function PageBanner({ title, image, subtitle, current = title, trai
         sizes="100vw"
         className={`-z-20 object-cover ${imagePosition}`}
       />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(16_20_26/0.9)_0%,rgb(16_20_26/0.74)_45%,rgb(16_20_26/0.5)_100%)]"/>
+      <div aria-hidden className="absolute inset-0 -z-10 bg-night/85 md:bg-transparent md:bg-[linear-gradient(90deg,rgb(16_20_26/0.9)_0%,rgb(16_20_26/0.74)_45%,rgb(16_20_26/0.5)_100%)]"/>
 
       <div className="container-site py-16 text-canvas md:py-24">
         <nav aria-label={dict.nav.breadcrumb} className="motion-safe:animate-[rise-in_800ms_var(--ease-out-expo)_both]">

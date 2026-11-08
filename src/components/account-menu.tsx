@@ -26,6 +26,7 @@ export function AccountMenu({ account, locale, myCourseHref, labels }: AccountMe
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -33,7 +34,9 @@ export function AccountMenu({ account, locale, myCourseHref, labels }: AccountMe
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     }
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      buttonRef.current?.focus();
     }
     document.addEventListener("pointerdown", onPointer);
     document.addEventListener("keydown", onKey);
@@ -47,6 +50,7 @@ export function AccountMenu({ account, locale, myCourseHref, labels }: AccountMe
   return (
     <div ref={rootRef} className="relative">
       <button
+        ref={buttonRef}
         type="button"
         aria-expanded={open}
         aria-controls={panelId}

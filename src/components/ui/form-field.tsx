@@ -15,7 +15,7 @@ interface FormFieldProps {
   trailing?: React.ReactNode;
 }
 
-const controlClass = "block w-full rounded-md border border-line-strong bg-canvas px-3.5 text-base text-ink transition-[border-color,box-shadow] duration-200 hover:border-ink-subtle focus:border-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ink/10 aria-invalid:border-danger aria-invalid:focus-visible:ring-danger/15";
+const controlClass = "block w-full rounded-md border border-line-input bg-canvas px-3.5 text-base text-ink transition-[border-color,box-shadow] duration-200 hover:border-ink-subtle focus:border-ink focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ink/10 aria-invalid:border-danger aria-invalid:focus-visible:ring-danger/15";
 
 export function FormField({ name, ids, label, error, required = true, defaultValue, type = "text", autoComplete, maxLength, multiline = false, trailing }: FormFieldProps) {
   const shared = {

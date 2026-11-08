@@ -17,20 +17,20 @@ export function ContactInfo({ labels }: ContactInfoProps) {
         {contactInfoItems(labels).map(({ key, label, value, href }) => {
           const Icon = contactInfoIcons[key];
           return (
-            <div key={key} className="flex gap-4 border-b border-line py-6">
-              <span aria-hidden className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-brand text-ink">
-                <Icon className="size-5" strokeWidth={1.75}/>
-              </span>
-              <div className="min-w-0">
-                <dt className="text-sm font-semibold text-ink-muted">{label}</dt>
-                <dd className="mt-1 break-words text-lg font-semibold text-ink">
-                  {href ? (
-                    <a href={href} className="tabular-nums underline decoration-transparent decoration-2 underline-offset-[0.3em] transition-colors hover:decoration-brand">
-                      {value}
-                    </a>
-                  ) : value}
-                </dd>
-              </div>
+            <div key={key} className="relative min-w-0 border-b border-line py-6 pl-15">
+              <dt className="text-sm font-semibold text-ink-muted">
+                <span aria-hidden className="absolute left-0 top-6 flex size-11 items-center justify-center rounded-lg bg-brand text-ink">
+                  <Icon className="size-5" strokeWidth={1.75}/>
+                </span>
+                {label}
+              </dt>
+              <dd className="mt-1 break-words text-lg font-semibold text-ink">
+                {href ? (
+                  <a href={href} className="tabular-nums underline decoration-transparent decoration-2 underline-offset-[0.3em] transition-colors hover:decoration-brand">
+                    {value}
+                  </a>
+                ) : value}
+              </dd>
             </div>
           );
         })}

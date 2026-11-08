@@ -9,7 +9,7 @@ export async function Hero() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
 
   return (
-    <section className="relative isolate flex min-h-[clamp(32rem,80svh,46rem)] items-center overflow-hidden bg-night">
+    <section className="relative isolate flex min-h-[clamp(32rem,80svh,46rem)] items-center overflow-hidden bg-night [--focus-ring:var(--color-canvas)]">
       <Image
         src={heroImage}
         alt=""

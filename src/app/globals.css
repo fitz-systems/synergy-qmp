@@ -17,6 +17,7 @@
   --color-canvas-alt: #f5f6f8;
   --color-line: #e4e7ec;
   --color-line-strong: #d0d5dd;
+  --color-line-input: #858d9b;
   --color-night: #10141a;
 
   --color-danger: #b42318;
@@ -43,6 +44,7 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
     scrollbar-color: var(--color-line-strong) transparent;
   }
 
@@ -67,7 +69,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-ink);
+    outline: 2px solid var(--focus-ring, var(--color-ink));
     outline-offset: 3px;
     border-radius: var(--radius-sm);
   }
@@ -75,6 +77,16 @@
   a {
     text-underline-offset: 0.22em;
     text-decoration-thickness: 1px;
+  }
+
+  html:has([data-sticky-tabs]) {
+    scroll-padding-top: 9.5rem;
+  }
+
+  @media (width < 64rem) {
+    html:has([data-sticky-footer]) {
+      scroll-padding-bottom: 6rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

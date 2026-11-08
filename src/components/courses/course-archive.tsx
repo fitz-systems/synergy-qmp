@@ -113,7 +113,7 @@ function CourseArchiveView({ courses, modes, labels, sidebar, state, onView, onQ
               value={state.query}
               onChange={(event) => onQuery(event.target.value)}
               placeholder={labels.searchPlaceholder}
-              className="h-11 w-full rounded-md border border-line-strong bg-canvas pl-10 pr-10 text-[0.9375rem] text-ink placeholder:text-ink-subtle transition-colors hover:border-ink-subtle focus:border-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 [&::-webkit-search-cancel-button]:hidden"
+              className="h-11 w-full rounded-md border border-line-input bg-canvas pl-10 pr-10 text-[0.9375rem] text-ink placeholder:text-ink-subtle transition-colors hover:border-ink-subtle focus:border-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/15 [&::-webkit-search-cancel-button]:hidden"
             />
             {state.query && (
               <button

@@ -52,6 +52,7 @@ export function CourseTabs({ tabs, label, price, enrollHref, enrollLabel }: Cour
     <div className="mt-10">
       <div ref={sentinel} aria-hidden className="h-px scroll-mt-[4.5rem] lg:scroll-mt-20"/>
       <div
+        data-sticky-tabs
         className={`sticky top-[4.5rem] z-30 -mx-5 border-b border-line bg-canvas/95 px-5 backdrop-blur-md transition-shadow duration-300 sm:mx-0 sm:px-0 lg:top-20 ${stuck ? "shadow-[0_8px_16px_-12px_rgb(16_20_26/0.25)]" : ""}`}
       >
         <div className="flex items-center gap-4">

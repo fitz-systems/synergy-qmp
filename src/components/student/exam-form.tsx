@@ -98,11 +98,11 @@ export function ExamForm({ locale, session, timeLimitMinutes, labels }: ExamForm
         {questions.map((question, index) => (
           <li key={question.id} id={questionAnchor(question.id)} className="scroll-mt-28">
             <fieldset disabled={expired} className="rounded-xl border border-line bg-canvas p-5 sm:p-6">
-              <legend className="contents">
+              <legend className="float-left w-full pb-5">
                 <span className="block text-sm font-semibold text-ink-subtle">{interpolate(labels.questionLabel, { n: index + 1, total })}</span>
                 <span className="mt-1.5 block text-lg font-semibold leading-snug text-ink">{question.prompt}</span>
               </legend>
-              <div className="mt-5 grid gap-2.5">
+              <div className="clear-left grid gap-2.5">
                 {question.options.map((option) => (
                   <label
                     key={option.id}
@@ -156,7 +156,7 @@ export function ExamForm({ locale, session, timeLimitMinutes, labels }: ExamForm
         </div>
       </aside>
 
-      <div className="sticky bottom-0 z-20 -mx-5 border-t border-line bg-canvas/95 px-5 py-3 backdrop-blur-md lg:hidden">
+      <div data-sticky-footer className="sticky bottom-0 z-20 -mx-5 border-t border-line bg-canvas/95 px-5 py-3 backdrop-blur-md lg:hidden">
         <div className="flex items-center gap-4">
           <div className="min-w-0 flex-1">
             <ExamProgress answered={answered} total={total} labels={labels} compact>
