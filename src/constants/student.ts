@@ -1,11 +1,16 @@
-import { Award, BookOpen, ClipboardCheck, type LucideIcon } from "lucide-react";
+import { Award, BookOpen, ClipboardCheck, LayoutDashboard, type LucideIcon } from "lucide-react";
 import type { Prisma } from "@/generated/prisma/client";
-import type { CourseStepKey } from "@/types/student";
+import type { AccountMenuLinkKind, CourseStepKey } from "@/types/student";
 
 export const courseStepIcons: Record<CourseStepKey, LucideIcon> = {
   material: BookOpen,
   exam: ClipboardCheck,
   certificate: Award
+}
+
+export const accountMenuLinkIcons: Record<AccountMenuLinkKind, LucideIcon> = {
+  myCourse: BookOpen,
+  adminPortal: LayoutDashboard
 }
 
 export const courseStepOrder: CourseStepKey[] = ["material", "exam", "certificate"];

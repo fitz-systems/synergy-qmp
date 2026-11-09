@@ -470,6 +470,7 @@
       "menu": "Menu du compte",
       "signedInAs": "Connecté en tant que",
       "myCourse": "Mon cours",
+      "adminPortal": "Portail d'administration",
       "logout": "Se déconnecter"
     },
     "myCourse": {

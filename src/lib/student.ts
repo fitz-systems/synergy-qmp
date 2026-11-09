@@ -1,4 +1,6 @@
 import { cache } from "react";
+import { adminRoutes } from "@/constants/admin";
+import { adminRole } from "@/constants/auth";
 import { examAnswerSelect } from "@/constants/student";
 import type { Locale } from "@/i18n/config";
 import { isCourseCode } from "@/lib/courses";
@@ -9,7 +11,7 @@ import { localizedHref } from "@/lib/helpers/routes";
 import { attemptsLeft, headerAccount, studentCourse } from "@/lib/helpers/student";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireUser } from "@/lib/session";
-import type { AccountMenuLabels, ExamResult, HeaderAccountMenu, StudentAccount, StudentCourse } from "@/types/student";
+import type { AccountMenuLabels, AccountMenuLink, ExamResult, HeaderAccountMenu, StudentAccount, StudentCourse } from "@/types/student";
 
 export async function getStudentAccount(): Promise<StudentAccount> {
   const { firstName, lastName, email } = await requireUser();
@@ -19,7 +21,10 @@ export async function getStudentAccount(): Promise<StudentAccount> {
 export async function getHeaderAccountMenu(locale: Locale, labels: AccountMenuLabels): Promise<HeaderAccountMenu | null> {
   const user = await getCurrentUser();
   if (!user) return null;
-  return { account: headerAccount(user), locale, myCourseHref: localizedHref(locale, "myCourse"), labels }
+  const primaryLink: AccountMenuLink = user.role === adminRole
+    ? { kind: "adminPortal", href: adminRoutes.dashboard }
+    : { kind: "myCourse", href: localizedHref(locale, "myCourse") };
+  return { account: headerAccount(user), locale, primaryLink, labels }
 }
 
 export const getStudentCourse = cache(async (): Promise<StudentCourse | null> => {

@@ -16,6 +16,8 @@ export type ExamStatus = "notStarted" | "passed" | "failed";
 
 export type CourseStepKey = "material" | "exam" | "certificate";
 
+export type AccountMenuLinkKind = "myCourse" | "adminPortal";
+
 export type CourseStepState = "done" | "current" | "locked";
 
 export interface StudentAccount {
@@ -30,10 +32,15 @@ export interface HeaderAccount {
   initials: string;
 }
 
+export interface AccountMenuLink {
+  kind: AccountMenuLinkKind;
+  href: string;
+}
+
 export interface HeaderAccountMenu {
   account: HeaderAccount;
   locale: Locale;
-  myCourseHref: string;
+  primaryLink: AccountMenuLink;
   labels: AccountMenuLabels;
 }
 

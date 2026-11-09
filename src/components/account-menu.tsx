@@ -3,8 +3,9 @@
 import Link from "next/link";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { BookOpen, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { SignOutForm } from "@/components/sign-out-form";
+import { accountMenuLinkIcons } from "@/constants/student";
 import type { HeaderAccountMenu } from "@/types/student";
 
 type AccountMenuProps = HeaderAccountMenu;
@@ -22,7 +23,8 @@ export function AccountAvatar({ initials, className = "size-9 text-sm" }: Accoun
   );
 }
 
-export function AccountMenu({ account, locale, myCourseHref, labels }: AccountMenuProps) {
+export function AccountMenu({ account, locale, primaryLink, labels }: AccountMenuProps) {
+  const PrimaryIcon = accountMenuLinkIcons[primaryLink.kind];
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -76,12 +78,12 @@ export function AccountMenu({ account, locale, myCourseHref, labels }: AccountMe
         <ul className="pt-1.5">
           <li>
             <Link
-              href={myCourseHref}
+              href={primaryLink.href}
               onClick={() => setOpen(false)}
               className="flex items-center gap-3 rounded-md px-3 py-2.5 text-[0.9375rem] font-medium text-ink transition-colors hover:bg-canvas-alt"
             >
-              <BookOpen aria-hidden className="size-4 text-ink-muted" strokeWidth={1.75}/>
-              {labels.myCourse}
+              <PrimaryIcon aria-hidden className="size-4 text-ink-muted" strokeWidth={1.75}/>
+              {labels[primaryLink.kind]}
             </Link>
           </li>
           <li>

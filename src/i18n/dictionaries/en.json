@@ -470,6 +470,7 @@
       "menu": "Account menu",
       "signedInAs": "Signed in as",
       "myCourse": "My course",
+      "adminPortal": "Admin portal",
       "logout": "Log out"
     },
     "myCourse": {

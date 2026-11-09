@@ -151,7 +151,7 @@ export const registrationsChartConfig = {
 } satisfies ChartConfig;
 
 export const passRateChartConfig = {
-  passRate: { label: "Pass rate (%)", color: "var(--chart-2)" }
+  passRate: { label: "Pass rate", color: "var(--chart-2)" }
 } satisfies ChartConfig;
 
 export const noRatingValue = "none";

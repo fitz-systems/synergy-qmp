@@ -43,7 +43,7 @@ export function DashboardCharts({ registrations, passRates }: DashboardChartsPro
               <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} unit="%"/>
               <YAxis type="category" dataKey="course" tickLine={false} axisLine={false} width={88}/>
               <ChartTooltip content={<ChartTooltipContent/>}/>
-              <Bar dataKey="passRate" fill="var(--color-passRate)" radius={6}/>
+              <Bar dataKey="passRate" unit="%" fill="var(--color-passRate)" radius={6}/>
             </BarChart>
           </ChartContainer>
         </CardContent>

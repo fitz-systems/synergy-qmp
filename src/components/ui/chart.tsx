@@ -256,6 +256,7 @@ function ChartTooltipContent({
                           {typeof item.value === "number"
                             ? item.value.toLocaleString()
                             : String(item.value)}
+                          {item.unit}
                         </span>
                       )}
                     </div>
