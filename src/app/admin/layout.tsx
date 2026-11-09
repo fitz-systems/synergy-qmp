@@ -20,7 +20,7 @@ export const instant = false;
 
 export default function AdminRootLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={inter.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className="min-h-dvh font-sans">
         <ThemeProvider attribute="class" defaultTheme="system" storageKey="admin-theme" enableSystem disableTransitionOnChange>
           <TooltipProvider>{children}</TooltipProvider>

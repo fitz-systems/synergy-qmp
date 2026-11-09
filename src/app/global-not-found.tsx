@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function GlobalNotFound() {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} data-scroll-behavior="smooth">
       <body className="flex min-h-dvh flex-col bg-canvas-alt font-sans">
         <header className="border-b border-line bg-canvas">
           <div className="container-site flex h-[4.5rem] items-center lg:h-20">

@@ -30,7 +30,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
   const locale = await getLocale();
 
   return (
-    <html lang={locale} className={inter.variable}>
+    <html lang={locale} className={inter.variable} data-scroll-behavior="smooth">
       <body className="flex min-h-dvh flex-col font-sans">{children}</body>
     </html>
   );
