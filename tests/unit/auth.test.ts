@@ -4,6 +4,7 @@ import { APIError } from "better-auth/api";
 import { describe, expect, it } from "vitest";
 import { loginFailureStatus, validateForgotPasswordEmail, validateLoginForm, validateResetPassword } from "@/lib/helpers/auth";
 import { isLegacyMd5Hash, verifyLegacyMd5 } from "@/lib/helpers/legacy-password";
+import { resetLinkLocale } from "@/lib/helpers/locale";
 import { clientIp, rateLimitKey } from "@/lib/helpers/rate-limit";
 
 const md5 = (value: string) => createHash("md5").update(value).digest("hex");
@@ -89,5 +90,23 @@ describe("rate limit keys", () => {
 
   it("never stores the raw email address", () => {
     expect(rateLimitKey("signIn", "email", "jane@example.com")).not.toContain("jane");
+  });
+});
+
+describe("reset link language", () => {
+  const link = (callback: string) => `http://localhost:3000/api/auth/reset-password/abc123?callbackURL=${encodeURIComponent(callback)}`;
+
+  it("uses the language of the page the link opens", () => {
+    expect(resetLinkLocale(link("/fr/reset-password"), { email: "a@b.c", preferredLocale: "en" })).toBe("fr");
+    expect(resetLinkLocale(link("/en/reset-password"), { email: "a@b.c", preferredLocale: "fr" })).toBe("en");
+  });
+
+  it("falls back to the account's language when the link has none", () => {
+    expect(resetLinkLocale("http://localhost:3000/api/auth/reset-password/abc123", { email: "a@b.c", preferredLocale: "fr" })).toBe("fr");
+    expect(resetLinkLocale(link("/reset-password"), { email: "a@b.c", preferredLocale: "fr" })).toBe("fr");
+  });
+
+  it("falls back to the default language when neither is usable", () => {
+    expect(resetLinkLocale(link("/de/reset-password"), { email: "a@b.c" })).toBe("en");
   });
 });

@@ -27,6 +27,8 @@ export const loginStatusByAuthError: Record<string, LoginFailureStatus> = {
 
 export const passwordMinLength = 8;
 
+export const resetLinkCallbackParam = "callbackURL";
+
 export const passwordResetTokenSeconds = 60 * 60;
 
 export const welcomeTokenSeconds = 7 * 24 * 60 * 60;

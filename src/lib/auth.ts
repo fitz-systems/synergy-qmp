@@ -7,6 +7,7 @@ import { disabledAuthPaths, passwordMinLength, passwordResetTokenSeconds, resetT
 import { hasPassword } from "@/lib/accounts";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email";
 import { isLegacyMd5Hash, verifyLegacyMd5 } from "@/lib/helpers/legacy-password";
+import { resetLinkLocale } from "@/lib/helpers/locale";
 import { prisma } from "@/lib/prisma";
 
 export const auth = betterAuth({
@@ -42,12 +43,13 @@ export const auth = betterAuth({
       }
     },
     sendResetPassword: async ({ user, url, token }) => {
+      const locale = resetLinkLocale(url, user);
       if (await hasPassword(Number(user.id))) {
-        await sendPasswordResetEmail(user, url);
+        await sendPasswordResetEmail(user, url, locale);
         return;
       }
       await prisma.verification.updateMany({ where: { identifier: `${resetTokenPrefix}${token}` }, data: { expiresAt: new Date(Date.now() + welcomeTokenSeconds * 1000) } });
-      await sendWelcomeEmail(user, url);
+      await sendWelcomeEmail(user, url, locale);
     }
   },
   databaseHooks: {

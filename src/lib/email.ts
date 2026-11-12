@@ -1,7 +1,7 @@
 import { Resend } from "resend";
+import type { Locale } from "@/i18n/config";
 import { getDictionaryFor } from "@/i18n/dictionaries";
 import { linkEmail } from "@/lib/helpers/email";
-import { resolveLocale } from "@/lib/helpers/locale";
 import type { AuthUserProfile } from "@/types/auth";
 import type { OutgoingEmail } from "@/types/email";
 
@@ -23,12 +23,12 @@ export async function sendEmail({ to, replyTo, subject, html, text }: OutgoingEm
   if (error) throw new Error(`Resend couldn't send "${subject}" to ${to}: ${error.message}`);
 }
 
-export async function sendPasswordResetEmail(user: AuthUserProfile, url: string) {
-  const dict = await getDictionaryFor(resolveLocale(user.preferredLocale));
+export async function sendPasswordResetEmail(user: AuthUserProfile, url: string, locale: Locale) {
+  const dict = await getDictionaryFor(locale);
   await sendEmail({ to: user.email, ...linkEmail(dict.emails.passwordReset, { name: user.firstName ?? "", url }) });
 }
 
-export async function sendWelcomeEmail(user: AuthUserProfile, url: string) {
-  const dict = await getDictionaryFor(resolveLocale(user.preferredLocale));
+export async function sendWelcomeEmail(user: AuthUserProfile, url: string, locale: Locale) {
+  const dict = await getDictionaryFor(locale);
   await sendEmail({ to: user.email, ...linkEmail(dict.emails.welcome, { name: user.firstName ?? "", url }) });
 }
