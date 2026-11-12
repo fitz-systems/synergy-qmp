@@ -59,7 +59,6 @@ export function CourseTile({ course, layout = "grid", readMore, headingLevel = "
                 {course.reviews}
               </span>
             </span>
-            <span className="text-base font-semibold tabular-nums text-ink">{course.price}</span>
           </div>
         </div>
 

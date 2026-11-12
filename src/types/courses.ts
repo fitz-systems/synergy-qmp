@@ -21,7 +21,6 @@ export interface Course {
   description: string;
   lectureTitle: string;
   outcomes: string[];
-  price: number;
   lectures: number;
   quizzes: number;
   durationHours: number;
@@ -45,7 +44,6 @@ export interface CourseListItem {
   description: string;
   mode: string;
   teacher: string;
-  price: string;
   students: string;
   reviews: string;
   imageAlt: string;

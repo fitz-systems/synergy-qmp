@@ -49,7 +49,6 @@ export function OurCourses({ title, courses, currentCode }: OurCoursesProps) {
               >
                 {course.title}
               </Link>
-              <p className="mt-1 text-sm font-semibold tabular-nums text-ink-muted">{course.price}</p>
             </div>
           </li>
         ))}

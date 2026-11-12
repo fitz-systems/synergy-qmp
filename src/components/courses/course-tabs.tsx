@@ -10,12 +10,11 @@ import type { CourseTab } from "@/types/courses";
 interface CourseTabsProps {
   tabs: CourseTab[];
   label: string;
-  price: string;
   enrollHref: string;
   enrollLabel: string;
 }
 
-export function CourseTabs({ tabs, label, price, enrollHref, enrollLabel }: CourseTabsProps) {
+export function CourseTabs({ tabs, label, enrollHref, enrollLabel }: CourseTabsProps) {
   const [active, setActive] = useState(tabs[0].id);
   const [stuck, setStuck] = useState(false);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -86,7 +85,6 @@ export function CourseTabs({ tabs, label, price, enrollHref, enrollLabel }: Cour
             inert={!stuck}
             className={`ml-auto hidden shrink-0 items-center gap-4 transition-[opacity,translate] duration-300 ease-out-expo md:flex ${stuck ? "opacity-100" : "pointer-events-none translate-y-1 opacity-0"}`}
           >
-            <span className="text-lg font-bold tabular-nums text-ink">{price}</span>
             <Link
               href={enrollHref}
               className="inline-flex h-10 items-center rounded-md bg-brand px-4 text-[0.9375rem] font-semibold text-ink transition-colors duration-200 hover:bg-brand-hover"

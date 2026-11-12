@@ -17,7 +17,7 @@ import { siteName } from "@/constants/seo";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourseListItems } from "@/lib/course-list";
 import { courseCodeFromParams, getCourse, getPublishedReviews } from "@/lib/courses";
-import { formatPrice, interpolate, plural } from "@/lib/helpers/format";
+import { interpolate, plural } from "@/lib/helpers/format";
 import { summarizeRatings } from "@/lib/helpers/reviews";
 import { courseHref, localizedHref } from "@/lib/helpers/routes";
 import { localizedMetadata } from "@/lib/helpers/seo";
@@ -80,7 +80,6 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[code]">
   const detail = copy.detail;
   const archiveHref = localizedHref(locale, "courses");
   const contactHref = localizedHref(locale, "contact");
-  const price = formatPrice(locale, course.price);
 
   const ratings = summarizeRatings(reviews, locale);
   const related = listItems.filter((item) => item.code !== code);
@@ -129,7 +128,6 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[code]">
                 </div>
               </dl>
               <div className="flex flex-wrap items-center gap-5">
-                <p className="text-3xl font-bold tabular-nums tracking-tight text-ink">{price}</p>
                 <ButtonLink href={contactHref}>{detail.enroll}</ButtonLink>
               </div>
             </div>
@@ -144,7 +142,7 @@ async function CourseDetail({ params }: Pick<PageProps<"/[lang]/courses/[code]">
             className="mt-8 h-auto w-full rounded-xl"
           />
 
-          <CourseTabs tabs={tabs} label={detail.tabsLabel} price={price} enrollHref={contactHref} enrollLabel={detail.enroll}/>
+          <CourseTabs tabs={tabs} label={detail.tabsLabel} enrollHref={contactHref} enrollLabel={detail.enroll}/>
 
           <div className="mt-12 border-t border-line pt-6">
             <ShareLinks title={course.title} labels={detail.share}/>

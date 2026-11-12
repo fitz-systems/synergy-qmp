@@ -130,7 +130,7 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
       </Card>
 
       <AdminFormSection title="Course page" description="Shown on the public course pages in both languages.">
-        <AdminField id={fieldId("price")} label="Price (CAD)" hint="Shown next to the enroll button. Enrollment is still through the contact page." error={invalid("price").error}>
+        <AdminField id={fieldId("price")} label="Price (CAD)" hint="Stored for records only. Not shown on the public site." error={invalid("price").error}>
           <Input id={fieldId("price")} name="price" inputMode="decimal" defaultValue={values.price} {...invalid("price").inputProps}/>
         </AdminField>
         {numberField("durationHours", "Course duration (hours)")}

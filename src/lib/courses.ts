@@ -45,7 +45,7 @@ async function getCourseCopy(locale: Locale): Promise<Omit<Course, "students">[]
       description: true,
       lectureTitle: true,
       outcomes: true,
-      course: { select: { code: true, priceCents: true, durationHours: true, lectureMinutes: true, questionsPerAttempt: true } }
+      course: { select: { code: true, durationHours: true, lectureMinutes: true, questionsPerAttempt: true } }
     }
   });
 
@@ -56,7 +56,6 @@ async function getCourseCopy(locale: Locale): Promise<Omit<Course, "students">[]
       description: copy.description ?? "",
       lectureTitle: copy.lectureTitle,
       outcomes: copy.outcomes,
-      price: course.priceCents / 100,
       lectures: courseLectureCount,
       quizzes: courseQuizCount,
       durationHours: course.durationHours,

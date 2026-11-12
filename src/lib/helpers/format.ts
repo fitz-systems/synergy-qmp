@@ -10,10 +10,6 @@ export function plural(locale: Locale, forms: PluralForms, count: number) {
   return interpolate(form, { count: count.toLocaleString(locale) });
 }
 
-export function formatPrice(locale: Locale, amount: number) {
-  return new Intl.NumberFormat(`${locale}-CA`, { style: "currency", currency: "CAD" }).format(amount);
-}
-
 export function formatRating(locale: Locale, rating: number) {
   return rating.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
