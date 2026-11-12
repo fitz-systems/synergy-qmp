@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { languageOptions, ratingOptions, reviewFormFailedNotice } from "@/constants/admin";
+import { useActionSubmit } from "@/hooks/use-action-submit";
 import type { ReviewFormField, ReviewFormState } from "@/types/admin";
 
 interface ReviewFormProps {
@@ -22,6 +23,7 @@ function fieldId(field: ReviewFormField) {
 
 export function ReviewForm({ action, initialState, submitLabel, cancelHref }: ReviewFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const submit = useActionSubmit(formAction);
   const [locale, setLocale] = useState(initialState.values.locale);
   const [rating, setRating] = useState(initialState.values.rating);
   const [published, setPublished] = useState(initialState.values.published);
@@ -39,7 +41,7 @@ export function ReviewForm({ action, initialState, submitLabel, cancelHref }: Re
   }
 
   return (
-    <form ref={formRef} action={formAction} noValidate className="space-y-6">
+    <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
       {state.status === "failed" && (
         <div ref={noticeRef} tabIndex={-1} role="alert" className="flex gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive focus-visible:outline-none">
           <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0"/>

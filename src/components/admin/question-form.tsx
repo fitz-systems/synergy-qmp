@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { maxQuestionOptions, minQuestionOptions, questionFormFailedNotice, questionTypeLabels } from "@/constants/admin";
+import { useActionSubmit } from "@/hooks/use-action-submit";
 import type { Locale } from "@/i18n/config";
 import { optionLetter } from "@/lib/helpers/admin";
 import { defaultQuestionOptions, isQuestionType, questionOptionsOf } from "@/lib/helpers/admin-courses";
@@ -28,6 +29,7 @@ function fieldId(field: QuestionFormField) {
 
 export function QuestionForm({ action, initialState, locale, submitLabel, cancelHref }: QuestionFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const submit = useActionSubmit(formAction);
   const [type, setType] = useState<QuestionType>(initialState.values.type);
   const [options, setOptions] = useState<AdminQuestionOption[]>(questionOptionsOf(initialState.values));
   const [active, setActive] = useState(initialState.values.active);
@@ -62,7 +64,7 @@ export function QuestionForm({ action, initialState, locale, submitLabel, cancel
   }
 
   return (
-    <form ref={formRef} action={formAction} noValidate className="space-y-6">
+    <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
       {state.status === "failed" && (
         <div ref={noticeRef} tabIndex={-1} role="alert" className="flex gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive focus-visible:outline-none">
           <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0"/>

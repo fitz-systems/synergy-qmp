@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { courseFormFailedNotice, courseSettingRanges } from "@/constants/admin";
+import { useActionSubmit } from "@/hooks/use-action-submit";
 import { locales, type Locale } from "@/i18n/config";
 import { adminQuestionsHref, languageLabel } from "@/lib/helpers/admin";
 import type { AdminCourse, CourseFormField, CourseFormState, CourseSetting } from "@/types/admin";
@@ -34,6 +35,7 @@ function errorLocale(errors: CourseFormState["errors"]) {
 
 export function CourseForm({ action, initialState, course, cancelHref }: CourseFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
+  const submit = useActionSubmit(formAction);
   const [tab, setTab] = useState<string>(locales[0]);
   const [shownState, setShownState] = useState(state);
   const [shuffleQuestions, setShuffleQuestions] = useState(initialState.values.shuffleQuestions);
@@ -70,7 +72,7 @@ export function CourseForm({ action, initialState, course, cancelHref }: CourseF
   }
 
   return (
-    <form ref={formRef} action={formAction} noValidate className="space-y-6">
+    <form ref={formRef} onSubmit={submit} noValidate className="space-y-6">
       {state.status === "failed" && (
         <div ref={noticeRef} tabIndex={-1} role="alert" className="flex gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive focus-visible:outline-none">
           <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0"/>
