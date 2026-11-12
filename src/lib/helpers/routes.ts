@@ -1,4 +1,4 @@
-import { adminLoginPath, routes, unlocalizedSegments, type Route } from "@/constants/routes";
+import { adminLoginPath, courseCodes, routes, unlocalizedSegments, type Route } from "@/constants/routes";
 import { hasLocale, type Locale } from "@/i18n/config";
 
 export function localizedHref(locale: Locale, route: Route) {
@@ -14,4 +14,9 @@ export function signInPathFor(pathname: string) {
   if (first === unlocalizedSegments[0]) return pathname === adminLoginPath || pathname.startsWith(`${adminLoginPath}/`) ? null : adminLoginPath;
   if (hasLocale(first) && `/${second}` === routes.myCourse) return localizedHref(first, "login");
   return null;
+}
+
+export function isUnknownCoursePath(pathname: string) {
+  const [, first = "", second = "", code = "", ...rest] = pathname.split("/");
+  return hasLocale(first) && `/${second}` === routes.courses && code !== "" && rest.every((part) => part === "") && !courseCodes.some((known) => known === code);
 }

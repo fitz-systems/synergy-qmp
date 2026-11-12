@@ -12,7 +12,7 @@ import { RatingStars } from "@/components/courses/rating-stars";
 import { ShareLinks } from "@/components/courses/share-links";
 import { PageBanner } from "@/components/shared/page-banner";
 import { ButtonLink } from "@/components/ui/button-link";
-import { courseCodes } from "@/constants/courses";
+import { courseCodes } from "@/constants/routes";
 import { siteName } from "@/constants/seo";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { getCourseListItems } from "@/lib/course-list";

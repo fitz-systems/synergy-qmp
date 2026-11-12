@@ -1,7 +1,8 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { notFound } from "next/navigation";
 import { coursesCacheTag, enrollmentsCacheTag, reviewsCacheTag } from "@/constants/cache";
-import { courseCodes, courseLectureCount, courseQuizCount } from "@/constants/courses";
+import { courseLectureCount, courseQuizCount } from "@/constants/courses";
+import { courseCodes } from "@/constants/routes";
 import type { Locale } from "@/i18n/config";
 import { prisma } from "@/lib/prisma";
 import type { Course, CourseCode, CourseReview } from "@/types/courses";

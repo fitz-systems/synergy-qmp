@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { courseCodes } from "@/constants/courses";
+import { courseCodes } from "@/constants/routes";
 import { sitemapRoutes } from "@/constants/seo";
 import { courseHref, localizedHref } from "@/lib/helpers/routes";
 import { sitemapEntry } from "@/lib/helpers/seo";

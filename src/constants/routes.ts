@@ -1,3 +1,5 @@
+import type { CourseCode } from "@/types/courses";
+
 export const routes = {
   home: "",
   about: "/about",
@@ -23,3 +25,7 @@ export const footerLinks: Route[] = ["home", "about", "courses", "contact", "pri
 export const unlocalizedSegments = ["admin"];
 
 export const adminLoginPath = "/admin/login";
+
+export const courseCodes: CourseCode[] = ["ground", "air"];
+
+export const unmatchedRouteSegment = "not-found";
