@@ -1,5 +1,5 @@
 import { Mail } from "lucide-react";
-import { FacebookIcon, GooglePlusIcon, LinkedInIcon, PinterestIcon, TwitterIcon } from "@/components/icons/social-icons";
+import { FacebookIcon, LinkedInIcon } from "@/components/icons/social-icons";
 import type { ShareLink } from "@/types/courses";
 import type { IconComponent } from "@/types/icons";
 
@@ -17,5 +17,3 @@ export const shareIcons: Record<ShareLink["key"], IconComponent> = {
   facebook: FacebookIcon,
   email: Mail
 }
-
-export const contactSocialIcons: IconComponent[] = [FacebookIcon, TwitterIcon, GooglePlusIcon, PinterestIcon];

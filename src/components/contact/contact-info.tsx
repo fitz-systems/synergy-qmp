@@ -1,5 +1,4 @@
 import { contactInfoIcons } from "@/constants/contact";
-import { contactSocialIcons } from "@/constants/links";
 import { contactInfoItems } from "@/lib/helpers/contact";
 import type { ContactInfoLabels } from "@/types/contact";
 
@@ -35,14 +34,6 @@ export function ContactInfo({ labels }: ContactInfoProps) {
           );
         })}
       </dl>
-
-      <ul aria-hidden className="mt-8 flex gap-2">
-        {contactSocialIcons.map((Icon, index) => (
-          <li key={index} className="flex size-10 items-center justify-center rounded-full border border-line-strong text-ink-subtle">
-            <Icon className="size-4"/>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

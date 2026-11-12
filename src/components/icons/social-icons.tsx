@@ -25,15 +25,3 @@ export function LinkedInIcon({ className }: SocialIconProps) {
 export function FacebookIcon({ className }: SocialIconProps) {
   return <BrandIcon name="facebook" className={className}/>;
 }
-
-export function TwitterIcon({ className }: SocialIconProps) {
-  return <BrandIcon name="twitter" className={className}/>;
-}
-
-export function GooglePlusIcon({ className }: SocialIconProps) {
-  return <BrandIcon name="googlePlus" className={className}/>;
-}
-
-export function PinterestIcon({ className }: SocialIconProps) {
-  return <BrandIcon name="pinterest" className={className}/>;
-}
