@@ -6,7 +6,8 @@ import { SignedInAdminRedirect } from "@/components/admin/signed-in-admin-redire
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Log in"
+  title: "Log in",
+  description: "Sign in to the Synergy QMP admin portal with your staff account."
 }
 
 export default function AdminLoginPage() {

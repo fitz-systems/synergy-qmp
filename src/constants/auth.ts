@@ -7,7 +7,7 @@ export const loginRememberField = "rememberMe";
 
 export const initialLoginFormState: LoginFormState = {
   status: "idle",
-  values: { email: "", rememberMe: true },
+  values: { email: "", rememberMe: false },
   errors: {}
 }
 

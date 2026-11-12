@@ -170,6 +170,11 @@ export const adminLoginFields: AdminLoginField[] = [
   { name: "password", label: "Password", type: "password", autoComplete: "current-password" }
 ];
 
+export const adminPasswordToggleLabels = {
+  show: "Show password",
+  hide: "Hide password"
+}
+
 export const adminLoginFieldErrors: Record<LoginField, Partial<Record<LoginFieldError, string>>> = {
   email: { required: "Enter your email.", invalidEmail: "Enter a valid email address." },
   password: { required: "Enter your password." }
