@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readImportTable, trueFalseOptionText, validateQuestionRecords } from "@/lib/helpers/admin-import";
+import { importCountLabel, readImportTable, trueFalseOptionText, validateQuestionRecords } from "@/lib/helpers/admin-import";
 import type { Locale } from "@/i18n/config";
 
 function importQuestions(csv: string, locale: Locale) {
@@ -28,5 +28,14 @@ describe("true / false import", () => {
   it("leaves multiple choice options as written", () => {
     const result = importQuestions(`${header}\nWhich class?,Class 7,Class 3,,,A,\n`, "en");
     expect(result.rows[0].values).toMatchObject({ type: "multipleChoice", options: ["Class 7", "Class 3"] });
+  });
+});
+
+describe("import count labels", () => {
+  it("use the singular for one row and the plural otherwise", () => {
+    expect(importCountLabel("users", 1)).toBe("1 user");
+    expect(importCountLabel("users", 0)).toBe("0 users");
+    expect(importCountLabel("questions", 1)).toBe("1 question");
+    expect(importCountLabel("questions", 1200)).toBe("1,200 questions");
   });
 });

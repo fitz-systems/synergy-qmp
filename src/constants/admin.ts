@@ -69,6 +69,11 @@ export const importKindLabels: Record<ImportKind, string> = {
   questions: "Questions"
 }
 
+export const importKindNouns: Record<ImportKind, { one: string; other: string }> = {
+  users: { one: "user", other: "users" },
+  questions: { one: "question", other: "questions" }
+}
+
 export const importColumns: Record<ImportKind, string[]> = {
   users: ["first_name", "last_name", "email", "company", "course", "language"],
   questions: ["prompt", "option_a", "option_b", "option_c", "option_d", "correct", "explanation"]

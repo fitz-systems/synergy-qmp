@@ -3,7 +3,7 @@ import { importMaxBytes, importMessages } from "@/constants/admin";
 import type { Prisma } from "@/generated/prisma/client";
 import { recordAudit } from "@/lib/audit";
 import { fullName, questionBankLabel } from "@/lib/helpers/admin";
-import { importSummary, parseBank, promptKey, readImportTable, validateQuestionRecords, validateUserRecords } from "@/lib/helpers/admin-import";
+import { importCountLabel, importSummary, parseBank, promptKey, readImportTable, validateQuestionRecords, validateUserRecords } from "@/lib/helpers/admin-import";
 import { prisma } from "@/lib/prisma";
 import type { ImportPreview, ImportResult, ImportQuestionRow, ImportRequest, ImportUserRow, ParsedImportRequest, QuestionBankKey } from "@/types/admin";
 
@@ -114,11 +114,11 @@ export async function importRows(adminId: number, request: ImportRequest, expect
     if (parsed.kind === "users") {
       await insertUsers(tx, parsed.result.rows);
       await recordAudit(tx, { adminId, action: "usersImported", entity: "import", entityLabel, details: summary });
-      return { ok: true, kind: "users", message: `Imported ${rows.length} ${rows.length === 1 ? "user" : "users"}.` }
+      return { ok: true, kind: "users", message: `Imported ${importCountLabel("users", rows.length)}.` }
     }
 
     await insertQuestions(tx, parsed.bank, parsed.result.rows);
     await recordAudit(tx, { adminId, action: "questionsImported", entity: "import", entityLabel, details: `${summary} in ${questionBankLabel(parsed.bank.code, parsed.bank.locale)}` });
-    return { ok: true, kind: "questions", message: `Imported ${rows.length} ${rows.length === 1 ? "question" : "questions"} into ${questionBankLabel(parsed.bank.code, parsed.bank.locale)}.` }
+    return { ok: true, kind: "questions", message: `Imported ${importCountLabel("questions", rows.length)} into ${questionBankLabel(parsed.bank.code, parsed.bank.locale)}.` }
   }, { timeout: 60_000 });
 }

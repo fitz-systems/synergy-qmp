@@ -1,4 +1,4 @@
-import { courseOptions, importColumns, importMaxRows, importMessages, languageAliases, maxQuestionOptions, questionImportLetters, trueFalseImportWords, trueFalseOptions, trueImportWords } from "@/constants/admin";
+import { courseOptions, importColumns, importKindNouns, importMaxRows, importMessages, languageAliases, maxQuestionOptions, questionImportLetters, trueFalseImportWords, trueFalseOptions, trueImportWords } from "@/constants/admin";
 import { hasLocale, type Locale } from "@/i18n/config";
 import type { ImportKind, ImportPreviewRow, ImportQuestionContext, ImportQuestionRow, ImportRecord, ImportTable, ImportUserContext, ImportUserRow, ParsedImport, QuestionBankKey, QuestionFormValues } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
@@ -154,6 +154,11 @@ export function importTemplate(kind: ImportKind) {
 
 export function importTemplateFileName(kind: ImportKind) {
   return `${kind}-template.csv`;
+}
+
+export function importCountLabel(kind: ImportKind, count: number) {
+  const noun = importKindNouns[kind];
+  return `${count.toLocaleString("en-CA")} ${count === 1 ? noun.one : noun.other}`;
 }
 
 export function importSummary(created: number, skipped: number) {

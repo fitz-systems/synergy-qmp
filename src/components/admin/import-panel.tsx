@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { importColumns, importKindLabels, importMaxBytes, importMaxRows, importMessages, importPreviewLimit, statusToneIconStyles, statusToneStyles } from "@/constants/admin";
 import { questionBankValue } from "@/lib/helpers/admin";
-import { importTemplate, importTemplateFileName } from "@/lib/helpers/admin-import";
+import { importCountLabel, importTemplate, importTemplateFileName } from "@/lib/helpers/admin-import";
 import { cn } from "@/lib/helpers/class-names";
 import { decodeCsvBytes } from "@/lib/helpers/csv";
 import type { ImportKind, ImportPreview, ImportResult, QuestionBank } from "@/types/admin";
@@ -66,7 +66,6 @@ function ImportTab({ kind, banks }: ImportTabProps) {
   const [dragging, setDragging] = useState(false);
   const [pending, startTransition] = useTransition();
   const fileId = `import-file-${kind}`;
-  const label = importKindLabels[kind].toLowerCase();
 
   function check(chosen: ChosenFile, bankValue: string) {
     startTransition(async () => setPreview(await previewImport({ kind, bank: bankValue, fileName: chosen.name, text: chosen.text })));
@@ -214,7 +213,7 @@ function ImportTab({ kind, banks }: ImportTabProps) {
             <Button type="button" variant="outline" onClick={clear} disabled={pending}>Clear</Button>
             <Button type="button" onClick={runIt} disabled={pending || preview.ready === 0}>
               {pending ? <LoaderCircle aria-hidden className="animate-spin"/> : <FileUp/>}
-              Import {preview.ready} {label}
+              Import {importCountLabel(kind, preview.ready)}
             </Button>
           </CardFooter>
         </Card>
