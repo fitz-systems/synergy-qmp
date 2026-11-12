@@ -24,7 +24,7 @@ async function questionContext(tx: Prisma.TransactionClient, bank: QuestionBankK
     tx.question.findMany({ where, select: { prompt: true } }),
     tx.question.aggregate({ where, _max: { sortOrder: true } })
   ]);
-  return { existingPrompts: new Set(questions.map((question) => promptKey(question.prompt))), nextSortOrder: (_max.sortOrder ?? 0) + 1 }
+  return { locale: bank.locale, existingPrompts: new Set(questions.map((question) => promptKey(question.prompt))), nextSortOrder: (_max.sortOrder ?? 0) + 1 }
 }
 
 async function parseRequest(tx: Prisma.TransactionClient, request: ImportRequest): Promise<ParsedImportRequest | { fileError: string }> {

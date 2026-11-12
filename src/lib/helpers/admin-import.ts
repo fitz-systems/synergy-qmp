@@ -1,4 +1,4 @@
-import { courseOptions, importColumns, importMaxRows, importMessages, languageAliases, maxQuestionOptions, questionImportLetters, trueFalseImportWords } from "@/constants/admin";
+import { courseOptions, importColumns, importMaxRows, importMessages, languageAliases, maxQuestionOptions, questionImportLetters, trueFalseImportWords, trueFalseOptions, trueImportWords } from "@/constants/admin";
 import { hasLocale, type Locale } from "@/i18n/config";
 import type { ImportKind, ImportPreviewRow, ImportQuestionContext, ImportQuestionRow, ImportRecord, ImportTable, ImportUserContext, ImportUserRow, ParsedImport, QuestionBankKey, QuestionFormValues } from "@/types/admin";
 import type { CourseCode } from "@/types/courses";
@@ -96,14 +96,18 @@ export function promptKey(prompt: string) {
   return prompt.toLowerCase().replace(/\s+/g, " ").trim();
 }
 
-function questionValues(record: ImportRecord, sortOrder: number): QuestionFormValues {
+export function trueFalseOptionText(option: string, locale: Locale) {
+  return trueFalseOptions[locale][trueImportWords.has(option.toLowerCase()) ? 0 : 1];
+}
+
+function questionValues(record: ImportRecord, sortOrder: number, locale: Locale): QuestionFormValues {
   const options = questionImportLetters.slice(0, maxQuestionOptions).map((letter) => record.cells[`option_${letter.toLowerCase()}`].replace(/\s+/g, " "));
   while (options.length > 0 && options[options.length - 1] === "") options.pop();
   const trueFalse = options.length === 2 && options.every((option) => trueFalseImportWords.has(option.toLowerCase()));
   return {
     type: trueFalse ? "trueFalse" : "multipleChoice",
     prompt: record.cells.prompt,
-    options,
+    options: trueFalse ? options.map((option) => trueFalseOptionText(option, locale)) : options,
     correctIndex: correctIndexOf(record.cells.correct),
     explanation: record.cells.explanation,
     sortOrder: String(sortOrder),
@@ -132,7 +136,7 @@ export function validateQuestionRecords(records: ImportRecord[], context: Import
   let sortOrder = context.nextSortOrder;
 
   for (const record of records) {
-    const values = questionValues(record, sortOrder);
+    const values = questionValues(record, sortOrder, context.locale);
     const problem = questionProblem(values, record, context, seen);
     preview.push(previewRow(record, problem));
     const key = promptKey(values.prompt);

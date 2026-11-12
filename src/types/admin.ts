@@ -479,6 +479,7 @@ export interface ImportUserContext {
 }
 
 export interface ImportQuestionContext {
+  locale: Locale;
   existingPrompts: Set<string>;
   nextSortOrder: number;
 }

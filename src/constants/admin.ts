@@ -471,6 +471,8 @@ export const importMessages = {
 
 export const trueFalseImportWords = new Set(["true", "false", "t", "f", "vrai", "faux", "v"]);
 
+export const trueImportWords = new Set(["true", "t", "vrai", "v"]);
+
 export const questionImportLetters = ["A", "B", "C", "D"];
 
 export const languageAliases: Record<string, Locale> = {
