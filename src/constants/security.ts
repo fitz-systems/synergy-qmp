@@ -6,7 +6,7 @@ const contentSecurityPolicy = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  "connect-src 'self' https://vercel.com/api/blob",
+  "connect-src 'self' https://vercel.com/api/blob/",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
