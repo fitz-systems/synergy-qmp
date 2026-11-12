@@ -1,3 +1,4 @@
+import { businessTimeZone } from "@/constants/student";
 import type { Locale } from "@/i18n/config";
 import type { PluralForms } from "@/types/i18n";
 
@@ -16,6 +17,10 @@ export function formatRating(locale: Locale, rating: number) {
 
 export function formatDate(locale: Locale, isoDate: string) {
   return new Intl.DateTimeFormat(`${locale}-CA`, { dateStyle: "long", timeZone: "UTC" }).format(new Date(isoDate));
+}
+
+export function formatTimestampDate(locale: Locale, isoTimestamp: string) {
+  return new Intl.DateTimeFormat(`${locale}-CA`, { dateStyle: "long", timeZone: businessTimeZone }).format(new Date(isoTimestamp));
 }
 
 export function formatPercent(locale: Locale, percent: number) {

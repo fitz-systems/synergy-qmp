@@ -3,7 +3,7 @@ import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "@/types/courses";
 import type { CertificateDetail, CourseDetailRow, CourseStep, CourseStepContent, CourseStepHrefs, ExamAnswers, ExamResult, ExamSettings, HeaderAccount, StudentAccount, StudentAttemptRecord, StudentCertificate, StudentCertificateLabels, StudentCopy, StudentCourse, StudentEnrollment, StudentEnrollmentRecord } from "@/types/student";
 import { isAttemptInProgress } from "./exam";
-import { formatDate, formatPercent, interpolate, plural } from "./format";
+import { formatDate, formatPercent, formatTimestampDate, interpolate, plural } from "./format";
 
 export function headerAccount(account: StudentAccount): HeaderAccount {
   return {
@@ -67,7 +67,7 @@ export function courseDetailRows(courseTitle: string, enrollment: StudentEnrollm
   return [
     { label: labels.course, value: courseTitle },
     { label: labels.language, value: labels.languages[enrollment.courseLocale] },
-    { label: labels.enrolled, value: formatDate(locale, enrollment.enrolledOn) },
+    { label: labels.enrolled, value: formatTimestampDate(locale, enrollment.enrolledOn) },
     { label: labels.exam, value: interpolate(labels.examValue, { questions: settings.questionCount, minutes: settings.timeLimitMinutes }) },
     { label: labels.passMark, value: formatPercent(locale, settings.passMarkPct) },
     {

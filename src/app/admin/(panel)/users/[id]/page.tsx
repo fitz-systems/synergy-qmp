@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { adminAttemptParam, adminRoutes, statusToneIconStyles, statusToneStyles, welcomeFailedParam } from "@/constants/admin";
 import { getAdminAttemptAnswers, getAdminUserDetail } from "@/lib/admin-users";
 import { cn } from "@/lib/helpers/class-names";
-import { adminCertificateHref, adminUserAttemptHref, adminUserEditHref, attemptsUsedLabel, enrollmentLabel, formatAdminDate, formatAdminDateTime, fullName, languageLabel, scoreLabel, searchParamValue, selectedAttemptId, todayInputValue } from "@/lib/helpers/admin";
+import { adminCertificateHref, adminUserAttemptHref, adminUserEditHref, attemptsUsedLabel, enrollmentLabel, formatAdminDate, formatAdminDateTime, formatAdminTimestampDate, fullName, languageLabel, scoreLabel, searchParamValue, selectedAttemptId, todayInputValue } from "@/lib/helpers/admin";
 import type { AdminUserAttempt } from "@/types/admin";
 
 export const metadata: Metadata = {
@@ -96,7 +96,7 @@ export default async function AdminUserPage({ params, searchParams }: PageProps<
               ["Company", current?.company ?? "—"],
               ["Language", languageLabel(user.preferredLocale)],
               ["Account", <ToggleBadge key="account" on={user.active} onLabel="Active" offLabel="Deactivated"/>],
-              ["Created", formatAdminDate(user.createdAt)],
+              ["Created", formatAdminTimestampDate(user.createdAt)],
               ["Notes", current?.notes || "—"]
             ]}/>
           </CardContent>
@@ -110,7 +110,7 @@ export default async function AdminUserPage({ params, searchParams }: PageProps<
             <CardContent className="space-y-4">
               <DetailList rows={[
                 ["Course", enrollmentLabel(current.courseCode, current.locale)],
-                ["Enrolled", formatAdminDate(current.enrolledOn)],
+                ["Enrolled", formatAdminTimestampDate(current.enrolledOn)],
                 ["Status", <StatusBadge key="status" status={current.status}/>],
                 ["Attempts used", attemptsUsedLabel(current.attemptsUsed, current.maxAttempts)],
                 ["Payment", <ToggleBadge key="paid" on={current.paid} onLabel="Paid" offLabel="Unpaid"/>]
@@ -282,7 +282,7 @@ export default async function AdminUserPage({ params, searchParams }: PageProps<
             <TableBody>
               {user.enrollments.map((enrollment) => (
                 <TableRow key={enrollment.id}>
-                  <TableCell className="pl-6">{formatAdminDate(enrollment.enrolledOn)}</TableCell>
+                  <TableCell className="pl-6">{formatAdminTimestampDate(enrollment.enrolledOn)}</TableCell>
                   <TableCell>{enrollment.courseName}</TableCell>
                   <TableCell><StatusBadge status={enrollment.status}/></TableCell>
                   <TableCell className="font-mono text-xs">{enrollment.certificateNumber ?? "—"}</TableCell>

@@ -156,6 +156,8 @@ export const adminSidebarWidth = "16rem";
 
 export const adminDateFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: "UTC" });
 
+export const adminTimestampDateFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeZone: businessTimeZone });
+
 export const adminDateTimeFormat = new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short", timeZone: businessTimeZone });
 
 export const adminLoginNotices: Record<LoginFailureStatus, string> = {

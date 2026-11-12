@@ -7,7 +7,7 @@ import { StudentPageHeader } from "@/components/student/student-page-header";
 import { ButtonLink } from "@/components/ui/button-link";
 import { contact } from "@/constants/contact";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
-import { formatDate, formatPercent, interpolate, plural } from "@/lib/helpers/format";
+import { formatPercent, formatTimestampDate, interpolate, plural } from "@/lib/helpers/format";
 import { localizedHref } from "@/lib/helpers/routes";
 import { isOutOfAttempts, resultScorePct } from "@/lib/helpers/student";
 import { getLatestExamResult } from "@/lib/student";
@@ -50,7 +50,7 @@ export default async function ExamResultsPage() {
               <p className="mt-1 text-[0.9375rem] text-ink-muted">
                 {interpolate(copy.passMark, { passMark: formatPercent(locale, result.passMarkPct) })}
                 <span aria-hidden> · </span>
-                {interpolate(copy.submitted, { date: formatDate(locale, result.submittedAt) })}
+                {interpolate(copy.submitted, { date: formatTimestampDate(locale, result.submittedAt) })}
               </p>
               <p className="mt-4 leading-relaxed text-ink-muted">
                 {result.passed

@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { adminRoutes, userListFilters } from "@/constants/admin";
 import { getAdminUserPage } from "@/lib/admin-users";
-import { adminListHref, adminUserEditHref, adminUserHref, enrollmentLabel, formatAdminDate, fullName, parseUserListQuery, userListFilterValues } from "@/lib/helpers/admin";
+import { adminListHref, adminUserEditHref, adminUserHref, enrollmentLabel, formatAdminTimestampDate, fullName, parseUserListQuery, userListFilterValues } from "@/lib/helpers/admin";
 
 export const metadata: Metadata = {
   title: "Users"
@@ -60,7 +60,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps<"/admin
                 <TableCell>{user.company ?? "—"}</TableCell>
                 <TableCell>{user.courseCode && user.locale ? enrollmentLabel(user.courseCode, user.locale) : "—"}</TableCell>
                 <TableCell>{user.status ? <StatusBadge status={user.status}/> : "—"}</TableCell>
-                <TableCell className="text-muted-foreground">{user.enrolledOn ? formatAdminDate(user.enrolledOn) : "—"}</TableCell>
+                <TableCell className="text-muted-foreground">{user.enrolledOn ? formatAdminTimestampDate(user.enrolledOn) : "—"}</TableCell>
                 <TableCell><ToggleBadge on={user.active} onLabel="Active" offLabel="Deactivated"/></TableCell>
                 <TableCell className="pr-4">
                   <DropdownMenu>

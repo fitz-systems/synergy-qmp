@@ -1,4 +1,4 @@
-import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, renewalRelativeFormat, renewalStatusLabels, userFormErrors } from "@/constants/admin";
+import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminTimestampDateFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, renewalRelativeFormat, renewalStatusLabels, userFormErrors } from "@/constants/admin";
 import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
 import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminRenewalQuery, AdminRenewalRecord, AdminRenewalRow, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, RenewalStatus, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
 import type { LoginField, LoginFormState, SessionUser } from "@/types/auth";
@@ -8,6 +8,10 @@ import { isEmail, readFormString } from "./forms";
 
 export function formatAdminDate(isoDate: string) {
   return adminDateFormat.format(new Date(isoDate));
+}
+
+export function formatAdminTimestampDate(isoTimestamp: string) {
+  return adminTimestampDateFormat.format(new Date(isoTimestamp));
 }
 
 export function formatAdminDateTime(isoDate: string) {
