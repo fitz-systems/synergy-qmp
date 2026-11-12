@@ -37,7 +37,6 @@ export function CourseTabs({ tabs, label, enrollHref, enrollLabel }: CourseTabsP
   const select = (index: number, focus = false) => {
     setActive(tabs[index].id);
     if (focus) tabRefs.current[index]?.focus();
-    if (stuck) sentinel.current?.scrollIntoView({ block: "start" });
   }
 
   const onKeyDown = (event: React.KeyboardEvent, index: number) => {
@@ -49,13 +48,13 @@ export function CourseTabs({ tabs, label, enrollHref, enrollLabel }: CourseTabsP
 
   return (
     <div className="mt-10">
-      <div ref={sentinel} aria-hidden className="h-px scroll-mt-[4.5rem] lg:scroll-mt-20"/>
+      <div ref={sentinel} aria-hidden className="h-px"/>
       <div
         data-sticky-tabs
         className={`sticky top-[4.5rem] z-30 -mx-5 border-b border-line bg-canvas/95 px-5 backdrop-blur-md transition-shadow duration-300 sm:mx-0 sm:px-0 lg:top-20 ${stuck ? "shadow-[0_8px_16px_-12px_rgb(16_20_26/0.25)]" : ""}`}
       >
         <div className="flex items-center gap-4">
-          <div role="tablist" aria-label={label} className="-mb-px flex overflow-x-auto [scrollbar-width:none]">
+          <div role="tablist" aria-label={label} className="-mx-5 -mb-px flex overflow-x-auto px-5 [mask-image:linear-gradient(to_right,transparent,black_1.25rem,black_calc(100%-1.25rem),transparent)] [scrollbar-width:none] sm:mx-0 sm:px-0 sm:[mask-image:none]">
             {tabs.map((tab, index) => (
               <button
                 key={tab.id}
@@ -70,12 +69,12 @@ export function CourseTabs({ tabs, label, enrollHref, enrollLabel }: CourseTabsP
                 tabIndex={active === tab.id ? 0 : -1}
                 onClick={() => select(index)}
                 onKeyDown={(event) => onKeyDown(event, index)}
-                className="group relative shrink-0 rounded-md px-4 py-4 text-[0.9375rem] font-semibold text-ink-muted transition-colors duration-200 hover:text-ink focus-visible:outline-offset-[-4px] aria-selected:text-ink"
+                className="group relative shrink-0 rounded-md px-3 py-4 text-sm font-semibold text-ink-muted transition-colors duration-200 hover:text-ink focus-visible:outline-offset-[-4px] aria-selected:text-ink sm:px-4 sm:text-[0.9375rem]"
               >
                 {tab.label}
                 <span
                   aria-hidden
-                  className="absolute inset-x-4 bottom-0 h-0.5 origin-left scale-x-0 rounded-full bg-brand transition-transform duration-300 ease-out-expo group-aria-selected:scale-x-100"
+                  className="absolute inset-x-3 bottom-0 h-0.5 origin-left scale-x-0 rounded-full bg-brand transition-transform duration-300 ease-out-expo group-aria-selected:scale-x-100 sm:inset-x-4"
                 />
               </button>
             ))}
