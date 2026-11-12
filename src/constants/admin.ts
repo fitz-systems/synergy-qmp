@@ -1,5 +1,6 @@
 import { BookOpen, CalendarClock, CircleAlert, Clock, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
 import type { ChartConfig } from "@/components/ui/chart";
+import { adminLoginPath } from "@/constants/routes";
 import { businessTimeZone } from "@/constants/student";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
@@ -16,7 +17,7 @@ export const adminRoutes: Record<AdminRoute, string> = {
   newReview: "/admin/reviews/new",
   auditLog: "/admin/audit-log",
   renewals: "/admin/renewals",
-  login: "/admin/login"
+  login: adminLoginPath
 }
 
 export const adminNav: AdminNavGroup[] = [

@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { NotFoundView } from "@/components/shared/not-found-view";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getDictionary, getLocale } from "@/i18n/dictionaries";
 import { notFoundLinks } from "@/lib/helpers/not-found";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const dict = await getDictionary();
+  return { title: dict.notFound.metaTitle }
+}
 
 export default async function NotFound() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);

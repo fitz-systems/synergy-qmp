@@ -1,5 +1,5 @@
-import { routes, type Route } from "@/constants/routes";
-import type { Locale } from "@/i18n/config";
+import { adminLoginPath, routes, unlocalizedSegments, type Route } from "@/constants/routes";
+import { hasLocale, type Locale } from "@/i18n/config";
 
 export function localizedHref(locale: Locale, route: Route) {
   return `/${locale}${routes[route]}`;
@@ -7,4 +7,11 @@ export function localizedHref(locale: Locale, route: Route) {
 
 export function courseHref(locale: Locale, code: string) {
   return `${localizedHref(locale, "courses")}/${code}`;
+}
+
+export function signInPathFor(pathname: string) {
+  const [, first = "", second = ""] = pathname.split("/");
+  if (first === unlocalizedSegments[0]) return pathname === adminLoginPath || pathname.startsWith(`${adminLoginPath}/`) ? null : adminLoginPath;
+  if (hasLocale(first) && `/${second}` === routes.myCourse) return localizedHref(first, "login");
+  return null;
 }

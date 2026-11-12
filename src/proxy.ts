@@ -1,7 +1,9 @@
+import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { unlocalizedSegments } from "@/constants/routes";
 import { defaultLocale, hasLocale, type Locale } from "@/i18n/config";
+import { signInPathFor } from "@/lib/helpers/routes";
 
 function preferredLocale(request: NextRequest): Locale {
   const header = request.headers.get("accept-language") ?? "";
@@ -18,6 +20,9 @@ function preferredLocale(request: NextRequest): Locale {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const signInPath = signInPathFor(pathname);
+  if (signInPath && !getSessionCookie(request)) return NextResponse.redirect(new URL(signInPath, request.url));
+
   const firstSegment = pathname.split("/")[1] ?? "";
   if (hasLocale(firstSegment) || unlocalizedSegments.includes(firstSegment)) return;
 
