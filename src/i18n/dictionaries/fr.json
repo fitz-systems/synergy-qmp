@@ -18,6 +18,7 @@
     "switchLanguageLabel": "View this page in English",
     "breadcrumb": "Fil d'Ariane",
     "resetPassword": "Réinitialiser le mot de passe",
+    "setPassword": "Choisir votre mot de passe",
     "myCourse": "Mon cours",
     "exam": "Examen",
     "examResults": "Résultats",
@@ -463,6 +464,20 @@
     "failed": {
       "title": "Impossible de modifier le mot de passe",
       "body": "Veuillez réessayer, ou écrivez-nous à {email}."
+    }
+  },
+  "setPasswordPage": {
+    "metaTitle": "Choisir votre mot de passe | Synergy QMP",
+    "title": "Choisir votre mot de passe",
+    "body": "Choisissez un mot de passe pour votre nouveau compte Synergy QMP. Vous l'utiliserez avec votre adresse courriel pour vous connecter.",
+    "submit": "Enregistrer le mot de passe",
+    "done": {
+      "title": "Mot de passe enregistré",
+      "body": "Votre compte est prêt. Connectez-vous avec votre adresse courriel et votre nouveau mot de passe."
+    },
+    "expired": {
+      "title": "Ce lien a expiré",
+      "body": "Les liens de création de compte ne fonctionnent qu'une fois et expirent après 7 jours. Demandez-en un nouveau et nous vous l'enverrons par courriel."
     }
   },
   "student": {

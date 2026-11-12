@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 import { APIError } from "better-auth/api";
 import { describe, expect, it } from "vitest";
-import { loginFailureStatus, validateForgotPasswordEmail, validateLoginForm, validateResetPassword } from "@/lib/helpers/auth";
+import { loginFailureStatus, setPasswordCopy, validateForgotPasswordEmail, validateLoginForm, validateResetPassword, welcomeLinkUrl } from "@/lib/helpers/auth";
 import { isLegacyMd5Hash, verifyLegacyMd5 } from "@/lib/helpers/legacy-password";
 import { resetLinkLocale } from "@/lib/helpers/locale";
 import { clientIp, rateLimitKey } from "@/lib/helpers/rate-limit";
@@ -108,5 +108,24 @@ describe("reset link language", () => {
 
   it("falls back to the default language when neither is usable", () => {
     expect(resetLinkLocale(link("/de/reset-password"), { email: "a@b.c" })).toBe("en");
+  });
+});
+
+describe("welcome links", () => {
+  const resetLink = "http://localhost:3000/api/auth/reset-password/abc123?callbackURL=%2Ffr%2Freset-password";
+
+  it("sends new accounts to the set-password page in their language, keeping the token", () => {
+    const link = new URL(welcomeLinkUrl(resetLink, "fr"));
+    expect(link.pathname).toBe("/api/auth/reset-password/abc123");
+    expect(link.searchParams.get("callbackURL")).toBe("/fr/set-password");
+  });
+
+  it("swaps in the set-password wording and keeps everything else from the reset page", async () => {
+    const en = (await import("@/i18n/dictionaries/en.json")).default;
+    const copy = setPasswordCopy(en.resetPasswordPage, en.setPasswordPage);
+    expect(copy.title).toBe(en.setPasswordPage.title);
+    expect(copy.expired.body).toContain("7 days");
+    expect(copy.expired.action).toBe(en.resetPasswordPage.expired.action);
+    expect(copy.fields).toEqual(en.resetPasswordPage.fields);
   });
 });

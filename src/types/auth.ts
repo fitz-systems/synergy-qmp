@@ -30,6 +30,8 @@ export type ForgotPasswordCopy = Dictionary["forgotPasswordPage"];
 
 export type ResetPasswordCopy = Dictionary["resetPasswordPage"];
 
+export type SetPasswordCopy = Dictionary["setPasswordPage"];
+
 export type ForgotPasswordError = "required" | "invalidEmail";
 
 export interface ForgotPasswordFormState {

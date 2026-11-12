@@ -1,10 +1,11 @@
 import { APIError } from "better-auth/api";
-import { adminRole, initialLoginFormState, invalidTokenCode, loginFields, loginRememberField, loginStatusByAuthError, passwordMinLength, resetPasswordFields } from "@/constants/auth";
-import { defaultLocale } from "@/i18n/config";
-import type { AuthSessionRecord, ForgotPasswordCopy, ForgotPasswordError, LoginCredentials, LoginErrorLabels, LoginFailureStatus, LoginField, LoginFormLabels, LoginFormState, ResetPasswordCopy, ResetPasswordField, ResetPasswordFormState, SessionUser } from "@/types/auth";
+import { adminRole, initialLoginFormState, invalidTokenCode, loginFields, loginRememberField, loginStatusByAuthError, passwordMinLength, resetLinkCallbackParam, resetPasswordFields } from "@/constants/auth";
+import { defaultLocale, type Locale } from "@/i18n/config";
+import type { AuthSessionRecord, ForgotPasswordCopy, ForgotPasswordError, LoginCredentials, LoginErrorLabels, LoginFailureStatus, LoginField, LoginFormLabels, LoginFormState, ResetPasswordCopy, ResetPasswordField, ResetPasswordFormState, SessionUser, SetPasswordCopy } from "@/types/auth";
 import type { NoticeLabels } from "@/types/forms";
 import { interpolate } from "./format";
 import { isEmail, readFormString } from "./forms";
+import { localizedHref } from "./routes";
 
 export function readLoginForm(formData: FormData): LoginCredentials {
   return {
@@ -93,4 +94,22 @@ export function sessionUser(user: AuthSessionRecord): SessionUser {
 export function resetTokenFromQuery(query: Record<string, string | string[] | undefined>) {
   const { token, error } = query;
   return typeof token === "string" && token && !error ? token : null;
+}
+
+export function setPasswordCopy(reset: ResetPasswordCopy, overrides: SetPasswordCopy): ResetPasswordCopy {
+  return {
+    ...reset,
+    metaTitle: overrides.metaTitle,
+    title: overrides.title,
+    body: overrides.body,
+    submit: overrides.submit,
+    done: { ...reset.done, ...overrides.done },
+    expired: { ...reset.expired, ...overrides.expired }
+  }
+}
+
+export function welcomeLinkUrl(url: string, locale: Locale) {
+  const link = new URL(url);
+  link.searchParams.set(resetLinkCallbackParam, localizedHref(locale, "setPassword"));
+  return link.toString();
 }

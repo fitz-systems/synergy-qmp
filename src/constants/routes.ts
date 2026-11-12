@@ -7,6 +7,7 @@ export const routes = {
   login: "/login",
   forgotPassword: "/forgot-password",
   resetPassword: "/reset-password",
+  setPassword: "/set-password",
   myCourse: "/my-course",
   exam: "/my-course/exam",
   examResults: "/my-course/exam/results",

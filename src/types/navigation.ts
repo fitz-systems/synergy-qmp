@@ -13,3 +13,5 @@ export interface LegacyRedirect {
   destination: string;
   has?: { type: "query"; key: string; value: string }[];
 }
+
+export type PageSearchParams = Record<string, string | string[] | undefined>;

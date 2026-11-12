@@ -6,6 +6,7 @@ import { nextCookies } from "better-auth/next-js";
 import { disabledAuthPaths, passwordMinLength, passwordResetTokenSeconds, resetTokenPrefix, welcomeTokenSeconds } from "@/constants/auth";
 import { hasPassword } from "@/lib/accounts";
 import { sendPasswordResetEmail, sendWelcomeEmail } from "@/lib/email";
+import { welcomeLinkUrl } from "@/lib/helpers/auth";
 import { isLegacyMd5Hash, verifyLegacyMd5 } from "@/lib/helpers/legacy-password";
 import { resetLinkLocale } from "@/lib/helpers/locale";
 import { prisma } from "@/lib/prisma";
@@ -49,7 +50,7 @@ export const auth = betterAuth({
         return;
       }
       await prisma.verification.updateMany({ where: { identifier: `${resetTokenPrefix}${token}` }, data: { expiresAt: new Date(Date.now() + welcomeTokenSeconds * 1000) } });
-      await sendWelcomeEmail(user, url, locale);
+      await sendWelcomeEmail(user, welcomeLinkUrl(url, locale), locale);
     }
   },
   databaseHooks: {

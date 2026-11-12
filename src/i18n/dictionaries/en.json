@@ -18,6 +18,7 @@
     "switchLanguageLabel": "Voir cette page en français",
     "breadcrumb": "Breadcrumb",
     "resetPassword": "Reset password",
+    "setPassword": "Set your password",
     "myCourse": "My course",
     "exam": "Exam",
     "examResults": "Results",
@@ -463,6 +464,20 @@
     "failed": {
       "title": "We couldn't update your password",
       "body": "Please try again, or contact us at {email}."
+    }
+  },
+  "setPasswordPage": {
+    "metaTitle": "Set your password | Synergy QMP",
+    "title": "Set your password",
+    "body": "Choose a password for your new Synergy QMP account. You'll log in with it and your email address.",
+    "submit": "Set password",
+    "done": {
+      "title": "Password set",
+      "body": "Your account is ready. Log in with your email address and new password."
+    },
+    "expired": {
+      "title": "This link has expired",
+      "body": "Account setup links work once and expire after 7 days. Request a new one and we'll email it to you."
     }
   },
   "student": {
