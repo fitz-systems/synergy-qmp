@@ -1,9 +1,9 @@
-import { BookOpen, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
+import { BookOpen, CalendarClock, CircleAlert, Clock, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
 import type { ChartConfig } from "@/components/ui/chart";
 import { businessTimeZone } from "@/constants/student";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
-import type { AdminLoginField, AdminNavGroup, AdminRoute, AdminTableFilter, AdminThemeOption, AuditAction, AuditEntity, CourseLocaleField, CourseSetting, EnrollmentStatus, ImportKind, QuestionStatus, QuestionType, SelectOption, StatusTone, UserFormError, UserFormField } from "@/types/admin";
+import type { AdminLoginField, AdminNavGroup, AdminRoute, AdminTableFilter, AdminThemeOption, AuditAction, AuditEntity, CourseLocaleField, CourseSetting, EnrollmentStatus, ImportKind, QuestionStatus, QuestionType, RenewalStatus, RenewalSummary, SelectOption, StatusTone, UserFormError, UserFormField } from "@/types/admin";
 import type { LoginFailureStatus, LoginField, LoginFieldError } from "@/types/auth";
 
 export const adminRoutes: Record<AdminRoute, string> = {
@@ -15,6 +15,7 @@ export const adminRoutes: Record<AdminRoute, string> = {
   reviews: "/admin/reviews",
   newReview: "/admin/reviews/new",
   auditLog: "/admin/audit-log",
+  renewals: "/admin/renewals",
   login: "/admin/login"
 }
 
@@ -24,7 +25,8 @@ export const adminNav: AdminNavGroup[] = [
     label: "Students",
     items: [
       { route: "users", label: "Users", icon: Users },
-      { route: "importData", label: "Import", icon: FileUp }
+      { route: "importData", label: "Import", icon: FileUp },
+      { route: "renewals", label: "Renewals", icon: CalendarClock }
     ]
   },
   {
@@ -88,6 +90,32 @@ export const userListFilters: AdminTableFilter[] = [
   { param: "course", label: "Course", allLabel: "All courses", options: courseOptions },
   { param: "status", label: "Status", allLabel: "All statuses", options: enrollmentStatusOptions }
 ];
+
+export const renewalWindowDays = 90;
+
+export const renewalStatusLabels: Record<RenewalStatus, string> = {
+  expiring: "Expiring soon",
+  expired: "Expired"
+}
+
+export const renewalStatusTones: Record<RenewalStatus, StatusTone> = {
+  expiring: "warning",
+  expired: "danger"
+}
+
+export const renewalStatusOptions: SelectOption[] = Object.entries(renewalStatusLabels).map(([value, label]) => ({ value, label }));
+
+export const renewalListFilters: AdminTableFilter[] = [
+  { param: "status", label: "Status", allLabel: "All statuses", options: renewalStatusOptions },
+  { param: "course", label: "Course", allLabel: "All courses", options: courseOptions }
+];
+
+export const renewalSummaries: RenewalSummary[] = [
+  { status: "expiring", label: `Expiring in the next ${renewalWindowDays} days`, icon: Clock },
+  { status: "expired", label: "Expired", icon: CircleAlert }
+];
+
+export const renewalRelativeFormat = new Intl.RelativeTimeFormat("en-CA", { numeric: "auto" });
 
 export const userFormErrors: Record<UserFormField, Partial<Record<UserFormError, string>>> = {
   firstName: { required: "Enter a first name." },

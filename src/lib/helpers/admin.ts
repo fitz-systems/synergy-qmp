@@ -1,6 +1,6 @@
-import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, userFormErrors } from "@/constants/admin";
+import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, renewalRelativeFormat, renewalStatusLabels, userFormErrors } from "@/constants/admin";
 import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
-import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
+import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminRenewalQuery, AdminRenewalRecord, AdminRenewalRow, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, RenewalStatus, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
 import type { LoginField, LoginFormState, SessionUser } from "@/types/auth";
 import type { CourseCode } from "@/types/courses";
 import { businessDate, isAttemptInProgress } from "./exam";
@@ -146,6 +146,25 @@ export function userListFilterValues(query: AdminUserListQuery): Record<string, 
   return { [adminSearchParam]: query.search, course: query.course ?? adminFilterAll, status: query.status ?? adminFilterAll }
 }
 
+export function isRenewalStatus(value: string): value is RenewalStatus {
+  return value in renewalStatusLabels;
+}
+
+export function parseRenewalQuery(params: AdminSearchParams): AdminRenewalQuery {
+  const course = searchParamValue(params, "course");
+  const status = searchParamValue(params, "status");
+  return {
+    search: searchParamValue(params, adminSearchParam),
+    course: isCourseOption(course) ? course : undefined,
+    status: isRenewalStatus(status) ? status : undefined,
+    page: pageParam(params)
+  }
+}
+
+export function renewalFilterValues(query: AdminRenewalQuery): Record<string, string> {
+  return { [adminSearchParam]: query.search, status: query.status ?? adminFilterAll, course: query.course ?? adminFilterAll }
+}
+
 export function adminListHref(pathname: string, values: Record<string, string>, page = 1) {
   const params = new URLSearchParams();
   for (const [name, value] of Object.entries(values)) {
@@ -266,6 +285,33 @@ export function adminUserRow(record: AdminUserListRecord): AdminUserRow {
     enrolledOn: record.enrolled_on?.toISOString() ?? null,
     active: record.active
   }
+}
+
+export function adminRenewalRow(record: AdminRenewalRecord, today: Date): AdminRenewalRow {
+  return {
+    enrollmentId: record.enrollment_id,
+    userId: record.user_id,
+    firstName: record.first_name,
+    lastName: record.last_name,
+    email: record.email,
+    company: record.company,
+    courseCode: courseCodeOf(record.course_code),
+    locale: localeOf(record.locale),
+    validUntil: record.valid_until.toISOString(),
+    daysLeft: Math.round((record.valid_until.getTime() - today.getTime()) / 86_400_000),
+    status: record.status
+  }
+}
+
+function relativeDays(days: number) {
+  const span = Math.abs(days);
+  if (span < 45) return renewalRelativeFormat.format(days, "day");
+  if (span < 730) return renewalRelativeFormat.format(Math.round(days / 30.44), "month");
+  return renewalRelativeFormat.format(Math.round(days / 365.25), "year");
+}
+
+export function renewalTimingLabel(daysLeft: number) {
+  return `${daysLeft < 0 ? "Expired" : "Expires"} ${relativeDays(daysLeft)}`;
 }
 
 function isCountedAttempt(attempt: { startedAt: Date }, resetAt: Date | null) {

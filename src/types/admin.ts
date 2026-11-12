@@ -5,7 +5,7 @@ import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
 import type { LoginField } from "./auth";
 
-export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "courses" | "reviews" | "newReview" | "auditLog" | "login";
+export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "courses" | "reviews" | "newReview" | "auditLog" | "renewals" | "login";
 
 export type EnrollmentStatus = "notStarted" | "inProgress" | "passed" | "failed";
 
@@ -271,6 +271,52 @@ export interface AdminListPage<Row> {
 }
 
 export type AdminUserPage = AdminListPage<AdminUserRow>;
+
+export type RenewalStatus = "expiring" | "expired";
+
+export interface RenewalSummary {
+  status: RenewalStatus;
+  label: string;
+  icon: LucideIcon;
+}
+
+export interface AdminRenewalQuery {
+  search: string;
+  course?: CourseCode;
+  status?: RenewalStatus;
+  page: number;
+}
+
+export interface AdminRenewalRecord {
+  enrollment_id: number;
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  company: string | null;
+  course_code: string;
+  locale: string;
+  valid_until: Date;
+  status: RenewalStatus;
+}
+
+export interface AdminRenewalRow {
+  enrollmentId: number;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string | null;
+  courseCode: CourseCode;
+  locale: Locale;
+  validUntil: string;
+  daysLeft: number;
+  status: RenewalStatus;
+}
+
+export interface AdminRenewalPage extends AdminListPage<AdminRenewalRow> {
+  counts: Record<RenewalStatus, number>;
+}
 
 export type AuditLogPage = AdminListPage<AuditEntry>;
 

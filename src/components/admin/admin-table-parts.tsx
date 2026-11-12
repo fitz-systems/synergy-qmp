@@ -1,14 +1,18 @@
 import Link from "next/link";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleAlert, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { enrollmentStatusLabels, statusToneStyles } from "@/constants/admin";
+import { enrollmentStatusLabels, renewalStatusLabels, renewalStatusTones, statusToneStyles } from "@/constants/admin";
 import { cn } from "@/lib/helpers/class-names";
-import type { EnrollmentStatus } from "@/types/admin";
+import type { EnrollmentStatus, RenewalStatus } from "@/types/admin";
 
 interface StatusBadgeProps {
   status: EnrollmentStatus;
+}
+
+interface RenewalBadgeProps {
+  status: RenewalStatus;
 }
 
 interface ToggleBadgeProps {
@@ -41,6 +45,16 @@ const statusStyles: Record<EnrollmentStatus, string> = {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   return <Badge variant="outline" className={cn("font-medium", statusStyles[status])}>{enrollmentStatusLabels[status]}</Badge>;
+}
+
+export function RenewalBadge({ status }: RenewalBadgeProps) {
+  const Icon = status === "expired" ? CircleAlert : Clock;
+  return (
+    <Badge variant="outline" className={cn("font-medium", statusToneStyles[renewalStatusTones[status]])}>
+      <Icon aria-hidden="true"/>
+      {renewalStatusLabels[status]}
+    </Badge>
+  );
 }
 
 export function ToggleBadge({ on, onLabel, offLabel }: ToggleBadgeProps) {
