@@ -16,7 +16,7 @@
 
 - Prisma 7 schema in `prisma/schema.prisma`. All tables live in the `synergy` Postgres schema. The client is generated to `src/generated/` (gitignored); import it from `@/lib/prisma`.
 - Neon branches: `dev` is used locally via `.env.local` (`DATABASE_URL` pooled, `DIRECT_URL` direct with `&schema=synergy` for migrations). `main` is production and its URL only lives in Vercel's environment variables.
-- Migrations: generate SQL with `prisma migrate diff`, making sure every statement is qualified with `"synergy".`; add CHECK constraints Prisma can't express by hand. Apply to `dev` first with `npx prisma migrate deploy`, and to production just before deploying. Never run `migrate reset` or `db push` against Neon.
+- Migrations: generate SQL with `prisma migrate diff`, making sure every statement is qualified with `"synergy".`; add CHECK constraints Prisma can't express by hand. Apply to `dev` first with `npx prisma migrate deploy`. Production migrations run automatically: `npm run build` (`scripts/build.ts`) runs `prisma migrate deploy` before `next build` when `VERCEL_ENV` is `production`, using the `DIRECT_URL` set in Vercel. Preview and local builds never migrate. Migrations must work with the code that's already live (add first, remove in a later deploy), since the old deployment keeps serving while the new one builds. Never run `migrate reset` or `db push` against Neon.
 - Auth is Better Auth (`src/lib/auth.ts`). Users are created by the admin only; old MD5 passwords are upgraded on first sign-in.
 
 ## Public repo
