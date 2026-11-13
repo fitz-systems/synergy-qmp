@@ -1,20 +1,24 @@
 import { adminRole } from "@/constants/auth";
 import { importMaxBytes, importMessages } from "@/constants/admin";
 import type { Prisma } from "@/generated/prisma/client";
+import { chargeSeats } from "@/lib/admin-distributor-mutations";
 import { recordAudit } from "@/lib/audit";
 import { fullName, questionBankLabel } from "@/lib/helpers/admin";
+import { nameKey } from "@/lib/helpers/admin-distributors";
 import { importCountLabel, importSummary, parseBank, promptKey, readImportTable, validateQuestionRecords, validateUserRecords } from "@/lib/helpers/admin-import";
 import { prisma } from "@/lib/prisma";
-import type { ImportPreview, ImportResult, ImportQuestionRow, ImportRequest, ImportUserRow, ParsedImportRequest, QuestionBankKey } from "@/types/admin";
+import type { ImportPreview, ImportResult, ImportQuestionRow, ImportRequest, ImportSeatUse, ImportUserRow, ParsedImportRequest, QuestionBankKey } from "@/types/admin";
 
 async function userContext(tx: Prisma.TransactionClient, emails: string[]) {
-  const [users, courses] = await Promise.all([
+  const [users, courses, companies] = await Promise.all([
     tx.user.findMany({ where: { email: { in: emails } }, select: { email: true, firstName: true, lastName: true, role: true } }),
-    tx.course.findMany({ where: { active: false }, select: { code: true } })
+    tx.course.findMany({ where: { active: false }, select: { code: true } }),
+    tx.organization.findMany({ select: { id: true, name: true, distributorId: true } })
   ]);
   return {
     existing: new Map(users.map((user) => [user.email, user.role === adminRole ? "an admin" : fullName(user)])),
-    inactiveCourses: new Set(courses.map((course) => course.code))
+    inactiveCourses: new Set(courses.map((course) => course.code)),
+    companies: new Map(companies.map((company) => [nameKey(company.name), { id: company.id, distributorId: company.distributorId }]))
   }
 }
 
@@ -45,22 +49,27 @@ async function parseRequest(tx: Prisma.TransactionClient, request: ImportRequest
   return { kind: "questions", bank, result: validateQuestionRecords(table.records, await questionContext(tx, bank)) }
 }
 
+function seatCounts(rows: ImportUserRow[]) {
+  const counts = new Map<number, number>();
+  for (const row of rows) {
+    const id = row.company?.distributorId;
+    if (id) counts.set(id, (counts.get(id) ?? 0) + 1);
+  }
+  return counts;
+}
+
+async function seatUses(rows: ImportUserRow[]): Promise<ImportSeatUse[]> {
+  const counts = seatCounts(rows);
+  if (counts.size === 0) return [];
+  const distributors = await prisma.distributor.findMany({ where: { id: { in: [...counts.keys()] } }, orderBy: { name: "asc" }, select: { id: true, name: true, seatBalance: true } });
+  return distributors.map((distributor) => ({ distributor: distributor.name, used: counts.get(distributor.id) ?? 0, balance: distributor.seatBalance }));
+}
+
 export async function previewImportRows(request: ImportRequest): Promise<ImportPreview> {
   const parsed = await parseRequest(prisma, request);
   if ("fileError" in parsed) return { fileError: parsed.fileError, rows: [], ready: 0 }
-  return { rows: parsed.result.preview, ready: parsed.result.rows.length }
-}
-
-async function organizationIds(tx: Prisma.TransactionClient, companies: string[]) {
-  const names = [...new Map(companies.filter(Boolean).map((name) => [name.toLowerCase(), name])).values()];
-  if (names.length === 0) return new Map<string, number>();
-  const find = () => tx.organization.findMany({ where: { OR: names.map((name) => ({ name: { equals: name, mode: "insensitive" as const } })) }, select: { id: true, name: true } });
-  const existing = await find();
-  const known = new Set(existing.map((organization) => organization.name.toLowerCase()));
-  const missing = names.filter((name) => !known.has(name.toLowerCase()));
-  if (missing.length > 0) await tx.organization.createMany({ data: missing.map((name) => ({ name })), skipDuplicates: true });
-  const all = missing.length > 0 ? await find() : existing;
-  return new Map(all.map((organization) => [organization.name.toLowerCase(), organization.id]));
+  if (parsed.kind === "questions") return { rows: parsed.result.preview, ready: parsed.result.rows.length }
+  return { rows: parsed.result.preview, ready: parsed.result.rows.length, missingCompanies: parsed.result.missingCompanies, seats: await seatUses(parsed.result.rows) }
 }
 
 async function insertUsers(tx: Prisma.TransactionClient, rows: ImportUserRow[]) {
@@ -68,7 +77,6 @@ async function insertUsers(tx: Prisma.TransactionClient, rows: ImportUserRow[]) 
   const courseIdOf = (row: ImportUserRow) => courseLocales.find((entry) => entry.course.code === row.course && entry.locale === row.locale)?.courseId;
   if (rows.some((row) => courseIdOf(row) === undefined)) throw new Error("A course locale is missing");
 
-  const organizations = await organizationIds(tx, rows.map((row) => row.company));
   const users = await tx.user.createManyAndReturn({
     data: rows.map((row) => ({ name: `${row.firstName} ${row.lastName}`, email: row.email, firstName: row.firstName, lastName: row.lastName, preferredLocale: row.locale })),
     select: { id: true, email: true }
@@ -79,9 +87,11 @@ async function insertUsers(tx: Prisma.TransactionClient, rows: ImportUserRow[]) 
       userId: userIds.get(row.email)!,
       courseId: courseIdOf(row)!,
       locale: row.locale,
-      organizationId: row.company ? organizations.get(row.company.toLowerCase()) ?? null : null
+      organizationId: row.company?.id ?? null,
+      seatDistributorId: row.company?.distributorId ?? null
     }))
   });
+  return chargeSeats(tx, seatCounts(rows));
 }
 
 async function insertQuestions(tx: Prisma.TransactionClient, bank: QuestionBankKey, rows: ImportQuestionRow[]) {
@@ -112,8 +122,8 @@ export async function importRows(adminId: number, request: ImportRequest, expect
     const entityLabel = request.fileName.slice(0, 200) || "CSV file";
 
     if (parsed.kind === "users") {
-      await insertUsers(tx, parsed.result.rows);
-      await recordAudit(tx, { adminId, action: "usersImported", entity: "import", entityLabel, details: summary });
+      const seats = await insertUsers(tx, parsed.result.rows);
+      await recordAudit(tx, { adminId, action: "usersImported", entity: "import", entityLabel, details: [summary, ...seats].join("; ") });
       return { ok: true, kind: "users", message: `Imported ${importCountLabel("users", rows.length)}.` }
     }
 

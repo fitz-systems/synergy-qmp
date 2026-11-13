@@ -1,23 +1,47 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { CircleAlert } from "lucide-react";
+import { ArrowRightLeft, CircleAlert, Ticket, Undo2, type LucideIcon } from "lucide-react";
 import { AdminField, AdminFormActions, AdminFormSection } from "@/components/admin/admin-form-parts";
+import { CompanyPicker } from "@/components/admin/company-picker";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { courseOptions, languageOptions, userFormFailedNotice } from "@/constants/admin";
+import { courseOptions, languageOptions, statusToneIconStyles, userFormFailedNotice } from "@/constants/admin";
 import { useActionSubmit } from "@/hooks/use-action-submit";
 import { userFormFieldError } from "@/lib/helpers/admin";
-import type { UserFormField, UserFormState } from "@/types/admin";
+import { seatMove, seatsLeftLabel } from "@/lib/helpers/admin-distributors";
+import { cn } from "@/lib/helpers/class-names";
+import type { CompanyOption, CompanyPickerData, StatusTone, UserFormField, UserFormState } from "@/types/admin";
+
+interface CurrentSeat {
+  companyId: number | null;
+  seatDistributorId: number | null;
+}
 
 interface UserFormProps {
   action: (state: UserFormState, formData: FormData) => Promise<UserFormState>;
   initialState: UserFormState;
+  companies: CompanyPickerData;
+  currentSeat?: CurrentSeat;
   creating: boolean;
   submitLabel: string;
   cancelHref: string;
+}
+
+interface SeatImpactProps {
+  id: string;
+  companyId: string;
+  companies: CompanyOption[];
+  data: CompanyPickerData;
+  currentSeat?: CurrentSeat;
+}
+
+interface SeatLine {
+  icon: LucideIcon;
+  tone: StatusTone;
+  text: string;
 }
 
 interface SwitchRowProps {
@@ -26,6 +50,45 @@ interface SwitchRowProps {
   hint: string;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+}
+
+function seatLines({ companyId, companies, data, currentSeat }: Omit<SeatImpactProps, "id">): SeatLine[] {
+  const distributorOf = (id: number | null | undefined) => data.distributors.find((distributor) => distributor.id === id);
+  const company = companies.find((option) => String(option.id) === companyId);
+  const original = companies.find((option) => option.id === currentSeat?.companyId);
+  const holder = currentSeat ? { ...currentSeat, companyDistributorId: original?.distributorId ?? null } : null;
+  const move = seatMove(holder, { companyId: company?.id ?? null, distributorId: company?.distributorId ?? null });
+  const lines: SeatLine[] = [];
+
+  const charged = distributorOf(move.charge);
+  if (charged) {
+    const after = charged.seatBalance - 1;
+    lines.push(after < 0
+      ? { icon: Ticket, tone: "warning", text: `Uses a seat from ${charged.name}, which has ${seatsLeftLabel(charged.seatBalance)}. Saving puts them at ${after.toLocaleString("en-CA")}.` }
+      : { icon: Ticket, tone: "neutral", text: `Uses a seat from ${charged.name}: ${seatsLeftLabel(charged.seatBalance)}, ${seatsLeftLabel(after)} after saving.` });
+  }
+  const refunded = distributorOf(move.refund);
+  if (refunded) lines.push({ icon: Undo2, tone: "neutral", text: `Gives a seat back to ${refunded.name}.` });
+  if (!move.moved && currentSeat?.seatDistributorId) {
+    const holderName = distributorOf(currentSeat.seatDistributorId)?.name;
+    if (holderName) lines.push({ icon: ArrowRightLeft, tone: "neutral", text: `Already uses a seat from ${holderName}. No change.` });
+  }
+  return lines;
+}
+
+function SeatImpact({ id, ...props }: SeatImpactProps) {
+  const lines = seatLines(props);
+  if (lines.length === 0) return null;
+  return (
+    <ul id={id} aria-live="polite" className="grid gap-1">
+      {lines.map((line) => (
+        <li key={line.text} className="flex gap-1.5 text-xs text-muted-foreground">
+          <line.icon aria-hidden className={cn("mt-px size-3.5 shrink-0", statusToneIconStyles[line.tone])}/>
+          {line.text}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function SwitchRow({ name, label, hint, checked, onCheckedChange }: SwitchRowProps) {
@@ -40,9 +103,11 @@ function SwitchRow({ name, label, hint, checked, onCheckedChange }: SwitchRowPro
   );
 }
 
-export function UserForm({ action, initialState, creating, submitLabel, cancelHref }: UserFormProps) {
+export function UserForm({ action, initialState, companies, currentSeat, creating, submitLabel, cancelHref }: UserFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const submit = useActionSubmit(formAction);
+  const [company, setCompany] = useState(initialState.values.company);
+  const [companyOptions, setCompanyOptions] = useState(companies.companies);
   const [course, setCourse] = useState(initialState.values.course);
   const [locale, setLocale] = useState(initialState.values.locale);
   const [active, setActive] = useState(initialState.values.active);
@@ -69,6 +134,7 @@ export function UserForm({ action, initialState, creating, submitLabel, cancelHr
   const firstName = invalid("firstName");
   const lastName = invalid("lastName");
   const email = invalid("email");
+  const companyField = invalid("company");
   const courseField = invalid("course");
   const localeField = invalid("locale");
 
@@ -91,8 +157,20 @@ export function UserForm({ action, initialState, creating, submitLabel, cancelHr
         <AdminField id={fieldId("email")} label="Email" hint="Used to log in. Must be unique." error={email.error}>
           <Input id={fieldId("email")} name="email" type="email" defaultValue={values.email} autoComplete="off" required {...email.inputProps}/>
         </AdminField>
-        <AdminField id="user-company" label="Company">
-          <Input id="user-company" name="company" defaultValue={values.company} autoComplete="off"/>
+        <AdminField id={fieldId("company")} label="Company" error={companyField.error}>
+          <CompanyPicker
+            id={fieldId("company")}
+            name="company"
+            data={companies}
+            value={company}
+            onValueChange={(value, options) => {
+              setCompany(value);
+              setCompanyOptions(options);
+            }}
+            invalid={companyField.error !== undefined}
+            describedBy={[companyField.error ? `${fieldId("company")}-error` : "", "user-company-seats"].filter(Boolean).join(" ")}
+          />
+          <SeatImpact id="user-company-seats" companyId={company} companies={companyOptions} data={companies} currentSeat={currentSeat}/>
         </AdminField>
       </AdminFormSection>
 

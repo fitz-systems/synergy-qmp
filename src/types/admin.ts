@@ -1,11 +1,11 @@
 import type { LucideIcon } from "lucide-react";
-import type { adminCourseSelect, adminQuestionSelect, adminReviewSelect, adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
+import type { adminCompanySelect, adminCourseSelect, adminDistributorSelect, adminQuestionSelect, adminReviewSelect, adminUserDetailSelect, auditLogSelect, dashboardAttemptSelect } from "@/constants/admin";
 import type { Prisma } from "@/generated/prisma/client";
 import type { Locale } from "@/i18n/config";
 import type { CourseCode } from "./courses";
 import type { LoginField } from "./auth";
 
-export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "courses" | "reviews" | "newReview" | "auditLog" | "renewals" | "login";
+export type AdminRoute = "dashboard" | "users" | "newUser" | "importData" | "distributors" | "newDistributor" | "companies" | "newCompany" | "courses" | "reviews" | "newReview" | "auditLog" | "renewals" | "login";
 
 export type EnrollmentStatus = "notStarted" | "inProgress" | "passed" | "failed";
 
@@ -211,6 +211,16 @@ export interface AdminDashboard {
   recentAttempts: DashboardAttempt[];
 }
 
+export interface AdminDashboardQuery {
+  distributor?: number | "none";
+  company?: number;
+}
+
+export interface DashboardFilterData extends CompanyPickerData {
+  distributor: string;
+  company: string;
+}
+
 export interface DashboardStat {
   label: string;
   value: string;
@@ -245,6 +255,8 @@ export interface AdminUserListQuery {
   search: string;
   course?: CourseCode;
   status?: EnrollmentStatus;
+  distributor?: number;
+  company?: number;
   page: number;
 }
 
@@ -339,6 +351,9 @@ export interface AdminEnrollment {
   courseName: string;
   locale: Locale;
   company: string | null;
+  companyId: number | null;
+  seatDistributorId: number | null;
+  seatDistributor: string | null;
   paid: boolean;
   status: EnrollmentStatus;
   enrolledOn: string;
@@ -385,9 +400,9 @@ export interface AdminUserDetail {
   attempts: AdminUserAttempt[];
 }
 
-export type UserFormField = "firstName" | "lastName" | "email" | "course" | "locale";
+export type UserFormField = "firstName" | "lastName" | "email" | "company" | "course" | "locale";
 
-export type UserFormError = "required" | "invalidEmail" | "emailTaken" | "invalidCourse" | "courseLocked" | "inactiveCourse";
+export type UserFormError = "required" | "invalidEmail" | "emailTaken" | "invalidCompany" | "invalidCourse" | "courseLocked" | "inactiveCourse";
 
 export interface UserFormValues {
   firstName: string;
@@ -410,9 +425,9 @@ export interface UserFormState {
 
 export type AdminActionResult = { ok: true; message?: string } | { ok: false; error: string };
 
-export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued" | "courseUpdated" | "courseMaterialUploaded" | "questionCreated" | "questionUpdated" | "questionDeleted" | "reviewCreated" | "reviewUpdated" | "reviewDeleted" | "usersImported" | "questionsImported";
+export type AuditAction = "userCreated" | "userUpdated" | "userDeactivated" | "userReactivated" | "passwordResetSent" | "attemptsReset" | "markedPaid" | "markedUnpaid" | "markedPassed" | "passCleared" | "certificateReissued" | "courseUpdated" | "courseMaterialUploaded" | "questionCreated" | "questionUpdated" | "questionDeleted" | "reviewCreated" | "reviewUpdated" | "reviewDeleted" | "usersImported" | "questionsImported" | "distributorCreated" | "distributorUpdated" | "distributorDeleted" | "seatsAdded" | "seatBalanceSet" | "companyCreated" | "companyUpdated" | "companyDeleted" | "companiesMerged" | "companiesImported";
 
-export type AuditEntity = "user" | "certificate" | "course" | "question" | "review" | "import";
+export type AuditEntity = "user" | "certificate" | "course" | "question" | "review" | "import" | "distributor" | "company";
 
 export interface AuditInput {
   adminId: number;
@@ -440,10 +455,18 @@ export interface ImportPreviewRow {
   problem?: string;
 }
 
+export interface ImportSeatUse {
+  distributor: string;
+  used: number;
+  balance: number;
+}
+
 export interface ImportPreview {
   fileError?: string;
   rows: ImportPreviewRow[];
   ready: number;
+  missingCompanies?: string[];
+  seats?: ImportSeatUse[];
 }
 
 export interface ImportRequest {
@@ -473,9 +496,15 @@ export interface ImportTable {
   records: ImportRecord[];
 }
 
+export interface ImportCompany {
+  id: number;
+  distributorId: number | null;
+}
+
 export interface ImportUserContext {
   existing: Map<string, string>;
   inactiveCourses: Set<string>;
+  companies: Map<string, ImportCompany>;
 }
 
 export interface ImportQuestionContext {
@@ -489,7 +518,7 @@ export interface ImportUserRow {
   firstName: string;
   lastName: string;
   email: string;
-  company: string;
+  company: ImportCompany | null;
   course: CourseCode;
   locale: Locale;
 }
@@ -503,6 +532,7 @@ export interface ParsedImport<Row> {
   fileError?: string;
   preview: ImportPreviewRow[];
   rows: Row[];
+  missingCompanies?: string[];
 }
 
 export interface AdminIdentity {
@@ -530,3 +560,93 @@ export type AdminQuestionRecord = Prisma.QuestionGetPayload<{ select: typeof adm
 export type AdminReviewRecord = Prisma.ReviewGetPayload<{ select: typeof adminReviewSelect }>;
 
 export type AdminEnrollmentRecord = AdminUserDetailRecord["enrollments"][number];
+
+export interface DistributorOption {
+  id: number;
+  name: string;
+  seatBalance: number;
+}
+
+export interface CompanyOption {
+  id: number;
+  name: string;
+  distributorId: number | null;
+}
+
+export interface CompanyPickerData {
+  companies: CompanyOption[];
+  distributors: DistributorOption[];
+}
+
+export interface AdminDistributorRow extends DistributorOption {
+  companyCount: number;
+  seatsUsed: number;
+}
+
+export interface AdminDistributorSeat {
+  enrollmentId: number;
+  userId: number;
+  userName: string;
+  company: string | null;
+  enrolledOn: string;
+}
+
+export interface AdminDistributor extends AdminDistributorRow {
+  notes: string;
+  companies: AdminCompanyRow[];
+  recentSeats: AdminDistributorSeat[];
+  history: AuditEntry[];
+}
+
+export interface AdminCompanyRow {
+  id: number;
+  name: string;
+  distributorId: number | null;
+  distributor: string | null;
+  studentCount: number;
+}
+
+export interface AdminCompanyListQuery {
+  search: string;
+  distributor?: number | "none";
+  page: number;
+}
+
+export type AdminCompanyPage = AdminListPage<AdminCompanyRow>;
+
+export type DistributorFormField = "name" | "seats";
+
+export interface DistributorFormValues {
+  name: string;
+  seats: string;
+  notes: string;
+}
+
+export interface DistributorFormState {
+  status: "idle" | "invalid" | "failed";
+  values: DistributorFormValues;
+  errors: Partial<Record<DistributorFormField, string>>;
+}
+
+export type CompanyFormField = "name" | "distributor";
+
+export interface CompanyFormValues {
+  name: string;
+  distributor: string;
+}
+
+export interface CompanyFormState {
+  status: "idle" | "invalid" | "failed";
+  values: CompanyFormValues;
+  errors: Partial<Record<CompanyFormField, string>>;
+}
+
+export type SeatAdjustment = "add" | "set";
+
+export type CompanyCreateResult = { ok: true; company: CompanyOption } | { ok: false; error: string }
+
+export type SeatChange = { kind: "charge" | "refund"; distributor: DistributorOption }
+
+export type AdminDistributorRecord = Prisma.DistributorGetPayload<{ select: typeof adminDistributorSelect }>;
+
+export type AdminCompanyRecord = Prisma.OrganizationGetPayload<{ select: typeof adminCompanySelect }>;

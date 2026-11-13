@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, CircleAlert, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { enrollmentStatusLabels, renewalStatusLabels, renewalStatusTones, statusToneStyles } from "@/constants/admin";
+import { seatBalanceTone, seatsLeftLabel } from "@/lib/helpers/admin-distributors";
 import { cn } from "@/lib/helpers/class-names";
 import type { EnrollmentStatus, RenewalStatus } from "@/types/admin";
 
@@ -19,6 +20,11 @@ interface ToggleBadgeProps {
   on: boolean;
   onLabel: string;
   offLabel: string;
+}
+
+interface SeatBalanceBadgeProps {
+  balance: number;
+  className?: string;
 }
 
 interface AdminTablePaginationProps {
@@ -63,6 +69,10 @@ export function ToggleBadge({ on, onLabel, offLabel }: ToggleBadgeProps) {
       {on ? onLabel : offLabel}
     </Badge>
   );
+}
+
+export function SeatBalanceBadge({ balance, className }: SeatBalanceBadgeProps) {
+  return <Badge variant="outline" className={cn("font-medium tabular-nums", statusToneStyles[seatBalanceTone(balance)], className)}>{seatsLeftLabel(balance)}</Badge>;
 }
 
 function PageLink({ href, label, children }: PageLinkProps) {

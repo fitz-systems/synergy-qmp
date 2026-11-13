@@ -1,6 +1,7 @@
-import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminTimestampDateFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, removedAdminLabel, renewalRelativeFormat, renewalStatusLabels, userFormErrors } from "@/constants/admin";
+import { adminCourseMaterialHref, adminDateFormat, adminDateTimeFormat, adminTimestampDateFormat, adminFilterAll, adminLoginFieldErrors, adminLoginNotices, adminPageParam, adminRoutes, adminSearchParam, auditActionLabels, auditEntityFilter, auditEntityLabels, companyListFilterParam, courseOptions, dashboardMonthFormat, dashboardMonths, enrollmentStatusLabels, languageOptions, noDistributorValue, removedAdminLabel, renewalRelativeFormat, renewalStatusLabels, userCompanyParam, userFormErrors } from "@/constants/admin";
 import { defaultLocale, hasLocale, locales, type Locale } from "@/i18n/config";
-import type { AdminCourse, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminRenewalQuery, AdminRenewalRecord, AdminRenewalRow, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, RenewalStatus, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
+import type { Prisma } from "@/generated/prisma/client";
+import type { AdminCourse, AdminDashboardQuery, AdminEnrollment, AdminEnrollmentRecord, AdminIdentity, AdminQuestion, AdminRenewalQuery, AdminRenewalRecord, AdminRenewalRow, AdminRoute, AdminSearchParams, AdminUserAttempt, AdminUserDetail, AdminUserDetailRecord, AdminUserListQuery, AdminUserListRecord, AdminUserRow, AuditEntity, AuditEntry, AuditLogQuery, AuditLogRecord, CompanyOption, CoursePassRate, DashboardAttempt, DashboardAttemptRecord, DashboardCountsRecord, DashboardStat, EnrollmentStatus, MonthlyRegistrations, MonthlyRegistrationsRecord, PassRateRecord, QuestionBank, RenewalStatus, UserFormField, UserFormState, UserFormValues } from "@/types/admin";
 import type { LoginField, LoginFormState, SessionUser } from "@/types/auth";
 import type { CourseCode } from "@/types/courses";
 import { businessDate, isAttemptInProgress } from "./exam";
@@ -44,6 +45,26 @@ export function adminUserAttemptHref(userId: number, attemptId: number) {
 
 export function adminReviewHref(id: number) {
   return `/admin/reviews/${id}`;
+}
+
+export function adminDistributorHref(id: number) {
+  return `/admin/distributors/${id}`;
+}
+
+export function adminCompanyHref(id: number) {
+  return `/admin/companies/${id}`;
+}
+
+export function adminNewCompanyHref(distributorId?: number) {
+  return distributorId ? `${adminRoutes.newCompany}?${companyListFilterParam}=${distributorId}` : adminRoutes.newCompany;
+}
+
+export function adminCompanyUsersHref(id: number) {
+  return `${adminRoutes.users}?${userCompanyParam}=${id}`;
+}
+
+export function adminDistributorUsersHref(id: number) {
+  return `${adminRoutes.users}?${companyListFilterParam}=${id}`;
 }
 
 export function adminCourseHref(code: string) {
@@ -130,7 +151,13 @@ export function isCourseOption(value: string): value is CourseCode {
   return courseOptions.some((option) => option.value === value);
 }
 
-function pageParam(params: AdminSearchParams) {
+export function positiveIdOf(value: string) {
+  if (!/^\d{1,9}$/.test(value)) return undefined;
+  const id = Number(value);
+  return id > 0 ? id : undefined;
+}
+
+export function pageParam(params: AdminSearchParams) {
   const page = Number.parseInt(searchParamValue(params, adminPageParam), 10);
   return Number.isInteger(page) && page > 0 ? page : 1;
 }
@@ -142,12 +169,20 @@ export function parseUserListQuery(params: AdminSearchParams): AdminUserListQuer
     search: searchParamValue(params, adminSearchParam),
     course: isCourseOption(course) ? course : undefined,
     status: isEnrollmentStatus(status) ? status : undefined,
+    distributor: positiveIdOf(searchParamValue(params, companyListFilterParam)),
+    company: positiveIdOf(searchParamValue(params, userCompanyParam)),
     page: pageParam(params)
   }
 }
 
 export function userListFilterValues(query: AdminUserListQuery): Record<string, string> {
-  return { [adminSearchParam]: query.search, course: query.course ?? adminFilterAll, status: query.status ?? adminFilterAll }
+  return {
+    [adminSearchParam]: query.search,
+    course: query.course ?? adminFilterAll,
+    status: query.status ?? adminFilterAll,
+    [companyListFilterParam]: query.distributor ? String(query.distributor) : adminFilterAll,
+    [userCompanyParam]: query.company ? String(query.company) : adminFilterAll
+  }
 }
 
 export function isRenewalStatus(value: string): value is RenewalStatus {
@@ -163,6 +198,46 @@ export function parseRenewalQuery(params: AdminSearchParams): AdminRenewalQuery 
     status: isRenewalStatus(status) ? status : undefined,
     page: pageParam(params)
   }
+}
+
+export function parseDashboardQuery(params: AdminSearchParams): AdminDashboardQuery {
+  const distributor = searchParamValue(params, companyListFilterParam);
+  return {
+    distributor: distributor === noDistributorValue ? noDistributorValue : positiveIdOf(distributor),
+    company: positiveIdOf(searchParamValue(params, userCompanyParam))
+  }
+}
+
+export function dashboardFilterValues(query: AdminDashboardQuery): Record<string, string> {
+  return {
+    [companyListFilterParam]: query.distributor ? String(query.distributor) : adminFilterAll,
+    [userCompanyParam]: query.company ? String(query.company) : adminFilterAll
+  }
+}
+
+export function isDashboardFiltered(query: AdminDashboardQuery) {
+  return query.distributor !== undefined || query.company !== undefined;
+}
+
+export function companyMatchesDistributor(company: CompanyOption, distributor: string) {
+  if (distributor === adminFilterAll) return true;
+  if (distributor === noDistributorValue) return company.distributorId === null;
+  return String(company.distributorId) === distributor;
+}
+
+export function dashboardEnrollmentWhere(query: AdminDashboardQuery): Prisma.EnrollmentWhereInput {
+  const conditions: Prisma.EnrollmentWhereInput[] = [];
+  if (query.company) conditions.push({ organizationId: query.company });
+  if (query.distributor === noDistributorValue) conditions.push({ OR: [{ organizationId: null }, { organization: { distributorId: null } }] });
+  else if (query.distributor) conditions.push({ organization: { distributorId: query.distributor } });
+  return { AND: conditions }
+}
+
+export function dashboardUsersHref(query: AdminDashboardQuery) {
+  return adminListHref(adminRoutes.users, {
+    [companyListFilterParam]: typeof query.distributor === "number" ? String(query.distributor) : adminFilterAll,
+    [userCompanyParam]: query.company ? String(query.company) : adminFilterAll
+  });
 }
 
 export function renewalFilterValues(query: AdminRenewalQuery): Record<string, string> {
@@ -194,7 +269,7 @@ export function readUserForm(formData: FormData): UserFormValues {
     firstName: readFormString(formData, "firstName"),
     lastName: readFormString(formData, "lastName"),
     email: readFormString(formData, "email").toLowerCase(),
-    company: readFormString(formData, "company").replace(/\s+/g, " "),
+    company: readFormString(formData, "company"),
     course: readFormString(formData, "course"),
     locale: readFormString(formData, "locale"),
     notes: readFormString(formData, "notes"),
@@ -210,6 +285,7 @@ export function validateUserForm(values: UserFormValues): UserFormState["errors"
   if (!values.lastName) errors.lastName = "required";
   if (!values.email) errors.email = "required";
   else if (!isEmail(values.email)) errors.email = "invalidEmail";
+  if (values.company && positiveIdOf(values.company) === undefined) errors.company = "invalidCompany";
   if (!isCourseOption(values.course)) errors.course = "invalidCourse";
   if (!hasLocale(values.locale)) errors.locale = "invalidCourse";
   return errors;
@@ -226,7 +302,7 @@ export function userFormValues(user?: AdminUserDetail): UserFormValues {
     firstName: user?.firstName ?? "",
     lastName: user?.lastName ?? "",
     email: user?.email ?? "",
-    company: current?.company ?? "",
+    company: current?.companyId ? String(current.companyId) : "",
     course: current?.courseCode ?? courseOptions[0].value,
     locale: current?.locale ?? user?.preferredLocale ?? defaultLocale,
     notes: current?.notes ?? "",
@@ -331,6 +407,9 @@ export function adminEnrollment(record: AdminEnrollmentRecord, now: Date): Admin
     courseName: record.courseLocale.name,
     locale: localeOf(record.locale),
     company: record.organization?.name ?? null,
+    companyId: record.organization?.id ?? null,
+    seatDistributorId: record.seatDistributor?.id ?? null,
+    seatDistributor: record.seatDistributor?.name ?? null,
     paid: record.paid,
     status: enrollmentStatusOf(record.passedOn !== null, record.attempts.some((attempt) => isAttemptInProgress(attempt, now)), counted.some((attempt) => attempt.submittedAt)),
     enrolledOn: record.createdAt.toISOString(),
@@ -394,7 +473,7 @@ interface EnrollmentSnapshot {
   locale: string;
   paid: boolean;
   notes: string | null;
-  organization: { name: string } | null;
+  organizationId: number | null;
   courseLocale: { course: { code: string } };
 }
 
@@ -404,7 +483,7 @@ export function userChanges(user: ProfileSnapshot, enrollment: EnrollmentSnapsho
     [user.email !== values.email, "email"],
     [user.active !== values.active, values.active ? "reactivated account" : "deactivated account"],
     [!enrollment || enrollment.courseLocale.course.code !== values.course || enrollment.locale !== values.locale, "course"],
-    [(enrollment?.organization?.name ?? "") !== values.company, "company"],
+    [(enrollment?.organizationId ?? undefined) !== positiveIdOf(values.company), "company"],
     [(enrollment?.paid ?? false) !== values.paid, values.paid ? "marked paid" : "marked unpaid"],
     [(enrollment?.notes ?? "") !== values.notes, "notes"]
   ];
@@ -444,6 +523,8 @@ function auditEntityHref(entity: AuditEntity, entityId: string | null) {
   if (entity === "user") return adminUserHref(id);
   if (entity === "certificate") return adminCertificateHref(id);
   if (entity === "review") return adminReviewHref(id);
+  if (entity === "distributor") return adminDistributorHref(id);
+  if (entity === "company") return adminCompanyHref(id);
   return undefined;
 }
 
@@ -475,7 +556,7 @@ export function dashboardStats(counts: DashboardCountsRecord, passRates: PassRat
   return [
     { label: "Active students", value: formatCount(counts.active_students), note: `${formatCount(counts.deactivated_students)} deactivated` },
     { label: "Attempts this month", value: formatCount(counts.attempts_this_month), note: `${formatCount(counts.passed_attempts_this_month)} passed` },
-    { label: "Pass rate", value: `${percent(passed, submitted)}%`, note: `${formatCount(passed)} of ${formatCount(submitted)} exams, last 12 months` },
+    { label: "Pass rate", value: submitted === 0 ? "—" : `${percent(passed, submitted)}%`, note: `${formatCount(passed)} of ${formatCount(submitted)} exams, last 12 months` },
     { label: "Passed this year", value: formatCount(counts.passed_this_year), note: `${formatCount(counts.passed_total)} passed in total` }
   ];
 }

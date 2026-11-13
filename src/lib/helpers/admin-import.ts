@@ -4,6 +4,7 @@ import type { ImportKind, ImportPreviewRow, ImportQuestionContext, ImportQuestio
 import type { CourseCode } from "@/types/courses";
 import { courseLabel, isCourseOption } from "./admin";
 import { validateQuestionForm } from "./admin-courses";
+import { nameKey, normalizeName } from "./admin-distributors";
 import { csvLine, parseCsv } from "./csv";
 import { isEmail } from "./forms";
 
@@ -58,6 +59,7 @@ function userProblem(record: ImportRecord, context: ImportUserContext, seen: Map
   if (owner !== undefined) return `Email already belongs to ${owner}`;
   const earlier = seen.get(email);
   if (earlier !== undefined) return `Same email as line ${earlier}`;
+  if (cells.company && !context.companies.has(nameKey(cells.company))) return "Company isn't in the company list";
   return undefined;
 }
 
@@ -65,10 +67,13 @@ export function validateUserRecords(records: ImportRecord[], context: ImportUser
   const seen = new Map<string, number>();
   const preview: ImportPreviewRow[] = [];
   const rows: ImportUserRow[] = [];
+  const missingCompanies = new Map<string, string>();
 
   for (const record of records) {
     const problem = userProblem(record, context, seen);
     preview.push(previewRow(record, problem));
+    const companyKey = nameKey(record.cells.company);
+    if (companyKey && !context.companies.has(companyKey) && !missingCompanies.has(companyKey)) missingCompanies.set(companyKey, normalizeName(record.cells.company));
     const email = record.cells.email.toLowerCase();
     if (email && !seen.has(email)) seen.set(email, record.line);
     if (problem) continue;
@@ -77,12 +82,12 @@ export function validateUserRecords(records: ImportRecord[], context: ImportUser
       firstName: record.cells.first_name.replace(/\s+/g, " "),
       lastName: record.cells.last_name.replace(/\s+/g, " "),
       email,
-      company: record.cells.company.replace(/\s+/g, " "),
+      company: context.companies.get(companyKey) ?? null,
       course: courseFromCell(record.cells.course)!,
       locale: localeFromCell(record.cells.language)!
     });
   }
-  return { preview, rows }
+  return { preview, rows, missingCompanies: [...missingCompanies.values()].sort((a, b) => a.localeCompare(b)) }
 }
 
 function correctIndexOf(value: string) {

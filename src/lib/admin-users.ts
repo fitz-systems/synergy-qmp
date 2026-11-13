@@ -16,6 +16,8 @@ function userListSql(query: AdminUserListQuery) {
   }
   if (query.course) conditions.push(Prisma.sql`course_code = ${query.course}`);
   if (query.status) conditions.push(Prisma.sql`status = ${query.status}`);
+  if (query.distributor) conditions.push(Prisma.sql`distributor_id = ${query.distributor}`);
+  if (query.company) conditions.push(Prisma.sql`company_id = ${query.company}`);
 
   return Prisma.sql`
     WITH latest AS (
@@ -25,7 +27,7 @@ function userListSql(query: AdminUserListQuery) {
     ), students AS (
       SELECT
         u.id, u.first_name, u.last_name, u.email, u.active, u.role,
-        o.name AS company, c.code AS course_code, l.locale, l.created_at AS enrolled_on,
+        o.name AS company, o.id AS company_id, o.distributor_id, c.code AS course_code, l.locale, l.created_at AS enrolled_on,
         CASE
           WHEN l.id IS NULL THEN NULL
           WHEN l.passed_on IS NOT NULL THEN 'passed'

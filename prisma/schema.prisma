@@ -80,12 +80,29 @@ model Verification {
   @@schema("synergy")
 }
 
-model Organization {
-  id          Int          @id @default(autoincrement())
-  name        String       @unique
-  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+model Distributor {
+  id          Int            @id @default(autoincrement())
+  name        String         @unique
+  seatBalance Int            @default(0) @map("seat_balance")
+  notes       String?
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  companies   Organization[]
   enrollments Enrollment[]
 
+  @@map("distributors")
+  @@schema("synergy")
+}
+
+model Organization {
+  id            Int          @id @default(autoincrement())
+  name          String       @unique
+  distributorId Int?         @map("distributor_id")
+  createdAt     DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  distributor   Distributor? @relation(fields: [distributorId], references: [id], onDelete: SetNull)
+  enrollments   Enrollment[]
+
+  @@index([distributorId])
   @@map("organizations")
   @@schema("synergy")
 }
@@ -136,6 +153,7 @@ model Enrollment {
   courseId            Int           @map("course_id")
   locale              String
   organizationId      Int?          @map("organization_id")
+  seatDistributorId   Int?          @map("seat_distributor_id")
   paid                Boolean       @default(false)
   passedOn            DateTime?     @map("passed_on") @db.Date
   certificateNumber   String?       @unique @map("certificate_number")
@@ -147,10 +165,12 @@ model Enrollment {
   user                User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   courseLocale        CourseLocale  @relation(fields: [courseId, locale], references: [courseId, locale])
   organization        Organization? @relation(fields: [organizationId], references: [id])
+  seatDistributor     Distributor?  @relation(fields: [seatDistributorId], references: [id], onDelete: SetNull)
   attempts            Attempt[]
 
   @@index([userId])
   @@index([organizationId])
+  @@index([seatDistributorId])
   @@map("enrollments")
   @@schema("synergy")
 }

@@ -3,8 +3,10 @@ import { adminRole } from "@/constants/auth";
 import type { Prisma } from "@/generated/prisma/client";
 import { withEnrollmentLock } from "@/lib/attempts";
 import { hasPassword } from "@/lib/accounts";
+import { applySeatMove } from "@/lib/admin-distributor-mutations";
 import { recordAudit } from "@/lib/audit";
-import { formatAdminDate, fullName, userChanges } from "@/lib/helpers/admin";
+import { changeDetails, formatAdminDate, fullName, positiveIdOf, userChanges } from "@/lib/helpers/admin";
+import { seatMove } from "@/lib/helpers/admin-distributors";
 import { certificateNumber } from "@/lib/helpers/certificate";
 import { businessDate } from "@/lib/helpers/exam";
 import { resolveLocale } from "@/lib/helpers/locale";
@@ -19,12 +21,13 @@ const currentEnrollmentSelect = {
   courseId: true,
   locale: true,
   organizationId: true,
+  seatDistributorId: true,
   paid: true,
   notes: true,
   passedOn: true,
   certificateNumber: true,
   attemptsResetAt: true,
-  organization: { select: { name: true } },
+  organization: { select: { distributorId: true } },
   courseLocale: { select: { name: true, course: { select: { code: true } } } },
   attempts: { select: { startedAt: true } }
 } satisfies Prisma.EnrollmentSelect;
@@ -44,10 +47,10 @@ function findStudent(tx: Prisma.TransactionClient, userId: number) {
   });
 }
 
-async function organizationIdFor(tx: Prisma.TransactionClient, company: string) {
-  if (!company) return null;
-  const existing = await tx.organization.findFirst({ where: { name: { equals: company, mode: "insensitive" } }, select: { id: true } });
-  return existing?.id ?? (await tx.organization.create({ data: { name: company }, select: { id: true } })).id;
+async function companyFor(tx: Prisma.TransactionClient, value: string) {
+  const id = positiveIdOf(value);
+  if (id === undefined) return null;
+  return await tx.organization.findUnique({ where: { id }, select: { id: true, distributorId: true } }) ?? undefined;
 }
 
 async function courseLocaleFor(tx: Prisma.TransactionClient, values: UserFormValues) {
@@ -75,21 +78,25 @@ export async function createStudent(adminId: number, values: UserFormValues): Pr
     if (await isEmailTaken(tx, values.email)) return { errors: { email: "emailTaken" } }
     const courseLocale = await courseLocaleFor(tx, values);
     if (!courseLocale.course.active) return { errors: { course: "inactiveCourse" } }
-    const organizationId = await organizationIdFor(tx, values.company);
+    const company = await companyFor(tx, values.company);
+    if (company === undefined) return { errors: { company: "invalidCompany" } }
+    const seatDistributorId = company?.distributorId ?? null;
     const user = await tx.user.create({
       data: {
         ...profileData(values),
-        enrollments: { create: { courseId: courseLocale.courseId, locale: values.locale, organizationId, paid: values.paid, notes: values.notes || null } }
+        enrollments: { create: { courseId: courseLocale.courseId, locale: values.locale, organizationId: company?.id ?? null, seatDistributorId, paid: values.paid, notes: values.notes || null } }
       },
       select: { id: true }
     });
-    await recordAudit(tx, { adminId, action: "userCreated", entity: "user", entityId: user.id, entityLabel: fullName(values), details: `Enrolled in ${courseLocale.name}` });
+    const seats = await applySeatMove(tx, { charge: seatDistributorId, refund: null });
+    await recordAudit(tx, { adminId, action: "userCreated", entity: "user", entityId: user.id, entityLabel: fullName(values), details: [`Enrolled in ${courseLocale.name}`, ...seats].join("; ") });
     return { id: user.id }
   });
 }
 
 export async function updateStudent(adminId: number, userId: number, values: UserFormValues): Promise<SaveResult> {
   return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT 1 FROM "synergy"."users" WHERE id = ${userId} FOR UPDATE`;
     const user = await findStudent(tx, userId);
     if (!user) return null;
     if (await isEmailTaken(tx, values.email, userId)) return { errors: { email: "emailTaken" } }
@@ -100,16 +107,21 @@ export async function updateStudent(adminId: number, userId: number, values: Use
 
     const courseLocale = await courseLocaleFor(tx, values);
     if ((courseChanged || !current) && !courseLocale.course.active) return { errors: { course: "inactiveCourse" } }
-    const organizationId = await organizationIdFor(tx, values.company);
-    const enrollment = { courseId: courseLocale.courseId, locale: values.locale, organizationId, paid: values.paid, notes: values.notes || null };
+    const company = await companyFor(tx, values.company);
+    if (company === undefined) return { errors: { company: "invalidCompany" } }
+    const holder = current ? { companyId: current.organizationId, seatDistributorId: current.seatDistributorId, companyDistributorId: current.organization?.distributorId ?? null } : null;
+    const move = seatMove(holder, { companyId: company?.id ?? null, distributorId: company?.distributorId ?? null });
+    const seatDistributorId = move.moved ? move.charge : current?.seatDistributorId ?? null;
+    const enrollment = { courseId: courseLocale.courseId, locale: values.locale, organizationId: company?.id ?? null, seatDistributorId, paid: values.paid, notes: values.notes || null };
 
     await tx.user.update({ where: { id: userId }, data: profileData(values) });
     if (current) await tx.enrollment.update({ where: { id: current.id }, data: enrollment });
     else await tx.enrollment.create({ data: { ...enrollment, userId } });
     if (user.active && !values.active) await tx.session.deleteMany({ where: { userId } });
 
-    const changes = userChanges(user, current, values);
-    if (changes.length > 0) await recordAudit(tx, { adminId, action: "userUpdated", entity: "user", entityId: userId, entityLabel: fullName(values), details: `Changed ${changes.join(", ")}` });
+    const seats = await applySeatMove(tx, move);
+    const details = changeDetails(userChanges(user, current, values), seats.join("; ") || undefined);
+    if (details) await recordAudit(tx, { adminId, action: "userUpdated", entity: "user", entityId: userId, entityLabel: fullName(values), details });
     return { id: userId }
   });
 }

@@ -1,4 +1,4 @@
-import { BookOpen, CalendarClock, CircleAlert, Clock, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Sun, Users } from "lucide-react";
+import { BookOpen, Building2, CalendarClock, CircleAlert, Clock, FileUp, History, LayoutDashboard, MessageSquareQuote, Monitor, Moon, Network, Sun, Users } from "lucide-react";
 import type { ChartConfig } from "@/components/ui/chart";
 import { adminLoginPath } from "@/constants/routes";
 import { businessTimeZone } from "@/constants/student";
@@ -12,6 +12,10 @@ export const adminRoutes: Record<AdminRoute, string> = {
   users: "/admin/users",
   newUser: "/admin/users/new",
   importData: "/admin/import",
+  distributors: "/admin/distributors",
+  newDistributor: "/admin/distributors/new",
+  companies: "/admin/companies",
+  newCompany: "/admin/companies/new",
   courses: "/admin/courses",
   reviews: "/admin/reviews",
   newReview: "/admin/reviews/new",
@@ -28,6 +32,13 @@ export const adminNav: AdminNavGroup[] = [
       { route: "users", label: "Users", icon: Users },
       { route: "importData", label: "Import", icon: FileUp },
       { route: "renewals", label: "Renewals", icon: CalendarClock }
+    ]
+  },
+  {
+    label: "Clients",
+    items: [
+      { route: "distributors", label: "Distributors", icon: Network },
+      { route: "companies", label: "Companies", icon: Building2 }
     ]
   },
   {
@@ -127,6 +138,7 @@ export const userFormErrors: Record<UserFormField, Partial<Record<UserFormError,
   firstName: { required: "Enter a first name." },
   lastName: { required: "Enter a last name." },
   email: { required: "Enter an email.", invalidEmail: "Enter a valid email address.", emailTaken: "Another account already uses this email." },
+  company: { invalidCompany: "Choose a company from the list." },
   course: { invalidCourse: "Choose a course.", courseLocked: "The course can't change after the student has started the exam.", inactiveCourse: "This course is inactive and can't take new enrollments." },
   locale: { invalidCourse: "Choose a language.", courseLocked: "The language can't change after the student has started the exam." }
 }
@@ -154,7 +166,17 @@ export const auditActionLabels: Record<AuditAction, string> = {
   reviewUpdated: "Edited review",
   reviewDeleted: "Deleted review",
   usersImported: "Imported users",
-  questionsImported: "Imported questions"
+  questionsImported: "Imported questions",
+  distributorCreated: "Added distributor",
+  distributorUpdated: "Edited distributor",
+  distributorDeleted: "Deleted distributor",
+  seatsAdded: "Added seats",
+  seatBalanceSet: "Set seat balance",
+  companyCreated: "Added company",
+  companyUpdated: "Edited company",
+  companyDeleted: "Deleted company",
+  companiesMerged: "Merged companies",
+  companiesImported: "Added companies from import"
 }
 
 export const adminSidebarWidth = "16rem";
@@ -210,7 +232,9 @@ export const auditEntityLabels: Record<AuditEntity, string> = {
   course: "Course",
   question: "Question",
   review: "Review",
-  import: "Import"
+  import: "Import",
+  distributor: "Distributor",
+  company: "Company"
 }
 
 export const auditEntityOptions: SelectOption[] = Object.entries(auditEntityLabels).map(([value, label]) => ({ value, label }));
@@ -246,6 +270,14 @@ export const dashboardRecentAttempts = 6;
 
 export const dashboardMonths = 12;
 
+export const dashboardFilterLabels = {
+  distributor: "Distributor",
+  allDistributors: "All distributors",
+  company: "Company",
+  allCompanies: "All companies",
+  clear: "Clear filters"
+}
+
 export const dashboardMonthFormat = new Intl.DateTimeFormat("en-CA", { month: "short", year: "2-digit", timeZone: "UTC" });
 
 export const adminThemeOptions: AdminThemeOption[] = [
@@ -278,7 +310,8 @@ export const adminEnrollmentSelect = {
   attemptsResetAt: true,
   notes: true,
   createdAt: true,
-  organization: { select: { name: true } },
+  organization: { select: { id: true, name: true } },
+  seatDistributor: { select: { id: true, name: true } },
   courseLocale: { select: { name: true, course: { select: { code: true, maxAttempts: true } } } },
   attempts: {
     select: { id: true, startedAt: true, expiresAt: true, submittedAt: true, correctCount: true, questionCount: true, passed: true },
@@ -488,4 +521,68 @@ export const languageAliases: Record<string, Locale> = {
   french: "fr",
   "français": "fr",
   francais: "fr"
+}
+
+export const noDistributorValue = "none";
+
+export const distributorHistoryLimit = 20;
+
+export const distributorRecentSeatsLimit = 10;
+
+export const seatAdjustmentLimit = 100_000;
+
+export const distributorSelect = {
+  id: true,
+  name: true,
+  seatBalance: true
+} satisfies Prisma.DistributorSelect;
+
+export const adminDistributorSelect = {
+  ...distributorSelect,
+  notes: true,
+  _count: { select: { companies: true, enrollments: true } }
+} satisfies Prisma.DistributorSelect;
+
+export const adminCompanySelect = {
+  id: true,
+  name: true,
+  distributorId: true,
+  distributor: { select: { name: true } },
+  _count: { select: { enrollments: true } }
+} satisfies Prisma.OrganizationSelect;
+
+export const companyListFilterParam = "distributor";
+
+export const userCompanyParam = "company";
+
+export const distributorFormFailedNotice = "The distributor couldn't be saved. Please try again.";
+
+export const companyFormFailedNotice = "The company couldn't be saved. Please try again.";
+
+export const distributorActionMessages = {
+  notFound: "This distributor no longer exists.",
+  invalidAmount: `Enter a whole number from 1 to ${seatAdjustmentLimit.toLocaleString("en-CA")}.`,
+  invalidBalance: `Enter a whole number from -${seatAdjustmentLimit.toLocaleString("en-CA")} to ${seatAdjustmentLimit.toLocaleString("en-CA")}.`,
+  failed: "Something went wrong. Please try again."
+}
+
+export const companyActionMessages = {
+  notFound: "This company no longer exists.",
+  nameRequired: "Enter a company name.",
+  nameTaken: "A company with this name already exists.",
+  distributorMissing: "That distributor no longer exists.",
+  hasStudents: "This company has students. Merge it into another company instead.",
+  mergeTarget: "Choose a different company to merge into.",
+  failed: "Something went wrong. Please try again."
+}
+
+export const companyPickerLabels = {
+  placeholder: "No company",
+  search: "Search companies",
+  none: "No company",
+  noMatches: "No companies match.",
+  noDistributor: "No distributor",
+  add: "Add company",
+  create: "Add company",
+  cancel: "Back"
 }

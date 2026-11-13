@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { adminAttemptParam, adminRoutes, statusToneIconStyles, statusToneStyles, welcomeFailedParam } from "@/constants/admin";
 import { getAdminAttemptAnswers, getAdminUserDetail } from "@/lib/admin-users";
 import { cn } from "@/lib/helpers/class-names";
-import { adminCertificateHref, adminUserAttemptHref, adminUserEditHref, attemptsUsedLabel, enrollmentLabel, formatAdminDate, formatAdminDateTime, formatAdminTimestampDate, fullName, languageLabel, scoreLabel, searchParamValue, selectedAttemptId, todayInputValue } from "@/lib/helpers/admin";
+import { adminCertificateHref, adminCompanyHref, adminDistributorHref, adminUserAttemptHref, adminUserEditHref, attemptsUsedLabel, enrollmentLabel, formatAdminDate, formatAdminDateTime, formatAdminTimestampDate, fullName, languageLabel, scoreLabel, searchParamValue, selectedAttemptId, todayInputValue } from "@/lib/helpers/admin";
 import type { AdminUserAttempt } from "@/types/admin";
 
 export const metadata: Metadata = {
@@ -93,7 +93,7 @@ export default async function AdminUserPage({ params, searchParams }: PageProps<
           </CardHeader>
           <CardContent>
             <DetailList rows={[
-              ["Company", current?.company ?? "—"],
+              ["Company", current?.companyId ? <Link key="company" href={adminCompanyHref(current.companyId)} className="hover:underline">{current.company}</Link> : "—"],
               ["Language", languageLabel(user.preferredLocale)],
               ["Account", <ToggleBadge key="account" on={user.active} onLabel="Active" offLabel="Deactivated"/>],
               ["Created", formatAdminTimestampDate(user.createdAt)],
@@ -113,7 +113,8 @@ export default async function AdminUserPage({ params, searchParams }: PageProps<
                 ["Enrolled", formatAdminTimestampDate(current.enrolledOn)],
                 ["Status", <StatusBadge key="status" status={current.status}/>],
                 ["Attempts used", attemptsUsedLabel(current.attemptsUsed, current.maxAttempts)],
-                ["Payment", <ToggleBadge key="paid" on={current.paid} onLabel="Paid" offLabel="Unpaid"/>]
+                ["Payment", <ToggleBadge key="paid" on={current.paid} onLabel="Paid" offLabel="Unpaid"/>],
+                ["Seat", current.seatDistributorId ? <Link key="seat" href={adminDistributorHref(current.seatDistributorId)} className="hover:underline">{current.seatDistributor}</Link> : "—"]
               ]}/>
               <div className="flex flex-wrap gap-2">
                 <AdminActionButton action={setPaid.bind(null, user.id, !current.paid)} size="sm">{current.paid ? "Mark unpaid" : "Mark paid"}</AdminActionButton>

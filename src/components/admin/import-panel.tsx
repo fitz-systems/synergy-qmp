@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { CircleAlert, CircleCheck, Download, FileText, FileUp, LoaderCircle, Upload } from "lucide-react";
+import { Building2, CircleAlert, CircleCheck, Download, FileText, FileUp, LoaderCircle, Plus, Ticket, Upload } from "lucide-react";
+import { createMissingCompanies } from "@/app/admin/(panel)/companies/actions";
 import { previewImport, runImport } from "@/app/admin/(panel)/import/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { importColumns, importKindLabels, importMaxBytes, importMaxRows, importMessages, importPreviewLimit, statusToneIconStyles, statusToneStyles } from "@/constants/admin";
+import { adminRoutes, importColumns, importKindLabels, importMaxBytes, importMaxRows, importMessages, importPreviewLimit, statusToneIconStyles, statusToneStyles } from "@/constants/admin";
 import { questionBankValue } from "@/lib/helpers/admin";
+import { seatBalanceTone, seatCountLabel, seatsLeftLabel } from "@/lib/helpers/admin-distributors";
 import { importCountLabel, importTemplate, importTemplateFileName } from "@/lib/helpers/admin-import";
 import { cn } from "@/lib/helpers/class-names";
 import { decodeCsvBytes } from "@/lib/helpers/csv";
-import type { ImportKind, ImportPreview, ImportResult, QuestionBank } from "@/types/admin";
+import type { AdminActionResult, ImportKind, ImportPreview, ImportResult, ImportSeatUse, QuestionBank } from "@/types/admin";
 
 interface ImportPanelProps {
   banks: QuestionBank[];
@@ -30,6 +32,19 @@ interface ChosenFile {
   name: string;
   text: string;
 }
+
+interface MissingCompaniesProps {
+  names: string[];
+  pending: boolean;
+  outcome: AdminActionResult | null;
+  onAdd: () => void;
+}
+
+interface SeatUsesProps {
+  seats: ImportSeatUse[];
+}
+
+const missingCompaniesShown = 8;
 
 const importKinds = Object.keys(importKindLabels) as ImportKind[];
 
@@ -57,18 +72,73 @@ function downloadTemplate(kind: ImportKind) {
   URL.revokeObjectURL(url);
 }
 
+function MissingCompanies({ names, pending, outcome, onAdd }: MissingCompaniesProps) {
+  const listed = names.slice(0, missingCompaniesShown).join(", ");
+  const more = names.length - missingCompaniesShown;
+  const noun = names.length === 1 ? "company" : "companies";
+  return (
+    <div className={cn("flex flex-col gap-3 rounded-md border px-3 py-3 text-sm sm:flex-row sm:items-center sm:justify-between", statusToneStyles.warning)}>
+      <div className="flex gap-2">
+        <Building2 aria-hidden className="mt-0.5 size-4 shrink-0"/>
+        <div>
+          <p className="font-medium">{names.length} {noun} in this file {names.length === 1 ? "isn't" : "aren't"} in the company list, so {names.length === 1 ? "its rows are" : "their rows are"} skipped.</p>
+          <p>{listed}{more > 0 ? `, and ${more} more` : ""}</p>
+          <p className="mt-1 text-xs">Added companies have no distributor. If they belong to one, set it under <a href={adminRoutes.companies} target="_blank" rel="noreferrer" className="underline">Companies</a> before importing so the right seats are used.</p>
+          {outcome && !outcome.ok && <p role="alert" className="mt-1 font-medium">{outcome.error}</p>}
+        </div>
+      </div>
+      <Button type="button" variant="outline" size="sm" className="shrink-0 bg-background" onClick={onAdd} disabled={pending}>
+        {pending ? <LoaderCircle aria-hidden className="animate-spin"/> : <Plus/>}
+        Add {names.length === 1 ? "it" : `all ${names.length}`}
+      </Button>
+    </div>
+  );
+}
+
+function SeatUses({ seats }: SeatUsesProps) {
+  return (
+    <div className="grid gap-1.5 rounded-md border px-3 py-3 text-sm">
+      <p className="flex items-center gap-2 font-medium"><Ticket aria-hidden className="size-4 shrink-0 text-muted-foreground"/>Seats this import uses</p>
+      <ul className="grid gap-1 pl-6">
+        {seats.map((seat) => {
+          const after = seat.balance - seat.used;
+          return (
+            <li key={seat.distributor} className="flex flex-wrap gap-x-2">
+              <span className="font-medium">{seat.distributor}</span>
+              <span className="text-muted-foreground">uses {seatCountLabel(seat.used)}: {seatsLeftLabel(seat.balance)} now,</span>
+              <span className={cn(after < 0 ? statusToneIconStyles[seatBalanceTone(after)] : "text-muted-foreground")}>{seatsLeftLabel(after)} after</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 function ImportTab({ kind, banks }: ImportTabProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [bank, setBank] = useState(banks[0] ? questionBankValue(banks[0]) : "");
   const [file, setFile] = useState<ChosenFile | null>(null);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [companiesOutcome, setCompaniesOutcome] = useState<AdminActionResult | null>(null);
   const [dragging, setDragging] = useState(false);
   const [pending, startTransition] = useTransition();
   const fileId = `import-file-${kind}`;
 
   function check(chosen: ChosenFile, bankValue: string) {
+    setCompaniesOutcome(null);
     startTransition(async () => setPreview(await previewImport({ kind, bank: bankValue, fileName: chosen.name, text: chosen.text })));
+  }
+
+  function addMissingCompanies() {
+    if (!file || !preview?.missingCompanies) return;
+    const names = preview.missingCompanies;
+    startTransition(async () => {
+      const outcome = await createMissingCompanies(names);
+      setCompaniesOutcome(outcome);
+      if (outcome.ok) setPreview(await previewImport({ kind, bank, fileName: file.name, text: file.text }));
+    });
   }
 
   async function choose(selected: File | undefined) {
@@ -94,6 +164,7 @@ function ImportTab({ kind, banks }: ImportTabProps) {
     setFile(null);
     setPreview(null);
     setResult(null);
+    setCompaniesOutcome(null);
   }
 
   function runIt() {
@@ -120,7 +191,7 @@ function ImportTab({ kind, banks }: ImportTabProps) {
           <CardTitle>Upload a CSV file</CardTitle>
           <CardDescription>
             Columns: <span className="font-mono text-xs">{importColumns[kind].join(", ")}</span>
-            {kind === "users" && <span className="mt-1 block">Course is ground or air, language is en or fr. No emails are sent. Use Send password reset on each student to email them a welcome link to set their password.</span>}
+            {kind === "users" && <span className="mt-1 block">Course is ground or air, language is en or fr. Company can be blank or must match a company in the list (capitals and spacing don&apos;t matter). No emails are sent. Use Send password reset on each student to email them a welcome link to set their password.</span>}
             {kind === "questions" && <span className="mt-1 block">Correct is the letter of the right answer (A to D). Two answers like True / False or Vrai / Faux make a true / false question.</span>}
           </CardDescription>
         </CardHeader>
@@ -185,6 +256,19 @@ function ImportTab({ kind, banks }: ImportTabProps) {
               {preview.rows.length > shown.length && <span>Showing the first {shown.length} of {preview.rows.length} rows</span>}
             </CardDescription>
           </CardHeader>
+          {(companiesOutcome?.ok && companiesOutcome.message || (preview.missingCompanies?.length ?? 0) > 0 || (preview.seats?.length ?? 0) > 0) && (
+            <div className="grid gap-3 border-b p-4">
+              {companiesOutcome?.ok && companiesOutcome.message && (
+                <p role="status" className={cn("flex items-center gap-2 rounded-md border px-3 py-2 text-sm", statusToneStyles.success)}>
+                  <CircleCheck aria-hidden className="size-4 shrink-0"/>{companiesOutcome.message}
+                </p>
+              )}
+              {preview.missingCompanies && preview.missingCompanies.length > 0 && (
+                <MissingCompanies names={preview.missingCompanies} pending={pending} outcome={companiesOutcome} onAdd={addMissingCompanies}/>
+              )}
+              {preview.seats && preview.seats.length > 0 && <SeatUses seats={preview.seats}/>}
+            </div>
+          )}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>

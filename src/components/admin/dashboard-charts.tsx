@@ -37,15 +37,19 @@ export function DashboardCharts({ registrations, passRates }: DashboardChartsPro
           <CardDescription>Share of submitted exams that passed, last 12 months</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={passRateChartConfig} className="h-64 w-full">
-            <BarChart data={passRates} layout="vertical" accessibilityLayer margin={{ left: 8 }}>
-              <CartesianGrid horizontal={false}/>
-              <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} unit="%"/>
-              <YAxis type="category" dataKey="course" tickLine={false} axisLine={false} width={88}/>
-              <ChartTooltip content={<ChartTooltipContent/>}/>
-              <Bar dataKey="passRate" unit="%" fill="var(--color-passRate)" radius={6}/>
-            </BarChart>
-          </ChartContainer>
+          {passRates.length === 0 ? (
+            <p className="flex h-64 items-center justify-center text-sm text-muted-foreground">No exams submitted in the last 12 months.</p>
+          ) : (
+            <ChartContainer config={passRateChartConfig} className="h-64 w-full">
+              <BarChart data={passRates} layout="vertical" accessibilityLayer margin={{ left: 8 }}>
+                <CartesianGrid horizontal={false}/>
+                <XAxis type="number" domain={[0, 100]} tickLine={false} axisLine={false} unit="%"/>
+                <YAxis type="category" dataKey="course" tickLine={false} axisLine={false} width={88}/>
+                <ChartTooltip content={<ChartTooltipContent/>}/>
+                <Bar dataKey="passRate" unit="%" fill="var(--color-passRate)" radius={6}/>
+              </BarChart>
+            </ChartContainer>
+          )}
         </CardContent>
       </Card>
     </div>

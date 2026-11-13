@@ -51,7 +51,7 @@ export function AdminFormSection({ title, description, children }: AdminFormSect
 
 export function AdminField({ id, label, hint, error, className, children }: AdminFieldProps) {
   return (
-    <div className={className ?? "grid gap-2"}>
+    <div className={className ?? "grid content-start gap-2"}>
       <Label htmlFor={id}>{label}</Label>
       {children}
       {error && <p id={`${id}-error`} className="text-sm text-destructive">{error}</p>}
