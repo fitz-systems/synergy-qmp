@@ -53,7 +53,7 @@ function ratingOf(value: string) {
 export function validateReviewForm(values: ReviewFormValues): ReviewFormState["errors"] {
   const errors: ReviewFormState["errors"] = {}
   if (!values.author) errors.author = "Enter the author's name.";
-  if (!values.body) errors.body = "Enter the review.";
+  if (!values.body && values.rating === noRatingValue) errors.body = "Enter the review or choose a rating.";
   if (!hasLocale(values.locale)) errors.locale = "Choose a language.";
   if (ratingOf(values.rating) === undefined) errors.rating = "Choose a rating.";
   if (!/^\d{1,4}$/.test(values.sortOrder)) errors.sortOrder = "Enter a whole number from 0 to 9999.";

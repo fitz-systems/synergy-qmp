@@ -5,7 +5,7 @@ import { Testimonials } from "./testimonials";
 
 export async function TestimonialsSection() {
   const [dict, locale] = await Promise.all([getDictionary(), getLocale()]);
-  const reviews = await getPublishedReviews(locale);
+  const reviews = (await getPublishedReviews(locale)).filter((review) => review.body);
   if (reviews.length === 0) return null;
 
   return (

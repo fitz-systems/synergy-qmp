@@ -166,7 +166,7 @@ export function ReviewsPanel({ reviews, summary, copy, locale }: ReviewsPanelPro
               {review.rating !== null && (
                 <RatingStars rating={review.rating} label={interpolate(copy.detail.ratingLabel, { rating: formatRating(locale, review.rating) })}/>
               )}
-              <blockquote className="mt-3 leading-relaxed text-ink">{review.body}</blockquote>
+              {review.body && <blockquote className="mt-3 leading-relaxed text-ink">{review.body}</blockquote>}
               <p className="mt-3 text-sm">
                 <span className="font-semibold text-ink">{review.author}</span>
                 {review.roleCompany && <span className="text-ink-muted"> · {review.roleCompany}</span>}

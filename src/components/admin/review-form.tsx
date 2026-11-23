@@ -56,8 +56,8 @@ export function ReviewForm({ action, initialState, submitLabel, cancelHref }: Re
         <AdminField id="review-role" label="Role or company">
           <Input id="review-role" name="roleCompany" defaultValue={values.roleCompany}/>
         </AdminField>
-        <AdminField id={fieldId("body")} label="Review" error={errors.body} className="grid gap-2 sm:col-span-2">
-          <Textarea id={fieldId("body")} name="body" rows={5} defaultValue={values.body} required {...invalidProps("body")}/>
+        <AdminField id={fieldId("body")} label="Review" hint="Optional with a rating. Reviews without text show their stars on course pages but not on the home page." error={errors.body} className="grid gap-2 sm:col-span-2">
+          <Textarea id={fieldId("body")} name="body" rows={5} defaultValue={values.body} {...invalidProps("body")}/>
         </AdminField>
         <AdminField id={fieldId("locale")} label="Language" hint="Shown on pages in this language only." error={errors.locale}>
           <Select name="locale" value={locale} onValueChange={setLocale}>

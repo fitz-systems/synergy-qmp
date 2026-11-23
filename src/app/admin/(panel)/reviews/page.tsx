@@ -46,7 +46,7 @@ export default async function AdminReviewsPage() {
                   <p className="font-medium">{review.author}</p>
                   <p className="text-xs text-muted-foreground">{review.roleCompany}</p>
                 </TableCell>
-                <TableCell className="max-w-sm whitespace-normal text-muted-foreground">{review.body}</TableCell>
+                <TableCell className="max-w-sm whitespace-normal text-muted-foreground">{review.body || "Rating only"}</TableCell>
                 <TableCell>{languageLabel(review.locale)}</TableCell>
                 <TableCell>
                   {review.rating === null
